@@ -221,7 +221,7 @@ export default function PartnerSettings({ partner, onUpdateSession }: PartnerSet
               Assigned Store Hub
             </div>
             <p className="text-xs mt-1 text-amber-800">
-              For changes to your store trade name, bank accounts, or verified territory pin codes, contact Camsik Super Admin or your territory manager.
+              For changes to your store trade name, bank accounts, or verified territory pin codes, contact Maa Ambika Super Admin or your territory manager.
             </p>
           </div>
         </div>

@@ -20,7 +20,7 @@ class CamsikDeliveryApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Camsik Delivery',
+      title: 'Maa Ambika Delivery',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -145,7 +145,7 @@ class _DeliveryMainNavigationScreenState extends State<DeliveryMainNavigationScr
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('CAMSIK RIDER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5)),
+                const Text('MAA AMBIKA FLEET', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5)),
                 Text(
                   _isOnline ? 'Online • Ready for Orders' : 'Offline • Duty Paused',
                   style: TextStyle(
@@ -901,10 +901,10 @@ class _DeliveryMainNavigationScreenState extends State<DeliveryMainNavigationScr
           _buildHotspotCard('Whitefield ITPL Corridor', 'Bengaluru East', '1.3x Surge', '19 orders awaiting rider', true),
           _buildHotspotCard('HSR Layout & Electronic City', 'Bengaluru South', '1.2x Surge', '14 orders awaiting rider', false),
           const SizedBox(height: 20),
-          const Text('Official Camsik Drop-off Hubs', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-          const SizedBox(height: 10),
-          _buildHubCard('Camsik Tech Lab & Sorting Center', 'Koramangala 4th Block', 'Open until 09:00 PM', 'Drop inspected phones here'),
-          _buildHubCard('Camsik Hub - North', 'Hebbal Ring Road', 'Open until 08:30 PM', 'Drop laptop & tablet boxes'),
+          const Text('Official Maa Ambika Drop-off Hubs', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+          const SizedBox(height: 12),
+          _buildHubCard('Maa Ambika Central Tech Lab', 'Main Road, Odisha', 'Open until 09:00 PM', 'Drop inspected phones here'),
+          _buildHubCard('Maa Ambika Hub - Main Store', 'Main Storefront', 'Open until 08:30 PM', 'Drop laptop & accessories boxes'),
         ],
       ),
     );
@@ -1052,7 +1052,7 @@ class _DeliveryMainNavigationScreenState extends State<DeliveryMainNavigationScr
                 const Divider(height: 1, indent: 56),
                 _buildProfileListTile(Icons.account_balance, 'Bank Account for Payouts', 'HDFC Bank ending in **8491', true),
                 const Divider(height: 1, indent: 56),
-                _buildProfileListTile(Icons.health_and_safety, 'Rider Insurance Policy', 'Camsik Transit Cover Active (₹5 Lakh)', true),
+                _buildProfileListTile(Icons.health_and_safety, 'Rider Insurance Policy', 'Maa Ambika Transit Cover Active (₹5 Lakh)', true),
               ],
             ),
           ),
@@ -1072,7 +1072,7 @@ class _DeliveryMainNavigationScreenState extends State<DeliveryMainNavigationScr
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('SOS Alert sent to Camsik Safety Center & Local Dispatch!'),
+                    content: Text('SOS Alert sent to Maa Ambika Safety Center & Local Dispatch!'),
                     backgroundColor: Color(0xFFDC2626),
                   ),
                 );

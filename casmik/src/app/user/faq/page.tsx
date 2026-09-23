@@ -6,8 +6,8 @@ import CustomerFooter from '@/components/CustomerFooter';
 import CamsikFaqSection from '@/app/components/CamsikFaqSection';
 
 export const metadata = {
-  title: 'Frequently Asked Questions (FAQ) — Camsik Device ReCommerce & Warranty',
-  description: 'Find answers to common questions about selling your smartphone, MacBook, laptop, tablet, or DSLR camera, 45-point inspection, refurbished warranty, and doorstep payouts on Camsik.',
+  title: 'Frequently Asked Questions (FAQ) — Maa Ambika Mobile Shop',
+  description: 'Find answers to common questions about sales, service, mobile repairs, device trade-in, certified refurbished warranty, and doorstep payouts at Maa Ambika Mobile Shop.',
 };
 
 export default function FaqPage() {
@@ -60,15 +60,15 @@ export default function FaqPage() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href="tel:+918976000010"
+                href="tel:+918260120467"
                 className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-purple-600/25 transition-all btn-press"
               >
                 <Phone size={16} />
-                <span>Call +91 8976000010</span>
+                <span>Call +91 8260120467</span>
               </a>
 
               <a
-                href="https://wa.me/918976000010?text=Hi%20Camsik%20team,%20I%20have%20a%20question%20about%20my%20device"
+                href="https://wa.me/918260120467?text=Hi%20Maa%20Ambika%20team,%20I%20have%20a%20question%20about%20my%20device"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-600/25 transition-all btn-press"

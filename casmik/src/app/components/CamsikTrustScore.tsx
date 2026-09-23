@@ -47,15 +47,15 @@ export default function CamsikTrustScore() {
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 relative">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-slate-800">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2 border border-slate-700">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 text-amber-400 text-xs font-bold uppercase tracking-wider mb-2 border border-slate-700">
               <ShieldCheck size={14} />
-              India&apos;s #1 ReCommerce Platform for Tech &amp; Cameras
+              Maa Ambika Mobile Shop • GSTIN: 21ELDPS6270L1ZS
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
-              Trusted by 2.5+ Lakh Creators, Professionals &amp; Tech Enthusiasts
+              Trusted by 2.5+ Lakh Customers for Best Products, Price &amp; Service
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Transparent AI valuation, instant bank payment, 45-point testing &amp; certified DoD data security
+              Your Digital Life Partner — Official store warranty, instant bank payout, 45-point testing &amp; 24/7 assistance at +91 8260120467
             </p>
           </div>
           <div className="flex items-center gap-3 shrink-0">

@@ -705,7 +705,7 @@ export default function DeliveryTasks() {
                   </p>
                   <p className="text-blue-700">✓ Verify customer identity with registered name</p>
                   <p className="text-blue-700">✓ Check device powers on and iCloud/Google accounts signed out</p>
-                  <p className="text-blue-700">✓ Place phone safely into Camsik Anti-Shock bubble pouch</p>
+                  <p className="text-blue-700">✓ Place phone safely into Maa Ambika Anti-Shock bubble pouch</p>
                 </div>
 
                 <button

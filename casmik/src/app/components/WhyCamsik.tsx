@@ -99,15 +99,15 @@ export default function WhyCamsik() {
 
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 relative">
         <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold uppercase tracking-wider mb-2.5">
-            <Sparkles size={13} className="text-purple-600" />
-            The Camsik Advantage
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-200 text-xs font-bold uppercase tracking-wider mb-2.5">
+            <Sparkles size={13} className="text-amber-600" />
+            The Maa Ambika Advantage
           </div>
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            Why Over 2.5 Lakh Customers Trust <span className="text-primary">Camsik</span>
+            Why Customers Trust <span className="bg-gradient-to-r from-amber-600 to-yellow-600 bg-clip-text text-transparent">Maa Ambika Mobile Shop</span>
           </h2>
           <p className="text-slate-600 mt-2 text-sm sm:text-base leading-relaxed">
-            Experience the safest, fastest, and most transparent platform to buy, sell, and exchange smartphones, laptops, MacBooks, tablets, and DSLR cameras with zero hassle.
+            Your Digital Life Partner — Providing Best Products, Best Prices, and Best Services for new smartphones, certified refurbished devices, instant cash buyback, doorstep exchange &amp; certified repairs.
           </p>
         </div>
 

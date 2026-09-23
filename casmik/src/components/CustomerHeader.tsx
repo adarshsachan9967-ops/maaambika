@@ -201,23 +201,35 @@ export default function CustomerHeader() {
         <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-8 xl:px-10 w-full">
           <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4 lg:gap-6">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 sm:gap-3 flex-shrink-0 group">
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-purple-700 via-indigo-600 to-blue-600 flex items-center justify-center shadow-lg shadow-purple-500/25 group-hover:scale-105 transition-transform duration-200 flex-shrink-0">
-                <div className="relative flex items-center justify-center">
-                  <Camera className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2.2} />
-                  <span className="absolute -top-1 -right-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-emerald-400 rounded-full border-2 border-white animate-pulse" />
-                </div>
+            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0 group">
+              <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 p-0.5 shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200 flex-shrink-0 overflow-hidden">
+                <img
+                  src="/assets/images/app_logo.png"
+                  alt="Maa Ambika Mobile Shop"
+                  className="w-full h-full object-contain rounded-lg bg-slate-950"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
               </div>
               <div className="flex flex-col">
-                <div className="flex items-center tracking-tight leading-none">
-                  <span className="font-black text-xl sm:text-2xl text-slate-900">CAM</span>
-                  <span className="font-black text-xl sm:text-2xl bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                    SIK
+                <div className="flex items-center tracking-tight leading-none gap-1.5">
+                  <span className="font-black text-lg sm:text-xl text-slate-900 tracking-tight">
+                    MAA AMBIKA
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-black uppercase tracking-wider bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 shadow-sm">
+                    MOBILE SHOP
                   </span>
                 </div>
-                <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-slate-400 mt-0.5 leading-none hidden xs:block">
-                  Electronics & Cameras
-                </span>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[10px] sm:text-[11px] font-bold text-amber-600 uppercase tracking-wider leading-none">
+                    Your Digital Life Partner
+                  </span>
+                  <span className="hidden xl:inline text-[10px] text-slate-400">·</span>
+                  <span className="hidden xl:inline text-[10px] font-semibold text-slate-500">
+                    GST: 21ELDPS6270L1ZS
+                  </span>
+                </div>
               </div>
             </Link>
 
@@ -305,13 +317,23 @@ export default function CustomerHeader() {
 
             {/* Right Actions: City Selector + NotificationBell + Login + CTA + Mobile hamburger */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              {/* Maa Ambika Store Helpline Button */}
+              <a
+                href="tel:+918260120467"
+                className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-amber-50 hover:bg-amber-100/80 border border-amber-300/80 text-amber-900 text-xs sm:text-sm font-bold shadow-sm transition-all duration-150 flex-shrink-0 group"
+                title="Call Maa Ambika Mobile Shop Helpline: 8260120467"
+              >
+                <Phone className="w-3.5 h-3.5 text-amber-600 group-hover:scale-110 transition-transform flex-shrink-0" />
+                <span className="font-extrabold tracking-wide">8260120467</span>
+              </a>
+
               {/* City Selector Button */}
               <button
                 type="button"
                 onClick={() => setCityModalOpen(true)}
                 className="flex items-center gap-1 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200/60 text-slate-800 text-xs sm:text-sm font-semibold transition-all duration-150 flex-shrink-0"
               >
-                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 flex-shrink-0" />
+                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 flex-shrink-0" />
                 <span className="max-w-[70px] sm:max-w-[110px] truncate text-xs sm:text-sm">{selectedCity}</span>
                 <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 flex-shrink-0" />
               </button>
@@ -629,10 +651,10 @@ export default function CustomerHeader() {
               </span>
               <span className="hidden xl:inline">•</span>
               <a
-                href="tel:+918976000010"
+                href="tel:+918260120467"
                 className="font-bold text-slate-700 hover:text-primary transition-colors inline-flex items-center gap-1 whitespace-nowrap"
               >
-                <Phone size={12} className="text-primary" /> +91 8976000010
+                <Phone size={12} className="text-primary" /> +91 8260120467
               </a>
             </div>
           </div>

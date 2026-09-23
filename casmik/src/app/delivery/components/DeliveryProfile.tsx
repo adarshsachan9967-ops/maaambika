@@ -185,7 +185,7 @@ export default function DeliveryProfile() {
                 <Building2 size={15} className="text-primary mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="font-bold text-slate-900">Base Processing Hub</p>
-                  <p className="text-slate-400 mt-0.5">Camsik Hub #12, 100ft Road, 4th Block Koramangala</p>
+                  <p className="text-slate-400 mt-0.5">Maa Ambika Main Hub, Odisha</p>
                 </div>
               </div>
             </div>
@@ -201,10 +201,10 @@ export default function DeliveryProfile() {
               Encountering a route issue, bike breakdown, or customer unavailable at doorstep?
             </p>
             <a
-              href="tel:+918000928123"
+              href="tel:+918260120467"
               className="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors"
             >
-              <Phone size={14} /> Call Fleet Control (+91 80009 28123)
+              <Phone size={14} /> Call Fleet Control (+91 8260120467)
             </a>
           </div>
 
@@ -228,7 +228,7 @@ export default function DeliveryProfile() {
               <div>
                 <h4 className="text-base font-black text-emerald-900">100% KYC Verified Delivery Agent</h4>
                 <p className="text-xs text-emerald-700 mt-0.5">
-                  Aadhaar, Driving License, Background Check, and Vehicle RC verified by Camsik Security.
+                  Aadhaar, Driving License, Background Check, and Vehicle RC verified by Maa Ambika Security.
                 </p>
               </div>
             </div>

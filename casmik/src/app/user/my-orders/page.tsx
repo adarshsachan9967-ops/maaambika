@@ -455,7 +455,7 @@ export default function MyOrdersPage() {
                   <span className="font-bold">- ₹{selectedReceiptOrder.tradeInCredit.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between text-emerald-700">
-                  <span>Guaranteed Camsik Bonus:</span>
+                  <span>Guaranteed Maa Ambika Bonus:</span>
                   <span className="font-bold">- ₹{selectedReceiptOrder.exchangeBonus.toLocaleString('en-IN')}</span>
                 </div>
                 {selectedReceiptOrder.couponDiscount > 0 && (

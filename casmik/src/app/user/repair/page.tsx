@@ -109,7 +109,7 @@ export default function UserRepairPage() {
 
             {/* Why Doorstep Repair */}
             <div className="bg-white rounded-3xl border border-slate-200 p-6 space-y-4">
-              <h3 className="text-sm font-black uppercase text-slate-900 tracking-wider">Casmik Repair Guarantees</h3>
+              <h3 className="text-sm font-black uppercase text-slate-900 tracking-wider">Maa Ambika Repair Guarantees</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-600">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="text-emerald-600 w-5 h-5 flex-shrink-0" />

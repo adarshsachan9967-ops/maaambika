@@ -25,7 +25,7 @@ export default function SuperAdminDashboardPage() {
         <div className="w-14 h-14 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center mb-4 shadow-xl shadow-primary/20">
           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
-        <p className="text-base font-bold text-white tracking-wide">CAMSIK Admin Security</p>
+        <p className="text-base font-bold text-white tracking-wide">Maa Ambika Admin Security</p>
         <p className="text-xs text-white/50 mt-1">Verifying administrative access...</p>
       </div>
     );

@@ -276,13 +276,13 @@ export default function CamsikFaqSection() {
               Contact Support
             </Link>
             <a
-              href="https://wa.me/918976000010"
+              href="https://wa.me/918260120467"
               target="_blank"
               rel="noopener noreferrer"
               className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm flex items-center gap-1.5 transition-all"
             >
               <MessageCircle size={15} />
-              <span>WhatsApp Us</span>
+              <span>WhatsApp: 8260120467</span>
             </a>
           </div>
         </div>

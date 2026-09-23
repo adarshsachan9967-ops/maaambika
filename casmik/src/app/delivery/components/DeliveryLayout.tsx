@@ -91,13 +91,13 @@ export default function DeliveryLayout({ activeSection, onSectionChange, childre
         {/* Brand Header */}
         <div className="p-5 border-b border-slate-100">
           <Link href="/delivery" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-emerald-500 flex items-center justify-center text-white font-black text-lg shadow-md shadow-primary/20 group-hover:scale-105 transition-transform">
-              C
+            <div className="w-11 h-11 rounded-2xl bg-amber-500/15 border border-amber-500/25 p-1 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform flex-shrink-0">
+              <img src="/assets/images/app_logo.png" alt="Maa Ambika" className="w-full h-full object-contain" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-black text-lg text-slate-900 tracking-tight">CAMSIK</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800">Fleet</span>
+                <span className="font-black text-lg text-slate-900 tracking-tight">Maa Ambika</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-800">Fleet</span>
               </div>
               <p className="text-xs text-slate-500 font-medium">Delivery Executive Portal</p>
             </div>
@@ -194,7 +194,7 @@ export default function DeliveryLayout({ activeSection, onSectionChange, childre
               </div>
               <div>
                 <p className="text-xs font-black text-emerald-950">Fleet Helpline</p>
-                <p className="text-[10px] text-emerald-700 font-medium">1800-CAMSIK-24</p>
+                <p className="text-[10px] text-emerald-700 font-semibold">+91 8260120467</p>
               </div>
             </div>
             <span className="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-md">24/7</span>
@@ -340,7 +340,7 @@ export default function DeliveryLayout({ activeSection, onSectionChange, childre
           <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setMobileMenuOpen(false)} />
           <div className="relative w-72 max-w-[80vw] bg-white h-full shadow-2xl flex flex-col z-10 p-5">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <span className="font-black text-lg text-slate-900">CAMSIK Delivery</span>
+              <span className="font-black text-lg text-slate-900">Maa Ambika Delivery</span>
               <button onClick={() => setMobileMenuOpen(false)} className="p-1 rounded-lg text-slate-500 hover:bg-slate-100">
                 <X size={18} />
               </button>

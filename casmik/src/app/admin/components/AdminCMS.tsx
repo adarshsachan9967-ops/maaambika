@@ -121,7 +121,7 @@ const cmsModules: Record<CMSSection, { id: CMSModule; label: string; icon: strin
     { id: 'banners', label: 'Hero Banners', icon: '🖼️', description: 'Homepage carousel banners for all categories and promotions' },
     { id: 'hero', label: 'Hero Content', icon: '✨', description: 'Headline, subtext, badge and action buttons' },
     { id: 'stats', label: 'Trust Statistics', icon: '📊', description: 'Customer count, payout volume, ratings and service milestones' },
-    { id: 'why', label: 'Why Camsik', icon: '💡', description: 'Trust cards, security guarantees and feature highlights' },
+    { id: 'why', label: 'Why Maa Ambika', icon: '💡', description: 'Trust cards, security guarantees and feature highlights' },
     { id: 'howItWorks', label: 'How It Works', icon: '🔄', description: '3-step simple selling, buying and exchange workflow' },
     { id: 'testimonials', label: 'Testimonials', icon: '⭐', description: 'Verified customer ratings, reviews and device feedback' },
     { id: 'faqs', label: 'FAQs', icon: '❓', description: 'Frequently asked customer questions and detailed answers' },
@@ -281,11 +281,11 @@ const initialHeroData: Record<CMSSection, HeroData> = {
     primaryCtaLink: '/sell-device-get-quote',
     secondaryCta: 'Browse Refurbished',
     secondaryCtaLink: '/buy-refurbished',
-    badge: 'Download the CAMSIK App',
+    badge: 'Download the Maa Ambika App',
     trustNote: 'Available on Google Play Store & Apple App Store',
   },
   partner: {
-    headline: 'Welcome to CAMSIK Partner Portal',
+    headline: 'Welcome to Maa Ambika Partner Portal',
     subtext: 'Manage store orders, device inspections, inventory transfers and daily commission payouts seamlessly.',
     primaryCta: 'View Pending Orders',
     primaryCtaLink: '/partner',
@@ -302,7 +302,7 @@ const initialHeroData: Record<CMSSection, HeroData> = {
     secondaryCta: 'Agent Profile',
     secondaryCtaLink: '/delivery',
     badge: 'Field Inspection Executive',
-    trustNote: 'Always carry your official CAMSIK ID badge & diagnostic testing kit',
+    trustNote: 'Always carry your official Maa Ambika ID badge & diagnostic testing kit',
   },
 };
 
@@ -405,7 +405,7 @@ const initialTestimonials: TestimonialItem[] = [
     rating: 5,
     device: 'MacBook Air M2 16GB',
     service: 'Sell',
-    review: 'Selling on local marketplaces is a headache with lowballers. Camsik gave me genuine resale value with zero haggling and picked it up from my apartment.',
+    review: 'Selling on local marketplaces is a headache with lowballers. Maa Ambika Mobile Shop gave me genuine resale value with zero haggling and picked it up from my apartment.',
     active: true,
   },
   {
@@ -423,19 +423,19 @@ const initialTestimonials: TestimonialItem[] = [
     name: 'Pooja Sundaram',
     city: 'Chennai',
     rating: 5,
-    device: 'Refurbished iPad Pro 11" M2',
-    service: 'Buy',
-    review: 'Looks and performs brand new! 100% battery health, original accessories, and came with a 12-month warranty certificate.',
+    device: 'iPhone 13 128GB',
+    service: 'Exchange',
+    review: 'Exchanged my old iPhone 13 for a certified refurbished 15 Pro. Smooth difference amount payment on UPI. Highly recommended!',
     active: true,
   },
   {
     id: 5,
-    name: 'Karan Malhotra',
-    city: 'Hyderabad',
-    rating: 4,
-    device: 'Samsung Galaxy S22 Ultra',
-    service: 'Exchange',
-    review: 'Upgraded smoothly. Paid just the price difference. Doorstep exchange was completed in under 20 minutes.',
+    name: 'Aditya Nair',
+    city: 'Bengaluru',
+    rating: 5,
+    device: 'OnePlus 11 5G',
+    service: 'Repair',
+    review: 'Doorstep screen replacement done within 45 minutes using genuine OEM display. Warranty card delivered instantly to my email.',
     active: true,
   },
 ];
@@ -445,7 +445,7 @@ const initialFAQs: FAQItem[] = [
     id: 1,
     portal: 'website',
     category: 'Valuation & Pricing',
-    q: 'How does Camsik calculate the price of my phone, laptop, or camera?',
+    q: 'How does Maa Ambika Mobile Shop calculate the price of my phone, laptop, or camera?',
     a: 'Our proprietary pricing engine analyzes live secondary market demand across India, hardware specifications, cosmetic grading, battery health, shutter actuations, and included original accessories to guarantee the highest market payout.',
     active: true,
   },
@@ -487,7 +487,7 @@ const initialFAQs: FAQItem[] = [
     portal: 'app',
     category: 'App Support',
     q: 'How do I track my assigned pickup agent in the app?',
-    a: 'Open the Camsik app, go to "Track Order", and you will see your agent’s contact details and real-time live map location 1 hour prior to your scheduled slot.',
+    a: 'Open the Maa Ambika app, go to "Track Order", and you will see your agent’s contact details and real-time live map location 1 hour prior to your scheduled slot.',
     active: true,
   },
   // Partner FAQ
@@ -511,25 +511,25 @@ const initialFAQs: FAQItem[] = [
 ];
 
 const initialBranding: BrandingData = {
-  brandName: 'CAMSIK',
-  tagline: 'Turn Your Old Devices Into Instant Cash',
-  logoLetter: 'C',
+  brandName: 'Maa Ambika Mobile Shop',
+  tagline: 'Your Digital Life Partner... Best Products • Best Price • Best Service',
+  logoLetter: 'M',
   primaryColor: '#00c853',
-  supportEmail: 'sellatcamsik@gmail.com',
-  supportPhone: '+91 98765 43210',
+  supportEmail: 'support@maaambikamobile.com',
+  supportPhone: '+91 8260120467',
 };
 
 const initialFooter: FooterData = {
-  aboutText: 'Camsik is India’s leading trusted re-commerce platform for selling, buying, and exchanging smartphones, laptops, tablets, and professional camera equipment with instant spot payments and doorstep service.',
-  address: 'Camsik Tech Hub, 4th Floor, 80 Feet Road, Koramangala 4th Block, Bengaluru, Karnataka 560034',
-  phone: '+91 98765 43210',
-  email: 'sellatcamsik@gmail.com',
+  aboutText: 'Maa Ambika Mobile Shop is your trusted digital partner for selling, buying, and exchanging smartphones, electronics, accessories, mobile repairs, and recharges with instant spot payments and doorstep service.',
+  address: 'Main Road, Maa Ambika Mobile Shop, Odisha, India - GSTIN: 21ELDPS6270L1ZS',
+  phone: '+91 8260120467',
+  email: 'support@maaambikamobile.com',
   hours: 'Mon - Sun: 9:00 AM - 9:00 PM IST',
-  copyright: '© 2026 Camsik Electronics Pvt. Ltd. All rights reserved.',
-  facebook: 'https://facebook.com/camsik',
-  twitter: 'https://twitter.com/camsik',
-  instagram: 'https://instagram.com/camsik',
-  youtube: 'https://youtube.com/camsik',
+  copyright: '© 2026 Maa Ambika Mobile Shop. All rights reserved.',
+  facebook: 'https://facebook.com/maaambikamobile',
+  twitter: 'https://twitter.com/maaambikamobile',
+  instagram: 'https://instagram.com/maaambikamobile',
+  youtube: 'https://youtube.com/maaambikamobile',
 };
 
 export default function AdminCMS() {
@@ -1344,7 +1344,7 @@ export default function AdminCMS() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-100">
                 <div>
                   <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                    <span>Why Camsik Feature Cards</span>
+                    <span>Why Maa Ambika Feature Cards</span>
                     <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 text-xs font-semibold">
                       {whyItems.length} items
                     </span>
@@ -1877,7 +1877,7 @@ export default function AdminCMS() {
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-gray-100">
             <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-100">
               <h3 className="font-bold text-gray-900 text-base">
-                {editingWhy ? 'Edit Why Camsik Card' : 'Add Why Camsik Card'}
+                {editingWhy ? 'Edit Why Maa Ambika Card' : 'Add Why Maa Ambika Card'}
               </h3>
               <button
                 onClick={() => {
@@ -1919,7 +1919,7 @@ export default function AdminCMS() {
                   rows={3}
                   name="desc"
                   defaultValue={editingWhy?.desc || ''}
-                  placeholder="Explain why customers should trust Camsik..."
+                  placeholder="Explain why customers should trust Maa Ambika Mobile Shop..."
                   required
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
                 />
@@ -2225,7 +2225,7 @@ export default function AdminCMS() {
                 <input
                   name="q"
                   defaultValue={editingFaq?.q || ''}
-                  placeholder="e.g. How does Camsik calculate the price?"
+                  placeholder="e.g. How does Maa Ambika Mobile Shop calculate the price?"
                   required
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 font-semibold"
                 />

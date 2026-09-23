@@ -60,6 +60,7 @@ export default function PartnerAuthPage() {
       if (
         query === 'partner@casmik.com' ||
         query === 'partner@camsik.com' ||
+        query === 'partner@maaambika.com' ||
         query === 'rajesh@camera.com' ||
         query === '9876543210' ||
         query === 'contact@camerahub.in' ||
@@ -106,7 +107,7 @@ export default function PartnerAuthPage() {
     }
 
     if (partner.status === 'suspended') {
-      setError('Your partner account has been suspended or rejected by the Super Admin. Please contact support@camsik.com.');
+      setError('Your partner account has been suspended or rejected by the Super Admin. Please contact support@maaambikamobile.com.');
       return;
     }
 
@@ -183,15 +184,14 @@ export default function PartnerAuthPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-green-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center">
-              <span className="text-white font-black text-lg">C</span>
+          <Link href="/" className="inline-flex items-center gap-3 mb-2">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 p-1 flex items-center justify-center shadow-md">
+              <img src="/assets/images/app_logo.png" alt="Maa Ambika" className="w-full h-full object-contain" />
             </div>
-            <span className="font-black text-2xl text-gray-900">CAMSIK</span>
+            <span className="font-black text-2xl text-gray-900 tracking-tight">Maa Ambika</span>
           </Link>
-          <p className="text-gray-500 text-sm">Partner Portal</p>
+          <p className="text-amber-700 font-semibold text-xs">Partner Portal • Maa Ambika Mobile Shop</p>
         </div>
 
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
@@ -431,7 +431,7 @@ export default function PartnerAuthPage() {
                       <div className="flex items-start gap-2 bg-blue-50 rounded-xl p-3">
                         <input type="checkbox" required id="terms" className="mt-0.5 accent-primary" />
                         <label htmlFor="terms" className="text-xs text-gray-600">
-                          I agree to Camsik's <span className="text-primary font-semibold">Partner Terms & Conditions</span> and confirm all submitted information is accurate.
+                          I agree to Maa Ambika Mobile Shop's <span className="text-primary font-semibold">Partner Terms & Conditions</span> and confirm all submitted information is accurate.
                         </label>
                       </div>
                     </>
@@ -453,7 +453,7 @@ export default function PartnerAuthPage() {
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">
-          <Link href="/" className="hover:text-primary">← Back to Camsik Home</Link>
+          <Link href="/" className="hover:text-primary">← Back to Maa Ambika Home</Link>
         </p>
       </div>
     </div>

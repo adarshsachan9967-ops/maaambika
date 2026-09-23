@@ -9,8 +9,8 @@ import CompetitiveComparisonTable from '@/app/components/CompetitiveComparisonTa
 import CamsikTrustScore from '@/app/components/CamsikTrustScore';
 
 export const metadata = {
-  title: 'Why Camsik — Highest Resale Valuation, 45-Point Diagnostics & Instant Payment',
-  description: 'Discover why over 2,50,000 customers and creators across India choose Camsik for smartphone, laptop, tablet, and camera buyback, exchange, and certified refurbished gear.',
+  title: 'Why Choose Maa Ambika Mobile Shop — Best Products, Best Price & Best Service',
+  description: 'Discover why customers trust Maa Ambika Mobile Shop for new and refurbished smartphones, instant doorstep buyback, device exchange, certified repairs & original accessories.',
 };
 
 export default function WhyCamsikPage() {
@@ -27,19 +27,19 @@ export default function WhyCamsikPage() {
               Home
             </Link>
             <ChevronRight size={13} />
-            <span className="text-purple-400 font-bold">Why Camsik</span>
+            <span className="text-amber-400 font-bold">Why Maa Ambika</span>
           </nav>
 
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold mb-4 border border-purple-500/30">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold mb-4 border border-amber-500/30">
               <Sparkles size={13} />
-              THE CAMSIK ADVANTAGE
+              THE MAA AMBIKA ADVANTAGE • YOUR DIGITAL LIFE PARTNER
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4">
-              Why Choose Camsik
+              Why Choose Maa Ambika Mobile Shop
             </h1>
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-              We engineered India&apos;s leading tech ReCommerce ecosystem. No lowball offers from offline shops, no risky meetings with online strangers. Just algorithmic valuations, 45-point hardware diagnostics, certified DoD data wipes, and instant doorstep payouts.
+              Best Products • Best Price • Best Service. Explore new smartphones, certified refurbished devices, doorstep sell &amp; exchange, certified mobile repairs, genuine accessories &amp; recharges. Phone: +91 8260120467 | GSTIN: 21ELDPS6270L1ZS.
             </p>
           </div>
         </div>

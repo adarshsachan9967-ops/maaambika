@@ -66,7 +66,7 @@ export default function StepQuoteResult({ sellState, onSchedulePickup, onBack }:
       quotedPrice: price,
       finalPrice: price,
       partnerId: 'partner-001',
-      partnerName: 'Camsik Certified Camera & Tech Hub',
+      partnerName: 'Maa Ambika Certified Hub',
       deliveryAgentId: null,
       deliveryAgentName: null,
       pickupDate: selectedDate,
@@ -110,7 +110,7 @@ export default function StepQuoteResult({ sellState, onSchedulePickup, onBack }:
         quoted_price: price,
         final_price: price,
         partner_id: 'partner-001',
-        partner_name: 'Camsik Certified Camera & Tech Hub',
+        partner_name: 'Maa Ambika Certified Hub',
         pickup_date: selectedDate,
         pickup_slot: selectedSlot,
         payment_status: 'pending',
@@ -337,9 +337,9 @@ export default function StepQuoteResult({ sellState, onSchedulePickup, onBack }:
         </div>
       </div>
 
-      {/* Why sell to Camsik */}
+      {/* Why sell to Maa Ambika */}
       <div className="bg-white rounded-2xl border border-border shadow-sm p-6">
-        <h3 className="font-bold text-foreground mb-4">Why sell to Camsik?</h3>
+        <h3 className="font-bold text-foreground mb-4">Why sell to Maa Ambika Mobile Shop?</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
           {sellBenefits.map(b => (
             <div key={b.id} className="flex flex-col items-center text-center p-3 rounded-xl bg-surface">

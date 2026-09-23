@@ -232,7 +232,7 @@ export default function AdminOrders({
       type: 'status_update',
       targetRole: 'all',
       title: `Order #${assignModal.orderNumber} Assigned to Partner`,
-      shortDetails: `Admin assigned Order #${assignModal.orderNumber} (${assignModal.deviceName}) to partner "${partner?.storeName || 'Camsik Partner'}" for pickup & processing.`,
+      shortDetails: `Admin assigned Order #${assignModal.orderNumber} (${assignModal.deviceName}) to partner "${partner?.storeName || 'Maa Ambika Partner'}" for pickup & processing.`,
       orderNumber: assignModal.orderNumber,
       deviceName: assignModal.deviceName,
       customerName: assignModal.customerName,

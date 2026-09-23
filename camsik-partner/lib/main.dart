@@ -19,7 +19,7 @@ class CamsikPartnerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Camsik Partner',
+      title: 'Maa Ambika Partner',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -65,7 +65,7 @@ class _PartnerMainNavigationScreenState extends State<PartnerMainNavigationScree
             const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('CAMSIK PARTNER', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1.1)),
+                Text('MAA AMBIKA PARTNER', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1.1)),
                 Text('TechWorld Hub • Karol Bagh', style: TextStyle(fontSize: 11, color: Colors.white70)),
               ],
             ),

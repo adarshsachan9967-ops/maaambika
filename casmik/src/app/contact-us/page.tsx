@@ -263,10 +263,10 @@ export default function ContactUsPage() {
                           </h3>
                         </div>
                         <a
-                          href="tel:+918976000010"
+                          href="tel:+918260120467"
                           className="text-lg sm:text-xl font-black text-slate-900 hover:text-blue-600 transition-colors block"
                         >
-                          +91 8976000010
+                          +91 8260120467
                         </a>
                         <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
                           <Clock size={12} className="text-slate-400" />
@@ -289,10 +289,10 @@ export default function ContactUsPage() {
                           </h3>
                         </div>
                         <a
-                          href="mailto:sellatcamsik@gmail.com"
+                          href="mailto:support@maaambikamobile.com"
                           className="text-base sm:text-lg font-black text-slate-900 hover:text-indigo-600 transition-colors block break-all"
                         >
-                          sellatcamsik@gmail.com
+                          support@maaambikamobile.com
                         </a>
                         <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
                           <Zap size={12} className="text-amber-500" />
@@ -307,18 +307,18 @@ export default function ContactUsPage() {
               {/* Action Buttons: WhatsApp & Call */}
               <div className="pt-4 border-t border-slate-200/80 space-y-3">
                 <a
-                  href="https://wa.me/918976000010?text=Hi%20Camsik%20team,%20I%20want%20to%20sell/trade-in%20my%20device"
+                  href="https://wa.me/918260120467?text=Hi%20Camsik%20team,%20I%20want%20to%20sell/trade-in%20my%20device"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2.5 btn-press"
                 >
                   <MessageCircle size={20} />
-                  Chat on WhatsApp (+91 8976000010)
+                  Chat on WhatsApp (+91 8260120467)
                 </a>
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <a
-                    href="tel:+918976000010"
+                    href="tel:+918260120467"
                     className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-center flex items-center justify-center gap-1.5 transition-colors"
                   >
                     <Phone size={14} /> Call Office
@@ -395,7 +395,7 @@ export default function ContactUsPage() {
                       Send Another Inquiry
                     </button>
                     <a
-                      href={`https://wa.me/918976000010?text=Hi%20Camsik,%20I%20just%20submitted%20an%20inquiry%20for%20${encodeURIComponent(formData.name)}`}
+                      href={`https://wa.me/918260120467?text=Hi%20Camsik,%20I%20just%20submitted%20an%20inquiry%20for%20${encodeURIComponent(formData.name)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-sm flex items-center gap-1.5 transition-colors"
@@ -434,7 +434,7 @@ export default function ContactUsPage() {
                         <input
                           type="tel"
                           required
-                          placeholder="8976000010"
+                          placeholder="8260120467"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                           className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
@@ -771,7 +771,7 @@ export default function ContactUsPage() {
       {/* Floating Call & WhatsApp Buttons */}
       <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
         <a
-          href="https://wa.me/918976000010?text=Hi%20Camsik%20team,%20I%20have%20an%20inquiry"
+          href="https://wa.me/918260120467?text=Hi%20Camsik%20team,%20I%20have%20an%20inquiry"
           target="_blank"
           rel="noopener noreferrer"
           className="w-13 h-13 rounded-full bg-emerald-500 text-white shadow-xl flex items-center justify-center hover:scale-110 transition-transform ring-4 ring-emerald-500/20 group relative"
@@ -783,13 +783,13 @@ export default function ContactUsPage() {
           </span>
         </a>
         <a
-          href="tel:+918976000010"
+          href="tel:+918260120467"
           className="w-13 h-13 rounded-full bg-blue-600 text-white shadow-xl flex items-center justify-center hover:scale-110 transition-transform ring-4 ring-blue-600/20 group relative"
           aria-label="Call Camsik Support"
         >
           <Phone size={24} />
           <span className="hidden group-hover:block absolute right-16 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
-            Call +91 8976000010
+            Call +91 8260120467
           </span>
         </a>
       </div>

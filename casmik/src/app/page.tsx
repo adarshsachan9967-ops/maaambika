@@ -23,26 +23,30 @@ export default function CustomerHomePage() {
   return (
     <main className="min-h-screen bg-background flex flex-col overflow-x-hidden w-full max-w-full">
       {/* Top Multi-Panel Navigation Banner */}
-      <div className="bg-slate-950 text-white text-xs py-2 px-4 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div className="bg-slate-950 text-white text-xs py-2.5 px-4 border-b border-amber-500/20">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-semibold text-emerald-300">CASMIK RECOMMERCE ECOSYSTEM</span>
-            <span className="hidden sm:inline text-slate-500">|</span>
-            <span className="hidden sm:inline text-slate-400">4 Web Panels Available</span>
+            <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <span className="font-bold text-amber-300 tracking-wide">MAA AMBIKA MOBILE SHOP</span>
+            <span className="hidden sm:inline text-slate-600">|</span>
+            <span className="hidden sm:inline text-amber-100/70 font-medium">Your Digital Life Partner</span>
+            <span className="hidden md:inline text-slate-600">|</span>
+            <a href="tel:+918260120467" className="hidden md:inline-flex text-amber-400 font-bold hover:underline">
+              Helpline: +91 8260120467
+            </a>
           </div>
-          <div className="flex items-center gap-3 font-medium text-slate-400">
-            <span>Explore Panels:</span>
+          <div className="flex items-center gap-3 font-semibold text-slate-300">
+            <span className="text-slate-400">Panels:</span>
             <Link href="/user" className="text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1">
-              <User size={12} /> User Web
+              <User size={12} /> Customer Store
             </Link>
             <Link href="/partner" className="text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1">
-              <Building size={12} /> Partner Web
+              <Building size={12} /> Merchant Portal
             </Link>
             <Link href="/delivery" className="text-amber-400 hover:text-amber-300 hover:underline flex items-center gap-1">
-              <Truck size={12} /> Delivery Web
+              <Truck size={12} /> Logistics Fleet
             </Link>
-            <Link href="/admin" className="text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-1">
+            <Link href="/super-admin-dashboard" className="text-yellow-400 hover:text-yellow-300 hover:underline flex items-center gap-1">
               <ShieldCheck size={12} /> Super Admin
             </Link>
           </div>

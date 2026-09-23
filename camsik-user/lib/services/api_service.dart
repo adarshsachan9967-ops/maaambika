@@ -1025,7 +1025,7 @@ class ApiService {
       'sellingPrice': 58999,
       'discount': 56,
       'batteryHealth': '98% Battery',
-      'warranty': '12 Months Camsik Care',
+      'warranty': '12 Months Maa Ambika Care',
       'image': 'assets/images/refurbished/iphone-15-pro.png',
       'gallery': [
         'assets/images/refurbished/iphone-15-pro.png',
@@ -1069,7 +1069,7 @@ class ApiService {
       'sellingPrice': 52499,
       'discount': 61,
       'batteryHealth': '92% Battery',
-      'warranty': '12 Months Camsik Care',
+      'warranty': '12 Months Maa Ambika Care',
       'image': 'assets/images/refurbished/iphone-15-pro-black.jpg',
       'gallery': [
         'assets/images/refurbished/iphone-15-pro-black.jpg',
@@ -1112,7 +1112,7 @@ class ApiService {
       'sellingPrice': 89999,
       'discount': 36,
       'batteryHealth': '100% Battery',
-      'warranty': '12 Months Camsik Care',
+      'warranty': '12 Months Maa Ambika Care',
       'image': 'assets/images/refurbished/galaxy-s24-ultra.png',
       'gallery': [
         'assets/images/refurbished/galaxy-s24-ultra.png',
@@ -1145,7 +1145,7 @@ class ApiService {
       'sellingPrice': 52999,
       'discount': 44,
       'batteryHealth': 'Shutter: 2,400',
-      'warranty': '12 Months Camsik Care',
+      'warranty': '12 Months Maa Ambika Care',
       'image': 'assets/images/refurbished/canon-eos-rp.jpg',
       'gallery': [
         'assets/images/refurbished/canon-eos-rp.jpg',
@@ -1187,7 +1187,7 @@ class ApiService {
       'sellingPrice': 34999,
       'discount': 53,
       'batteryHealth': 'Shutter: 8,900',
-      'warranty': '12 Months Camsik Care',
+      'warranty': '12 Months Maa Ambika Care',
       'image': 'assets/images/refurbished/sony-a7.jpg',
       'gallery': [
         'assets/images/refurbished/sony-a7.jpg',
@@ -1219,7 +1219,7 @@ class ApiService {
       'sellingPrice': 118999,
       'discount': 30,
       'batteryHealth': '100% (21 Cycles)',
-      'warranty': '12 Months Camsik Care',
+      'warranty': '12 Months Maa Ambika Care',
       'image': 'assets/images/refurbished/macbook-pro-14.png',
       'gallery': [
         'assets/images/refurbished/macbook-pro-14.png',
@@ -1251,7 +1251,7 @@ class ApiService {
       'sellingPrice': 62999,
       'discount': 37,
       'batteryHealth': '98% (42 Cycles)',
-      'warranty': '12 Months Camsik Care',
+      'warranty': '12 Months Maa Ambika Care',
       'image': 'assets/images/refurbished/macbook-air-m2.png',
       'gallery': [
         'assets/images/refurbished/macbook-air-m2.png',
@@ -1283,7 +1283,7 @@ class ApiService {
       'sellingPrice': 48999,
       'discount': 40,
       'batteryHealth': '97% Battery',
-      'warranty': '12 Months Camsik Care',
+      'warranty': '12 Months Maa Ambika Care',
       'image': 'assets/images/refurbished/ipad-pro-m2.jpg',
       'gallery': [
         'assets/images/refurbished/ipad-pro-m2.jpg',

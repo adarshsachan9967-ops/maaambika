@@ -108,7 +108,7 @@ export default function AdminNotifications() {
         type: 'status_update',
         targetRole: 'all',
         title: `Order #CSM-2024-${randNum} Picked Up`,
-        shortDetails: `Partner Camsik Certified Hub picked up Sony Alpha A7 IV (Rahul Verma) and started diagnostic inspection.`,
+        shortDetails: `Partner Maa Ambika Certified Hub picked up Sony Alpha A7 IV (Rahul Verma) and started diagnostic inspection.`,
         orderNumber: `CSM-2024-${randNum}`,
         deviceName: 'Sony Alpha A7 IV',
         customerName: 'Rahul Verma',

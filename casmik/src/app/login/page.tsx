@@ -364,7 +364,7 @@ export default function LoginPage() {
                       <label className="block text-xs font-bold text-slate-700">Password</label>
                       <button
                         type="button"
-                        onClick={() => alert('For password reset assistance, contact Camsik support at support@camsik.in or +91 8976000010.')}
+                        onClick={() => alert('For password reset assistance, contact Camsik support at support@camsik.in or +91 8260120467.')}
                         className="text-[11px] font-bold text-emerald-600 hover:underline"
                       >
                         Forgot?

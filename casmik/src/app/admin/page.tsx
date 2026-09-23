@@ -67,7 +67,7 @@ export default function AdminPage() {
             <div className="w-6 h-6 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
           </div>
           <div className="space-y-1">
-            <h2 className="text-lg font-black text-white">CAMSIK Admin Security</h2>
+            <h2 className="text-lg font-black text-white">Maa Ambika Admin Security</h2>
             <p className="text-xs text-slate-400">Verifying administrative credentials...</p>
           </div>
 

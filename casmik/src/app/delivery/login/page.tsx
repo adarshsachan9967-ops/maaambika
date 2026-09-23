@@ -85,7 +85,7 @@ export default function DeliveryAuthPage() {
     );
 
     if (!agent) {
-      if (query === '9876543210' || query === 'delivery@casmik.com' || query === 'delivery@camsik.com') {
+      if (query === '9876543210' || query === 'delivery@casmik.com' || query === 'delivery@camsik.com' || query === 'delivery@maaambika.com') {
         const demo = allAgents[0];
         localStorage.setItem('casmik_delivery_session', JSON.stringify(demo));
         window.location.href = '/delivery';
@@ -101,7 +101,7 @@ export default function DeliveryAuthPage() {
     }
 
     if (agent.approvalStatus === 'rejected') {
-      setError('Your delivery agent application was rejected or deactivated. Please contact support@camsik.com.');
+      setError('Your delivery agent application was rejected or deactivated. Please contact support@maaambikamobile.com.');
       return;
     }
 
@@ -206,15 +206,14 @@ export default function DeliveryAuthPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-primary/5 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-6">
-          <Link href="/" className="inline-flex items-center gap-2 mb-2">
-            <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-md shadow-primary/30">
-              <span className="text-white font-black text-lg">C</span>
+          <Link href="/" className="inline-flex items-center gap-3 mb-2">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 p-1 flex items-center justify-center shadow-md">
+              <img src="/assets/images/app_logo.png" alt="Maa Ambika" className="w-full h-full object-contain" />
             </div>
-            <span className="font-black text-2xl text-gray-900 tracking-tight">CAMSIK</span>
+            <span className="font-black text-2xl text-gray-900 tracking-tight">Maa Ambika</span>
           </Link>
-          <p className="text-gray-500 text-xs font-medium">Delivery Agent & Executive Portal</p>
+          <p className="text-amber-700 text-xs font-semibold">Delivery Agent & Executive Portal • Maa Ambika Mobile Shop</p>
         </div>
 
         {/* Demo Fast Login Pills */}
@@ -453,7 +452,7 @@ export default function DeliveryAuthPage() {
                       <div className="flex items-start gap-2 bg-blue-50 rounded-xl p-3">
                         <input type="checkbox" required id="terms" className="mt-0.5 accent-primary" />
                         <label htmlFor="terms" className="text-xs text-gray-600">
-                          I agree to Camsik's <span className="text-primary font-semibold">Delivery Agent Terms</span> and confirm all submitted information is accurate.
+                          I agree to Maa Ambika Mobile Shop's <span className="text-primary font-semibold">Delivery Agent Terms</span> and confirm all submitted information is accurate.
                         </label>
                       </div>
                     </>
@@ -475,7 +474,7 @@ export default function DeliveryAuthPage() {
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">
-          <Link href="/" className="hover:text-primary">← Back to Camsik Home</Link>
+          <Link href="/" className="hover:text-primary">← Back to Maa Ambika Home</Link>
         </p>
       </div>
     </div>

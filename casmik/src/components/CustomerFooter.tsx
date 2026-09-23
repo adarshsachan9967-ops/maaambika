@@ -123,38 +123,47 @@ export default function CustomerFooter() {
       {/* Main Footer Links */}
       <div className="max-w-screen-2xl mx-auto px-6 lg:px-8 xl:px-10 py-8 sm:py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10">
-          {/* Brand Info */}
+          {/* Brand Info & Address */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-purple-600/25">
-                <Camera size={22} />
+            <Link href="/" className="flex items-center gap-3 mb-5 group">
+              <div className="w-12 h-12 rounded-xl bg-slate-900 border border-amber-500/30 p-1 flex items-center justify-center flex-shrink-0 shadow-lg shadow-amber-500/10">
+                <img
+                  src="/assets/images/app_logo.png"
+                  alt="Maa Ambika Mobile Shop"
+                  className="w-full h-full object-contain rounded-lg"
+                />
               </div>
               <div>
-                <span className="font-black text-2xl text-white tracking-tight">CAMSIK</span>
-                <span className="block text-[10px] font-semibold text-purple-400 uppercase tracking-widest -mt-1">
-                  Tech &amp; Cameras ReCommerce
+                <span className="font-black text-2xl text-white tracking-tight flex items-center gap-2">
+                  MAA AMBIKA
+                  <span className="text-xs px-2 py-0.5 rounded bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black tracking-wide uppercase">
+                    MOBILE SHOP
+                  </span>
+                </span>
+                <span className="block text-[11px] font-bold text-amber-400 uppercase tracking-widest mt-0.5">
+                  Your Digital Life Partner
                 </span>
               </div>
             </Link>
             <p className="text-sm text-slate-400 leading-relaxed mb-6">
-              India&apos;s leading tech ReCommerce platform. Buy, sell, or exchange smartphones, iPhones, MacBooks, laptops, tablets, DSLRs, mirrorless cameras &amp; creator gear with instant bank payout, 45-point testing &amp; certified warranty.
+              Best Products • Best Price • Best Service. Your premier destination for the latest smartphones, certified refurbished devices, instant cash buyback, doorstep exchange, expert mobile repairs, genuine accessories &amp; recharges.
             </p>
 
             <div className="space-y-2.5 text-xs text-slate-400 mb-6">
               <div className="flex items-start gap-2.5">
-                <MapPin size={15} className="text-purple-400 flex-shrink-0 mt-0.5" />
-                <span>A-315, Shanti Shopping Center, Near Mira Road Station, Mumbai, Maharashtra - 401107</span>
+                <MapPin size={15} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                <span>Maa Ambika Mobile Shop, Main Market Road · GSTIN: 21ELDPS6270L1ZS</span>
               </div>
               <div className="flex items-center gap-2.5">
-                <Phone size={15} className="text-purple-400 flex-shrink-0" />
-                <a href="tel:+918976000010" className="hover:text-white transition-colors">
-                  +91 8976000010 (Mon–Sun 9 AM – 9 PM)
+                <Phone size={15} className="text-amber-400 flex-shrink-0" />
+                <a href="tel:+918260120467" className="hover:text-amber-300 font-bold text-slate-200 transition-colors">
+                  +91 8260120467 (Mon–Sun 9 AM – 9 PM)
                 </a>
               </div>
               <div className="flex items-center gap-2.5">
-                <Mail size={15} className="text-purple-400 flex-shrink-0" />
-                <a href="mailto:sellatcamsik@gmail.com" className="hover:text-white transition-colors">
-                  sellatcamsik@gmail.com
+                <Mail size={15} className="text-amber-400 flex-shrink-0" />
+                <a href="mailto:support@maaambikamobile.com" className="hover:text-amber-300 transition-colors">
+                  support@maaambikamobile.com
                 </a>
               </div>
             </div>
@@ -217,7 +226,7 @@ export default function CustomerFooter() {
 
         {/* Bottom Copyright */}
         <div className="mt-8 pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© 2026 Camsik Electronics Pvt. Ltd. All rights reserved.</p>
+          <p>© 2026 Maa Ambika Mobile Shop. All rights reserved. GSTIN: 21ELDPS6270L1ZS</p>
           <div className="flex items-center gap-6">
             <Link href="#privacy" className="hover:text-slate-300 transition-colors">Privacy Policy</Link>
             <Link href="#terms" className="hover:text-slate-300 transition-colors">Terms of Service</Link>

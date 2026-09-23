@@ -28,15 +28,15 @@ export default function UserAboutUsPage() {
           </nav>
 
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold mb-4 border border-emerald-500/30">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold mb-4 border border-amber-500/30">
               <Sparkles size={13} />
-              THE CASMIK ADVANTAGE
+              THE MAA AMBIKA ADVANTAGE • YOUR DIGITAL LIFE PARTNER
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4">
-              Pioneering India&apos;s Circular Electronics Revolution
+              Maa Ambika Mobile Shop — Best Products, Best Price &amp; Best Service
             </h1>
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-              We engineered India&apos;s leading tech ReCommerce ecosystem. No lowball offers from offline shops, no risky meetings with online strangers. Just algorithmic valuations, 45-point hardware diagnostics, certified DoD 5220.22-M data wipes, and instant doorstep payouts.
+              Welcome to Maa Ambika Mobile Shop — Your Digital Life Partner (GSTIN: 21ELDPS6270L1ZS, Phone: +91 8260120467). We provide genuine new smartphones, 45-point certified refurbished devices, doorstep sell &amp; exchange, certified mobile repairs, original accessories, and quick recharges.
             </p>
           </div>
         </div>

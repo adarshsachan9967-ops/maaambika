@@ -148,7 +148,7 @@ export default function PartnerPage() {
           </span>
           <h2 className="text-2xl font-black text-gray-900 mb-2">Application Under Review</h2>
           <p className="text-gray-500 text-sm mb-6">
-            Hello <strong>{session.name}</strong>, your partner application for <strong>{session.storeName}</strong> has been submitted. Camsik Super Admin is currently verifying your details and store documents.
+            Hello <strong>{session.name}</strong>, your partner application for <strong>{session.storeName}</strong> has been submitted. Maa Ambika Super Admin is currently verifying your details and store documents.
           </p>
 
           <div className="bg-gray-50 rounded-2xl p-4 text-left mb-6 space-y-2.5 text-xs text-gray-600">

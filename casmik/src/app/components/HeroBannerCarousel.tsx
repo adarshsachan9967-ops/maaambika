@@ -35,8 +35,29 @@ interface HeroSlide {
 
 const slides: HeroSlide[] = [
   {
+    id: 'slide-maa-ambika-flagship',
+    badge: '👑 MAA AMBIKA MOBILE SHOP • YOUR DIGITAL LIFE PARTNER',
+    titlePrefix: 'Best Products • ',
+    titleHighlight: 'Best Price • Best Service',
+    titleSuffix: ' Guaranteed',
+    description:
+      'Maa Ambika Mobile Shop is your trusted tech destination. Explore new smartphones, certified refurbished devices, instant sell & exchange, expert doorstep repairs, genuine accessories & mobile recharges. Helpline: +91 8260120467 | GSTIN: 21ELDPS6270L1ZS.',
+    ctaText: 'Visit Customer Store',
+    ctaLink: '/user',
+    categoryFilter: 'cat-smartphone',
+    bgGradient: 'from-amber-950 via-slate-950 to-stone-900',
+    accentColor: '#f59e0b',
+    image: '/assets/images/app_logo.png',
+    imageAlt: 'Maa Ambika Mobile Shop - Your Digital Life Partner',
+    stats: [
+      { label: 'Verified Service', value: '100% Genuine' },
+      { label: 'Helpline / WhatsApp', value: '+91 8260120467' },
+      { label: 'GSTIN Registered', value: '21ELDPS6270L1ZS' },
+    ],
+  },
+  {
     id: 'slide-smartphone',
-    badge: '📱 #1 SMARTPHONE & IPHONE BUYBACK',
+    badge: '📱 #1 SMARTPHONE & IPHONE STORE',
     titlePrefix: 'Sell Used ',
     titleHighlight: 'Smartphones & iPhones',
     titleSuffix: ' for Peak Cash',

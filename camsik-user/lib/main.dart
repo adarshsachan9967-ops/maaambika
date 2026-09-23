@@ -49,7 +49,7 @@ class _CamsikUserAppState extends State<CamsikUserApp> {
 
   // Active User Profile - Starts clean and empty by default (no static dummy values)
   UserProfile _userProfile = UserProfile(
-    name: 'Camsik Customer',
+    name: 'Maa Ambika Customer',
     phone: '',
     email: '',
     avatarIndex: 0,
@@ -74,7 +74,7 @@ class _CamsikUserAppState extends State<CamsikUserApp> {
       _isFirstLaunch = !onboarded && !loggedIn;
       if (savedProfile != null) {
         _userProfile = UserProfile(
-          name: savedProfile['name']?.toString().isNotEmpty == true ? savedProfile['name'] : 'Camsik Customer',
+          name: savedProfile['name']?.toString().isNotEmpty == true ? savedProfile['name'] : 'Maa Ambika Customer',
           phone: savedProfile['phone']?.toString() ?? '',
           email: savedProfile['email']?.toString() ?? '',
           avatarIndex: savedProfile['avatarIndex'] is int ? savedProfile['avatarIndex'] : 0,
@@ -135,7 +135,7 @@ class _CamsikUserAppState extends State<CamsikUserApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Camsik User',
+      title: 'Maa Ambika Mobile Shop',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -240,7 +240,7 @@ class UserOrder {
       paymentMethod: json['paymentMethod'] ?? 'Instant UPI',
       timelineSteps: [
         'Order Placed & Confirmed',
-        'Camsik Executive Assigned',
+        'Maa Ambika Executive Assigned',
         'Doorstep Verification',
         'Inspection & Data Wipe',
         'Payment Disbursed / Complete',
@@ -662,7 +662,7 @@ class _CamsikAuthScreenState extends State<CamsikAuthScreen> {
           }
           final cleanPhone = identifier.replaceAll(RegExp(r'\D'), '');
           final profile = UserProfile(
-            name: u?['name']?.toString() ?? 'Camsik Customer',
+            name: u?['name']?.toString() ?? 'Maa Ambika Customer',
             phone: u?['phone']?.toString() ?? (cleanPhone.length == 10 ? cleanPhone : identifier),
             email: u?['email']?.toString() ?? (identifier.contains('@') ? identifier : '$cleanPhone@camsik.in'),
             avatarIndex: 0,
@@ -723,24 +723,29 @@ class _CamsikAuthScreenState extends State<CamsikAuthScreen> {
                       text: const TextSpan(
                         children: [
                           TextSpan(
-                            text: 'CAM',
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -0.5),
+                            text: 'MAA AMBIKA ',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5),
                           ),
                           TextSpan(
-                            text: 'SIK',
+                            text: 'MOBILE SHOP',
                             style: TextStyle(
-                              color: Color(0xFF818CF8),
+                              color: Color(0xFFFBBF24),
                               fontWeight: FontWeight.w900,
-                              fontSize: 28,
+                              fontSize: 24,
                               letterSpacing: -0.5,
                             ),
                           ),
                         ],
                       ),
                     ),
+                    const SizedBox(height: 4),
                     const Text(
-                      "India's #1 Camera & Tech ReCommerce Platform",
-                      style: TextStyle(color: Colors.white54, fontSize: 12),
+                      "Your Digital Life Partner...",
+                      style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
+                    ),
+                    const Text(
+                      "Best Products • Best Price • Best Service",
+                      style: TextStyle(color: Colors.white54, fontSize: 11),
                     ),
                   ],
                 ),
@@ -807,7 +812,7 @@ class _CamsikAuthScreenState extends State<CamsikAuthScreen> {
               const SizedBox(height: 24),
 
               Text(
-                _isRegister ? 'Create Camsik Account' : 'Welcome to Camsik',
+                _isRegister ? 'Create Maa Ambika Account' : 'Welcome to Maa Ambika',
                 style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
@@ -906,7 +911,7 @@ class _CamsikAuthScreenState extends State<CamsikAuthScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
                         )
                       : Text(
-                          _isRegister ? 'Create Account & Continue' : 'Sign In to Camsik',
+                          _isRegister ? 'Create Account & Continue' : 'Sign In to Maa Ambika',
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                 ),

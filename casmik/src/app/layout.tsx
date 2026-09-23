@@ -18,11 +18,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Camsik — Buy, Sell & Exchange Used Smartphones, Laptops, MacBooks, Tablets & Cameras | Instant Cash & Free Doorstep Pickup',
-  description: "India's leading ReCommerce platform. Sell, buy certified refurbished, or exchange old smartphones, iPhones, MacBooks, laptops, iPads, tablets, DSLRs, mirrorless cameras & lenses with instant AI valuation, free doorstep pickup, 45-point testing & certified warranty.",
-  keywords: 'sell old phone, sell used iphone, sell laptop, sell macbook, sell used tablet, sell dslr camera, buy refurbished iphone, buy refurbished macbook, 1-step device exchange, camsik recommerce, apple, samsung, sony, canon, dell',
+  title: 'Maa Ambika Mobile Shop — Your Digital Life Partner | Smartphones, Certified Refurbished, Repairs & Accessories',
+  description: 'Maa Ambika Mobile Shop — Your Digital Life Partner. Best products, best prices, best service! Buy latest smartphones, certified refurbished phones, instant doorstep sell & exchange, expert mobile repairs, original accessories & recharge. Mob: +91 8260120467, GSTIN: 21ELDPS6270L1ZS.',
+  keywords: 'Maa Ambika Mobile Shop, mobile shop near me, buy smartphones, sell old phone, mobile repair, phone exchange, certified refurbished phones, iPhone, Samsung Galaxy, OnePlus, mobile accessories, mobile recharge, GSTIN 21ELDPS6270L1ZS, 8260120467',
   icons: {
-    icon: [{ url: '/favicon.ico', type: 'image/x-icon' }],
+    icon: [{ url: '/assets/images/app_logo.png', type: 'image/png' }],
   },
 };
 

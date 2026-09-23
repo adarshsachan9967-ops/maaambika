@@ -156,16 +156,16 @@ export default function QuoteSummaryPanel({ sellState, currentStep }: Props) {
         <p className="text-xs text-muted-foreground mb-4">Our support team is here for you</p>
         <div className="space-y-2">
           <a
-            href="tel:+918976000010"
+            href="tel:+918260120467"
             className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted hover:border-primary/30 transition-all duration-150"
           >
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
               <Phone size={14} className="text-primary" />
             </div>
-            <span className="text-sm font-semibold text-foreground">+91 8976000010</span>
+            <span className="text-sm font-semibold text-foreground">+91 8260120467</span>
           </a>
           <a
-            href="https://wa.me/918976000010?text=Hi%20Camsik%20team,%20I%20need%20help%20with%20my%20device%20valuation"
+            href="https://wa.me/918260120467?text=Hi%20Maa%20Ambika%20team,%20I%20need%20help%20with%20my%20device%20valuation"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted hover:border-emerald-500/30 transition-all duration-150"

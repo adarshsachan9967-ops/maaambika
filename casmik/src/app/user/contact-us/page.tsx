@@ -44,7 +44,7 @@ const FAQS = [
   },
   {
     q: 'Can I choose free doorstep pickup instead of visiting in person?',
-    a: 'Absolutely! If you are located in Mumbai, Thane, Navi Mumbai, Pune, Delhi NCR, Bangalore, or any of our 200+ covered cities, a certified Camsik executive will visit your home or office, inspect the device, and transfer your payout instantly on the spot.'
+    a: 'Absolutely! If you are located in any of our covered areas or visit our showroom, a certified Maa Ambika specialist will assist you, inspect the device, and transfer your payout instantly on the spot.'
   },
   {
     q: 'What accessories should I bring to get the maximum valuation?',
@@ -263,10 +263,10 @@ export default function ContactUsPage() {
                           </h3>
                         </div>
                         <a
-                          href="tel:+918976000010"
+                          href="tel:+918260120467"
                           className="text-lg sm:text-xl font-black text-slate-900 hover:text-blue-600 transition-colors block"
                         >
-                          +91 8976000010
+                          +91 8260120467
                         </a>
                         <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
                           <Clock size={12} className="text-slate-400" />
@@ -289,10 +289,10 @@ export default function ContactUsPage() {
                           </h3>
                         </div>
                         <a
-                          href="mailto:sellatcamsik@gmail.com"
+                          href="mailto:support@maaambikamobile.com"
                           className="text-base sm:text-lg font-black text-slate-900 hover:text-indigo-600 transition-colors block break-all"
                         >
-                          sellatcamsik@gmail.com
+                          support@maaambikamobile.com
                         </a>
                         <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
                           <Zap size={12} className="text-amber-500" />
@@ -307,18 +307,18 @@ export default function ContactUsPage() {
               {/* Action Buttons: WhatsApp & Call */}
               <div className="pt-4 border-t border-slate-200/80 space-y-3">
                 <a
-                  href="https://wa.me/918976000010?text=Hi%20Camsik%20team,%20I%20want%20to%20sell/trade-in%20my%20device"
+                  href="https://wa.me/918260120467?text=Hi%20Maa%20Ambika%20team,%20I%20want%20to%20sell/trade-in%20my%20device"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2.5 btn-press"
                 >
                   <MessageCircle size={20} />
-                  Chat on WhatsApp (+91 8976000010)
+                  Chat on WhatsApp (+91 8260120467)
                 </a>
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <a
-                    href="tel:+918976000010"
+                    href="tel:+918260120467"
                     className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-center flex items-center justify-center gap-1.5 transition-colors"
                   >
                     <Phone size={14} /> Call Office
@@ -382,7 +382,7 @@ export default function ContactUsPage() {
                     Inquiry Submitted Successfully!
                   </h3>
                   <p className="text-sm text-emerald-800 max-w-md mx-auto mb-6 leading-relaxed">
-                    Thank you, <strong>{formData.name}</strong>. Your inquiry regarding <strong>{INQUIRY_TYPES.find(t => t.id === selectedInquiry)?.label}</strong> has been routed to our Mumbai desk. A Camsik advisor will reach out to you via <strong>{formData.phone}</strong> shortly.
+                    Thank you, <strong>{formData.name}</strong>. Your inquiry regarding <strong>{INQUIRY_TYPES.find(t => t.id === selectedInquiry)?.label}</strong> has been received. A Maa Ambika advisor will reach out to you via <strong>{formData.phone}</strong> shortly.
                   </p>
                   <div className="flex flex-wrap justify-center gap-3">
                     <button
@@ -395,7 +395,7 @@ export default function ContactUsPage() {
                       Send Another Inquiry
                     </button>
                     <a
-                      href={`https://wa.me/918976000010?text=Hi%20Camsik,%20I%20just%20submitted%20an%20inquiry%20for%20${encodeURIComponent(formData.name)}`}
+                      href={`https://wa.me/918260120467?text=Hi%20Maa%20Ambika,%20I%20just%20submitted%20an%20inquiry%20for%20${encodeURIComponent(formData.name)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-sm flex items-center gap-1.5 transition-colors"
@@ -434,7 +434,7 @@ export default function ContactUsPage() {
                         <input
                           type="tel"
                           required
-                          placeholder="8976000010"
+                          placeholder="8260120467"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                           className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
@@ -576,7 +576,7 @@ export default function ContactUsPage() {
               {/* Google Maps Embed iframe */}
               <div className="w-full h-[380px] sm:h-[460px] lg:h-[500px]">
                 <iframe
-                  title="Camsik Official Mumbai Office Location"
+                  title="Maa Ambika Mobile Shop Location"
                   src={googleMapEmbedSrc}
                   width="100%"
                   height="100%"
@@ -593,7 +593,7 @@ export default function ContactUsPage() {
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="font-extrabold text-slate-900 uppercase tracking-wider text-[11px]">
-                    Camsik Registered Office
+                    Maa Ambika Mobile Shop
                   </span>
                 </div>
                 <p className="font-bold text-slate-800 leading-snug">
@@ -771,7 +771,7 @@ export default function ContactUsPage() {
       {/* Floating Call & WhatsApp Buttons */}
       <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
         <a
-          href="https://wa.me/918976000010?text=Hi%20Camsik%20team,%20I%20have%20an%20inquiry"
+          href="https://wa.me/918260120467?text=Hi%20Maa%20Ambika%20team,%20I%20have%20an%20inquiry"
           target="_blank"
           rel="noopener noreferrer"
           className="w-13 h-13 rounded-full bg-emerald-500 text-white shadow-xl flex items-center justify-center hover:scale-110 transition-transform ring-4 ring-emerald-500/20 group relative"
@@ -783,13 +783,13 @@ export default function ContactUsPage() {
           </span>
         </a>
         <a
-          href="tel:+918976000010"
+          href="tel:+918260120467"
           className="w-13 h-13 rounded-full bg-blue-600 text-white shadow-xl flex items-center justify-center hover:scale-110 transition-transform ring-4 ring-blue-600/20 group relative"
-          aria-label="Call Camsik Support"
+          aria-label="Call Maa Ambika Support"
         >
           <Phone size={24} />
           <span className="hidden group-hover:block absolute right-16 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
-            Call +91 8976000010
+            Call +91 8260120467
           </span>
         </a>
       </div>

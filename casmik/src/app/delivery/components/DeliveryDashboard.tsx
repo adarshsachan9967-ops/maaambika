@@ -166,7 +166,7 @@ export default function DeliveryDashboard({ onNavigateToTasks, onNavigateToEarni
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span>Destination:</span>
-            <span className="font-bold text-slate-800">Camsik Certified Hub</span>
+            <span className="font-bold text-slate-800">Maa Ambika Certified Hub</span>
           </div>
         </div>
 
@@ -411,13 +411,13 @@ export default function DeliveryDashboard({ onNavigateToTasks, onNavigateToEarni
           <div className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs space-y-3">
             <h3 className="font-black text-sm text-slate-900">Assigned Processing Hub</h3>
             <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/60">
-              <p className="text-xs font-bold text-slate-900">Camsik Certified Central Hub</p>
-              <p className="text-[11px] text-slate-500 mt-0.5">Connaught Place, Outer Circle, New Delhi</p>
-              <p className="text-[11px] text-slate-500 mt-1">Hub Manager: <strong>Vikram Singhania</strong></p>
+              <p className="text-xs font-bold text-slate-900">Maa Ambika Certified Central Hub</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">Main Road, Maa Ambika Mobile Shop, Odisha</p>
+              <p className="text-[11px] text-slate-500 mt-1">Hub Manager: <strong>Maa Ambika Operations</strong></p>
             </div>
             <div className="flex gap-2">
               <a
-                href="tel:9876543210"
+                href="tel:+918260120467"
                 className="flex-1 py-2.5 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border border-emerald-200 transition-colors"
               >
                 <Phone size={12} />

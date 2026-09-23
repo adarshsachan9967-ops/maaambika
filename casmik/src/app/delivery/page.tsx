@@ -138,7 +138,7 @@ export default function DeliveryPage() {
           </span>
           <h2 className="text-2xl font-black text-gray-900 mb-2">Application Under Review</h2>
           <p className="text-gray-500 text-sm mb-6">
-            Hello <strong>{session.name}</strong>, your delivery executive application is under review. The Camsik Admin team is verifying your documents and vehicle details.
+            Hello <strong>{session.name}</strong>, your delivery executive application is under review. The Maa Ambika Admin team is verifying your documents and vehicle details.
           </p>
 
           <div className="bg-gray-50 rounded-2xl p-4 text-left mb-6 space-y-2.5 text-xs text-gray-600">

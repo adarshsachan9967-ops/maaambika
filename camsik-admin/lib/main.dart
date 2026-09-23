@@ -20,7 +20,7 @@ class CamsikAdminApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Camsik Admin',
+      title: 'Maa Ambika Admin',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -161,7 +161,7 @@ class _AdminMainNavigationScreenState extends State<AdminMainNavigationScreen> {
             const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('CAMSIK ADMIN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5)),
+                Text('MAA AMBIKA ADMIN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5)),
                 Text('Master Control • Super Admin', style: TextStyle(fontSize: 11, color: Color(0xFFA78BFA))),
               ],
             ),
@@ -679,7 +679,7 @@ class _AdminMainNavigationScreenState extends State<AdminMainNavigationScreen> {
           // Active Coupons
           const Text('Active Promo Codes', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
           const SizedBox(height: 10),
-          _buildCouponCard('CAMSIK1000', 'Flat ₹1,000 Off on Refurbished Laptops & Phones', 'Used 418 times', 'Active'),
+          _buildCouponCard('AMBIKA1000', 'Flat ₹1,000 Off on Refurbished Laptops & Phones', 'Used 418 times', 'Active'),
           _buildCouponCard('SELLBONUS500', 'Get Extra ₹500 trade-in credit when selling phone', 'Used 892 times', 'Active'),
           _buildCouponCard('FREEDELIVERY', 'Zero pickup fee for first-time doorstep inspections', 'Used 1,240 times', 'Active'),
         ],

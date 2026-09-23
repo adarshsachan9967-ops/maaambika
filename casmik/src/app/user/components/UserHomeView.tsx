@@ -32,18 +32,27 @@ export default function UserHomeView({ onNavigateTab }: UserHomeViewProps) {
 
   const banners = [
     {
+      id: 0,
+      title: 'Maa Ambika Mobile Shop',
+      subtitle: 'Your Digital Life Partner • Best Products, Best Price & Best Service',
+      tag: '👑 Official Store · Mob: 8260120467',
+      actionTab: 'buy',
+      gradient: 'from-amber-600 via-amber-700 to-slate-900',
+      btnText: 'Shop Store'
+    },
+    {
       id: 1,
       title: 'Instant Sell & Doorstep Cash',
-      subtitle: 'Get up to ₹85,000 for your old phone, laptop or camera',
-      tag: '🔥 Diwali Super Bonus +₹2,500',
+      subtitle: 'Get top cash for your old smartphone, laptop or tablet with instant UPI payout',
+      tag: '🔥 Best Price Guarantee',
       actionTab: 'sell',
       gradient: 'from-emerald-600 via-teal-700 to-slate-900',
       btnText: 'Calculate Value'
     },
     {
       id: 2,
-      title: 'Certified Refurbished Tech',
-      subtitle: '32-Point Quality Inspected with 1-Year Pan-India Warranty',
+      title: 'Certified Refurbished Mobiles',
+      subtitle: '45-Point Quality Inspected with 1-Year Comprehensive Store Warranty',
       tag: '✨ Up to 70% Off Retail',
       actionTab: 'buy',
       gradient: 'from-blue-600 via-indigo-700 to-slate-900',
@@ -166,7 +175,7 @@ export default function UserHomeView({ onNavigateTab }: UserHomeViewProps) {
                 <span>{banner.btnText}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
-              <span className="text-[10px] text-white/80 font-medium">Verified by Casmik</span>
+              <span className="text-[10px] text-amber-300 font-bold">Maa Ambika Verified</span>
             </div>
 
             {/* Decorative background glow */}
@@ -301,7 +310,7 @@ export default function UserHomeView({ onNavigateTab }: UserHomeViewProps) {
       <div className="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-3.5 space-y-3">
         <h3 className="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          Camsik Trust & Security Guarantee
+          Maa Ambika Trust &amp; Security Guarantee
         </h3>
 
         <div className="grid grid-cols-2 gap-2 text-[10px]">

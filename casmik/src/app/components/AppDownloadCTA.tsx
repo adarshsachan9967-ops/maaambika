@@ -116,15 +116,15 @@ export default function AppDownloadCTA() {
             
             {/* Left Column: Heading, Value Props & Download Badges */}
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/20 text-xs font-bold text-primary mb-5 border border-primary/30 shadow-sm backdrop-blur-md">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                OFFICIAL CAMSIK RECOMMERCE APP • IOS &amp; ANDROID
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 text-xs font-bold text-amber-400 mb-5 border border-amber-500/30 shadow-sm backdrop-blur-md">
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                OFFICIAL MAA AMBIKA MOBILE SHOP APP • IOS &amp; ANDROID
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 leading-tight">
-                Trade, Buy &amp; Sell Tech Smarter with the{' '}
-                <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-primary bg-clip-text text-transparent">
-                  Camsik App
+                Shop, Trade &amp; Service Mobiles Smarter with{' '}
+                <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">
+                  Maa Ambika Mobile
                 </span>
               </h2>
 

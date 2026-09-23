@@ -24,13 +24,13 @@ export default function UserWebHomePage() {
   return (
     <main className="min-h-screen bg-background flex flex-col overflow-x-hidden w-full max-w-full">
       {/* Top Multi-Panel Navigation Banner */}
-      <div className="bg-slate-950 text-white text-xs py-2 px-4 border-b border-slate-800">
+      <div className="bg-slate-950 text-white text-xs py-2 px-4 border-b border-amber-500/20">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-semibold text-emerald-300">CASMIK RECOMMERCE ECOSYSTEM</span>
+            <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <span className="font-bold text-amber-300">MAA AMBIKA MOBILE SHOP</span>
             <span className="hidden sm:inline text-slate-500">|</span>
-            <span className="hidden sm:inline text-slate-400">User Web Portal</span>
+            <span className="hidden sm:inline text-slate-400">Customer Store &amp; ReCommerce Hub</span>
           </div>
           <div className="flex items-center gap-3 font-medium text-slate-400">
             <span>Switch Portal:</span>
@@ -40,7 +40,7 @@ export default function UserWebHomePage() {
             <Link href="/delivery" className="text-amber-400 hover:text-amber-300 hover:underline flex items-center gap-1">
               <Truck size={12} /> Delivery
             </Link>
-            <Link href="/admin" className="text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-1">
+            <Link href="/super-admin-dashboard" className="text-yellow-400 hover:text-yellow-300 hover:underline flex items-center gap-1">
               <ShieldCheck size={12} /> Admin
             </Link>
           </div>
@@ -54,22 +54,22 @@ export default function UserWebHomePage() {
       <nav className="bg-slate-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800 hidden md:block">
         <div className="max-w-7xl mx-auto flex items-center justify-center gap-6 font-medium overflow-x-auto">
           <Link href="/user/sell-device" className="hover:text-emerald-400 flex items-center gap-1 transition-colors">
-            <Zap size={13} className="text-emerald-400" /> Sell Device (Instant Quote)
+            <Zap size={13} className="text-emerald-400" /> Sell Phone (Instant Quote)
           </Link>
-          <Link href="/user/buy-refurbished" className="hover:text-blue-400 flex items-center gap-1 transition-colors">
-            <ShoppingBag size={13} className="text-blue-400" /> Buy Refurbished Tech
+          <Link href="/user/buy-refurbished" className="hover:text-amber-400 flex items-center gap-1 transition-colors">
+            <ShoppingBag size={13} className="text-amber-400" /> Buy Certified Phones
           </Link>
-          <Link href="/user/exchange" className="hover:text-amber-400 flex items-center gap-1 transition-colors">
-            <RefreshCw size={13} className="text-amber-400" /> Doorstep Exchange
+          <Link href="/user/exchange" className="hover:text-purple-400 flex items-center gap-1 transition-colors">
+            <RefreshCw size={13} className="text-purple-400" /> Doorstep Exchange
           </Link>
-          <Link href="/user/my-orders" className="hover:text-purple-400 flex items-center gap-1 transition-colors">
-            <Truck size={13} className="text-purple-400" /> Track Orders
+          <Link href="/user/my-orders" className="hover:text-blue-400 flex items-center gap-1 transition-colors">
+            <Truck size={13} className="text-blue-400" /> Track Orders
           </Link>
           <Link href="/user/how-it-works" className="hover:text-white transition-colors">
             How It Works
           </Link>
           <Link href="/user/about-us" className="hover:text-white transition-colors">
-            Why Casmik
+            Why Maa Ambika
           </Link>
           <Link href="/user/faq" className="hover:text-white transition-colors">
             FAQs

@@ -193,7 +193,7 @@ export default function PartnerProfile({ partner, onUpdateSession }: PartnerProf
             <Shield size={20} />
           </div>
           <div>
-            <p className="text-sm font-bold text-emerald-900">Verified Camsik Partner Store</p>
+            <p className="text-sm font-bold text-emerald-900">Verified Maa Ambika Partner Store</p>
             <p className="text-xs text-emerald-700 mt-0.5">
               KYC documents verified &bull; Inspection clearance level: Tier 1 Authorized Studio &bull; Active since March 2023
             </p>
@@ -447,7 +447,7 @@ export default function PartnerProfile({ partner, onUpdateSession }: PartnerProf
                 <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl p-3">
                   <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
                   <p className="text-xs font-bold text-emerald-800">
-                    {uploadSuccess} uploaded! Camsik Super Admin notified.
+                    {uploadSuccess} uploaded! Maa Ambika Super Admin notified.
                   </p>
                 </div>
               )}

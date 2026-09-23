@@ -59,13 +59,13 @@ export default function PartnerLayout({ activeSection, onSectionChange, children
   const SidebarContent = () => (
     <>
       <div className={`flex items-center h-16 border-b border-gray-100 flex-shrink-0 ${collapsed ? 'justify-center px-0' : 'px-4 gap-3'}`}>
-        <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
-          <span className="text-white font-black text-sm">C</span>
+        <div className="w-8 h-8 rounded-xl overflow-hidden bg-amber-500/20 border border-amber-500/30 flex items-center justify-center flex-shrink-0 p-0.5">
+          <img src="/assets/images/app_logo.png" alt="Maa Ambika" className="w-full h-full object-contain" />
         </div>
         {!collapsed && (
           <div>
-            <p className="font-black text-gray-900 text-sm leading-none">CAMSIK</p>
-            <p className="text-xs text-gray-400 leading-none mt-0.5">Partner Portal</p>
+            <p className="font-black text-gray-900 text-sm leading-none">Maa Ambika</p>
+            <p className="text-[10px] text-amber-600 font-semibold leading-none mt-1">Partner Portal</p>
           </div>
         )}
       </div>

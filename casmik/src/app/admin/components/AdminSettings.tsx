@@ -61,13 +61,13 @@ export default function AdminSettings() {
               <h3 className="font-bold text-gray-900 text-base">Company Details</h3>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { label: 'Company Name', value: 'CAMSIK Technologies Pvt Ltd' },
-                  { label: 'Brand Name', value: 'CAMSIK' },
-                  { label: 'Support Email', value: 'sellatcamsik@gmail.com' },
-                  { label: 'Support Phone', value: '+91 8976000010' },
-                  { label: 'GST Number', value: '27AABCC1234D1Z5' },
-                  { label: 'PAN Number', value: 'AABCC1234D' },
-                  { label: 'Registered Address', value: 'A-315, Shanti Shopping Center, Near Mira Road Station, Mumbai, Maharashtra - 401107' },
+                  { label: 'Company Name', value: 'Maa Ambika Mobile Shop' },
+                  { label: 'Brand Name', value: 'Maa Ambika Mobile Shop' },
+                  { label: 'Support Email', value: 'support@maaambikamobile.com' },
+                  { label: 'Support Phone', value: '+91 8260120467' },
+                  { label: 'GST Number', value: '21ELDPS6270L1ZS' },
+                  { label: 'PAN Number', value: 'ELDPS6270L' },
+                  { label: 'Registered Address', value: 'Main Road, Maa Ambika Mobile Shop, Odisha, India' },
                   { label: 'Currency', value: 'INR (₹)' },
                 ].map(field => (
                   <div key={field.label}>
@@ -78,7 +78,7 @@ export default function AdminSettings() {
               </div>
               <div>
                 <label className="text-xs font-bold text-gray-600 mb-1.5 block">Platform Tagline</label>
-                <input defaultValue="Turn Your Old Devices Into Instant Value." className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                <input defaultValue="Your Digital Life Partner... Best Products • Best Price • Best Service" className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -103,10 +103,10 @@ export default function AdminSettings() {
                 <h4 className="font-bold text-blue-900 text-sm mb-3">Admin Bank Account (for Bank Transfers)</h4>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { label: 'Bank Name', value: 'ICICI Bank' },
-                    { label: 'IFSC Code', value: 'ICIC0000004' },
-                    { label: 'Account Name', value: 'Cashify Recommerce Pvt Ltd' },
-                    { label: 'Account Number', value: '000405001289' },
+                    { label: 'Bank Name', value: 'State Bank of India' },
+                    { label: 'IFSC Code', value: 'SBIN0001234' },
+                    { label: 'Account Name', value: 'Maa Ambika Mobile Shop' },
+                    { label: 'Account Number', value: '38901245678' },
                   ].map(f => (
                     <div key={f.label}>
                       <label className="text-xs font-bold text-blue-700 mb-1 block">{f.label}</label>

@@ -458,7 +458,7 @@ interface CouponOption {
 
 const availableCoupons: CouponOption[] = [
   {
-    code: 'CAMSIK500',
+    code: 'AMBIKA500',
     title: 'Flat ₹500 Instant Discount',
     discount: 500,
     description: 'Instant welcome credit on any exchange upgrade',
@@ -701,7 +701,7 @@ export default function ExchangeDevicePage() {
       handleApplyCoupon(match);
       setCustomCouponInput('');
     } else {
-      setCouponError('Invalid coupon code. Try CAMSIK500 or UPGRADE1000');
+      setCouponError('Invalid coupon code. Try AMBIKA500 or UPGRADE1000');
     }
   };
 
@@ -2109,7 +2109,7 @@ export default function ExchangeDevicePage() {
                     </div>
 
                     <div className="flex justify-between items-center text-emerald-700">
-                      <span className="font-medium">Special Camsik Exchange Bonus</span>
+                      <span className="font-medium">Special Maa Ambika Exchange Bonus</span>
                       <span className="font-bold">
                         - ₹{exchangeBonus.toLocaleString('en-IN')}
                       </span>
@@ -2206,7 +2206,7 @@ export default function ExchangeDevicePage() {
                   <span className="font-bold">- ₹{confirmedOrder.tradeInCredit.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between text-emerald-700">
-                  <span>Special Camsik Exchange Bonus:</span>
+                  <span>Special Maa Ambika Exchange Bonus:</span>
                   <span className="font-bold">- ₹{confirmedOrder.exchangeBonus.toLocaleString('en-IN')}</span>
                 </div>
                 {confirmedOrder.couponDiscount > 0 && (

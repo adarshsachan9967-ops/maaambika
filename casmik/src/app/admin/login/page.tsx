@@ -8,6 +8,8 @@ const VALID_ADMIN_EMAILS = [
   'casmikadmin9967@gmail.com',
   'admin@casmik.com',
   'admin@camsik.com',
+  'maaambikaadmin@gmail.com',
+  'admin@maaambikamobile.com',
 ];
 const ADMIN_PASSWORD = 'Casmik@9967';
 
@@ -61,13 +63,12 @@ export default function AdminLoginPage() {
       </div>
 
       <div className="relative w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary shadow-2xl shadow-primary/40 mb-4">
-            <Shield size={28} className="text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-amber-500/20 border border-amber-500/30 shadow-2xl shadow-amber-500/30 mb-4 overflow-hidden p-2">
+            <img src="/assets/images/app_logo.png" alt="Maa Ambika Mobile Shop" className="w-full h-full object-contain" />
           </div>
-          <h1 className="text-2xl font-black text-white">CAMSIK Admin</h1>
-          <p className="text-white/50 text-sm mt-1">Super Admin Control Panel</p>
+          <h1 className="text-2xl font-black text-white">Maa Ambika Admin</h1>
+          <p className="text-amber-400 font-semibold text-xs mt-1">Maa Ambika Mobile Shop • Super Admin Control</p>
         </div>
 
         {/* Card */}
@@ -149,7 +150,7 @@ export default function AdminLoginPage() {
         </div>
 
         <p className="text-center text-white/30 text-xs mt-6">
-          © 2024 CAMSIK. All rights reserved. Unauthorized access is prohibited.
+          © 2026 Maa Ambika Mobile Shop. All rights reserved. Unauthorized access is prohibited.
         </p>
       </div>
     </div>

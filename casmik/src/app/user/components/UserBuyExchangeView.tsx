@@ -53,7 +53,7 @@ export default function UserBuyExchangeView({ onOrderBooked }: UserBuyExchangeVi
       originalPrice: 242990,
       discount: '36% OFF',
       image: 'https://ik.imagekit.io/v8swalwfs/casmik/cameras/sony-a7iv.png',
-      warranty: '1 Year Casmik Warranty',
+      warranty: '1 Year Maa Ambika Store Warranty',
       shutterCount: '4,210 / 200,000',
       features: ['33MP Sensor', '4K 60p 10-bit', 'Real-time Eye AF']
     },
@@ -79,7 +79,7 @@ export default function UserBuyExchangeView({ onOrderBooked }: UserBuyExchangeVi
       originalPrice: 124999,
       discount: '48% OFF',
       image: 'https://ik.imagekit.io/v8swalwfs/casmik/phones/s23-ultra.png',
-      warranty: '1 Year Casmik Warranty',
+      warranty: '1 Year Maa Ambika Store Warranty',
       batteryHealth: '95%',
       features: ['200MP Quad Camera', 'Snapdragon 8 Gen 2', 'S-Pen Included']
     }

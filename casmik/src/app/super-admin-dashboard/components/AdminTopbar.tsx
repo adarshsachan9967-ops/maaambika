@@ -48,7 +48,12 @@ export default function AdminTopbar({ onMenuToggle, activeSection }: Props) {
         <Menu size={20} />
       </button>
       <div className="flex-1">
-        <h1 className="text-lg font-bold text-foreground">{sectionTitles[activeSection]}</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-bold text-foreground">{sectionTitles[activeSection]}</h1>
+          <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-700 border border-amber-500/20">
+            Maa Ambika Mobile Shop • GSTIN: 21ELDPS6270L1ZS
+          </span>
+        </div>
         <p className="text-xs text-muted-foreground">{greeting}, Adarsh · {dateStr}</p>
       </div>
       <div className="flex items-center gap-3">

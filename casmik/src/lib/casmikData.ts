@@ -1,5 +1,17 @@
-// CAMSIK Shared Data Store — Camera-Exclusive Buyback, Exchange & Certified Sales
-// Aligned with https://camsik.com/
+// MAA AMBIKA MOBILE SHOP Shared Data Store
+// Your Digital Life Partner — Best Products • Best Price • Best Service
+
+export const STORE_CONFIG = {
+  name: 'Maa Ambika Mobile Shop',
+  tagline: 'Your Digital Life Partner',
+  motto: 'Best Products • Best Price • Best Service',
+  phone: '+91 8260120467',
+  phoneRaw: '8260120467',
+  gstin: '21ELDPS6270L1ZS',
+  email: 'support@maaambikamobile.com',
+  address: 'Maa Ambika Mobile Shop, Main Market Road',
+  logoUrl: '/assets/images/app_logo.png',
+};
 
 export interface Category {
   id: string;
