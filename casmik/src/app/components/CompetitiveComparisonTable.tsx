@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Check, X, Sparkles, Shield, Camera } from 'lucide-react';
+import { Check, X, Sparkles, Shield, Smartphone } from 'lucide-react';
 import Link from 'next/link';
 
 interface FeatureComparison {
@@ -87,14 +87,14 @@ export default function CompetitiveComparisonTable() {
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
         <div className="text-center max-w-3xl mx-auto mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold uppercase tracking-wider mb-2 border border-slate-200">
-            <Sparkles size={13} className="text-purple-600" />
+            <Sparkles size={13} className="text-amber-600" />
             Honest Market Comparison
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
-            Why Smart Customers Choose <span className="bg-gradient-to-r from-emerald-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">Camsik</span>
+            Why Smart Customers Choose <span className="bg-gradient-to-r from-amber-600 via-yellow-600 to-amber-700 bg-clip-text text-transparent">Maa Ambika Mobile Shop</span>
           </h2>
           <p className="text-slate-500 mt-2 text-xs sm:text-sm lg:text-base max-w-xl mx-auto">
-            See how buying, selling, or exchanging tech on Camsik compares against traditional offline shops and risky classifieds.
+            See how buying new 5G smartphones, repairs, or exchanging tech at Maa Ambika compares against unorganized local shops and risky classifieds.
           </p>
         </div>
 
@@ -153,11 +153,11 @@ export default function CompetitiveComparisonTable() {
                   </span>
                 </div>
 
-                {/* Camsik (Recommended) Card */}
-                <div className="rounded-xl bg-gradient-to-r from-purple-50/90 to-indigo-50/70 border border-purple-200/90 p-3 mb-2.5">
-                  <div className="flex items-center gap-1.5 text-xs font-black text-purple-800 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-purple-600 animate-pulse" />
-                    <span>Camsik (Recommended)</span>
+                {/* Maa Ambika (Recommended) Card */}
+                <div className="rounded-xl bg-gradient-to-r from-amber-50/90 to-yellow-50/70 border border-amber-200/90 p-3 mb-2.5">
+                  <div className="flex items-center gap-1.5 text-xs font-black text-amber-800 mb-1">
+                    <span className="w-2 h-2 rounded-full bg-amber-600 animate-pulse" />
+                    <span>Maa Ambika Mobile Shop (Recommended)</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <div className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
@@ -173,7 +173,7 @@ export default function CompetitiveComparisonTable() {
                 <div className="space-y-1.5">
                   <div className="rounded-xl bg-slate-50 border border-slate-200/60 p-2.5">
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-0.5">
-                      Offline Camera Shops
+                      Local Offline Mobile Shops
                     </p>
                     <div className="flex items-start gap-1.5">
                       <div className="w-4 h-4 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
@@ -208,9 +208,9 @@ export default function CompetitiveComparisonTable() {
         {mobileTab !== 'all' && (
           <div className="md:hidden rounded-2xl border border-slate-200 overflow-hidden shadow-sm bg-white">
             <div className="grid grid-cols-2 bg-slate-50 border-b border-slate-200 text-xs font-bold text-center">
-              <div className="py-3 px-2 bg-purple-50/80 text-purple-800 border-r border-slate-200 flex items-center justify-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-purple-600 animate-pulse" />
-                Camsik
+              <div className="py-3 px-2 bg-amber-50/80 text-amber-800 border-r border-slate-200 flex items-center justify-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-amber-600 animate-pulse" />
+                Maa Ambika
               </div>
               <div className="py-3 px-2 text-slate-600 flex items-center justify-center">
                 {mobileTab === 'offline' ? 'Offline Shops' : 'Classifieds'}
@@ -254,14 +254,14 @@ export default function CompetitiveComparisonTable() {
                 <th className="py-5 px-6 font-extrabold text-sm text-slate-900 w-1/4">
                   Feature / Capability
                 </th>
-                <th className="py-5 px-6 font-black text-sm text-purple-700 bg-purple-50/50 w-1/3 border-x border-purple-200/60">
+                <th className="py-5 px-6 font-black text-sm text-amber-800 bg-amber-50/50 w-1/3 border-x border-amber-200/60">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-purple-600 animate-pulse" />
-                    Camsik (Recommended)
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-600 animate-pulse" />
+                    Maa Ambika Mobile Shop (Recommended)
                   </div>
                 </th>
                 <th className="py-5 px-6 font-bold text-sm text-slate-500 w-1/4">
-                  Offline Camera Shops
+                  Local Offline Mobile Shops
                 </th>
                 <th className="py-5 px-6 font-bold text-sm text-slate-500 w-1/4">
                   Online Classifieds (OLX/Etc.)
@@ -317,23 +317,23 @@ export default function CompetitiveComparisonTable() {
         </div>
 
         {/* Bottom CTA Banner */}
-        <div className="mt-8 sm:mt-10 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 text-white flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6 shadow-xl">
+        <div className="mt-8 sm:mt-10 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-slate-950 via-[#1a0f02] to-slate-900 text-white flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6 shadow-xl border border-amber-500/30">
           <div className="flex items-center gap-3 sm:gap-4 text-center md:text-left flex-col sm:flex-row">
-            <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-purple-300 shrink-0">
-              <Camera size={26} />
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+              <Smartphone size={26} />
             </div>
             <div>
               <h4 className="text-base sm:text-lg font-black text-white">
-                Ready to experience the smarter way to sell cameras?
+                Ready to experience the smarter way to buy, repair &amp; exchange phones?
               </h4>
               <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
-                It takes only 60 seconds to see your exact guaranteed payout.
+                Visit Maa Ambika Mobile Shop or call our store helpline: +91 8260120467.
               </p>
             </div>
           </div>
           <Link
             href="/sell-device-get-quote"
-            className="w-full sm:w-auto text-center shrink-0 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-sm shadow-lg shadow-emerald-600/30 transition-all"
+            className="w-full sm:w-auto text-center shrink-0 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/30 transition-all"
           >
             Calculate Exact Price Now &rarr;
           </Link>

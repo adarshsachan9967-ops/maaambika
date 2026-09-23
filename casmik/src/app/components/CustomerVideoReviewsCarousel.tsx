@@ -54,9 +54,9 @@ const reviews: VideoReview[] = [
     duration: '0:58',
     thumbnail: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800&auto=format&fit=crop',
     avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=200&auto=format&fit=crop',
-    quote: 'Bought a certified refurbished MacBook Pro M3. It arrived looking 100% brand new with 100% battery health, full box, and a 12-month Camsik warranty. Best tech decision ever!',
-    highlight: '12-Month Warranty Included',
-    verifiedBadge: 'Verified MacBook Buyer',
+    quote: 'Bought a certified smartphone and MacBook. It arrived looking 100% brand new with 100% battery health, full box, and a 12-month Maa Ambika warranty. Best tech decision ever!',
+    highlight: '12-Month Store Warranty',
+    verifiedBadge: 'Verified Buyer',
     actionUrl: '/buy-refurbished',
     actionText: 'Explore Refurbished MacBooks',
   },
@@ -65,18 +65,18 @@ const reviews: VideoReview[] = [
     name: 'Rajesh Kannan',
     role: 'Wedding Cinematographer',
     city: 'Chennai (T. Nagar)',
-    gearSold: 'Sony Alpha 7 IV + FE 24-70mm f/2.8 GM',
-    gearTypeLabel: 'Camera Gear Sold',
-    amountReceived: '₹1,82,000',
+    gearSold: 'Samsung Galaxy S24 Ultra (512GB)',
+    gearTypeLabel: 'Smartphone Sold',
+    amountReceived: '₹82,000',
     rating: 5,
     duration: '1:34',
-    thumbnail: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=800&auto=format&fit=crop',
+    thumbnail: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?q=80&w=800&auto=format&fit=crop',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop',
-    quote: 'Sold my wedding backup camera kit — full-frame body and fast zoom lens. Seamless doorstep pickup, digital laser sensor check, and direct bank transfer without any stress.',
-    highlight: 'Same Day Pro Camera Valuation',
-    verifiedBadge: 'Verified Sony Pro Seller',
-    actionUrl: '/sell-device-get-quote?cat=cat-dslr',
-    actionText: 'Sell Camera & Optics',
+    quote: 'Sold my Galaxy S24 Ultra to Maa Ambika. Doorstep pickup was seamless, hardware diagnostics took 10 minutes, and funds were transferred to my UPI account before handover.',
+    highlight: 'Spot UPI Payment in 2 Mins',
+    verifiedBadge: 'Verified Samsung Seller',
+    actionUrl: '/sell-device-get-quote?cat=cat-smartphone',
+    actionText: 'Sell Smartphone',
   },
   {
     id: 'rev-4',
@@ -174,7 +174,7 @@ export default function CustomerVideoReviewsCarousel() {
               Customer Video Reviews &amp; Stories
             </h2>
             <p className="text-slate-600 mt-2 text-sm sm:text-base max-w-2xl">
-              Hear directly from creators, professionals, and users who sold, bought, or exchanged smartphones, MacBooks, DSLRs, and tablets on Camsik with instant bank payouts.
+              Hear directly from customers, creators, and professionals who bought, repaired, or exchanged smartphones and gadgets at Maa Ambika Mobile Shop with instant service.
             </p>
           </div>
 

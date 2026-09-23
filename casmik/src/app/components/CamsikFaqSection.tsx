@@ -32,15 +32,15 @@ const faqs: FAQ[] = [
     id: 'faq-1',
     category: 'Selling & Valuation',
     badge: 'AI Valuation Engine',
-    question: 'How is the resale price of my phone, laptop, or camera calculated on Camsik?',
-    answer: 'Our proprietary pricing algorithm analyzes live secondary market demand across India, processor/sensor generation, physical cosmetics, battery cycle health, display condition (OLED burn-in, scratches), camera sensor health, and included original accessories to calculate the highest guaranteed payout.',
+    question: 'How is the resale price of my phone, laptop, or tablet calculated at Maa Ambika Mobile Shop?',
+    answer: 'Our proprietary pricing algorithm analyzes live secondary market demand across India, processor/chipset generation, physical cosmetics, battery cycle health, display condition (OLED burn-in, scratches), camera sensor health, and included original accessories to calculate the highest guaranteed payout.',
   },
   {
     id: 'faq-2',
     category: 'Selling & Valuation',
     badge: 'KYC & Paperwork',
-    question: 'Do I need the original box and bill to sell my device on Camsik?',
-    answer: 'No! An original bill and retail packaging are not mandatory. Having them adds a small value bonus, but you can sell your smartphone, MacBook, tablet, or camera with just a valid government photo ID (Aadhaar Card, Driving License, or Passport) for legal KYC compliance.',
+    question: 'Do I need the original box and bill to sell my device to Maa Ambika Mobile Shop?',
+    answer: 'No! An original bill and retail packaging are not mandatory. Having them adds a small value bonus, but you can sell your smartphone, MacBook, or tablet with just a valid government photo ID (Aadhaar Card, Driving License, or Passport) for legal KYC compliance.',
   },
   {
     id: 'faq-3',
@@ -54,21 +54,21 @@ const faqs: FAQ[] = [
     category: 'Buying Refurbished',
     badge: 'Warranty & Returns',
     question: 'What warranty and return policy do I get when buying refurbished tech?',
-    answer: 'All certified refurbished devices purchased from Camsik come with a 6 to 12 months comprehensive warranty covering manufacturing and hardware defects, along with a 7-day hassle-free replacement guarantee if the device fails to meet expectations.',
+    answer: 'All certified refurbished devices purchased from Maa Ambika Mobile Shop come with a 6 to 12 months comprehensive warranty covering manufacturing and hardware defects, along with a 7-day hassle-free replacement guarantee if the device fails to meet expectations.',
   },
   {
     id: 'faq-5',
     category: 'Exchange & Upgrade',
     badge: '1-Step Doorstep Swap',
     question: 'How does the 1-step device exchange process work?',
-    answer: 'Select the upgraded device you want and enter the details of your old phone, laptop, or camera. We add an exclusive exchange bonus (up to ₹5,000) directly to your trade-in credit. Our specialist arrives at your doorstep with your upgraded device, inspects your old gadget, and you pay only the remaining balance on the spot.',
+    answer: 'Select the upgraded device you want and enter the details of your old phone, laptop, or tablet. We add an exclusive exchange bonus (up to ₹5,000) directly to your trade-in credit. Our specialist arrives at your doorstep with your upgraded device, inspects your old gadget, and you pay only the remaining balance on the spot.',
   },
   {
     id: 'faq-6',
     category: 'Exchange & Upgrade',
     badge: 'Cashback Balance',
     question: 'What happens if my old gadget is worth more than the device I want to buy?',
-    answer: 'If your trade-in valuation exceeds the cost of your selected upgrade, Camsik pays YOU the remaining balance! The technician immediately transfers the surplus cash to your UPI or bank account right at your doorstep.',
+    answer: 'If your trade-in valuation exceeds the cost of your selected upgrade, Maa Ambika Mobile Shop pays YOU the remaining balance! The technician immediately transfers the surplus cash to your UPI or bank account right at your doorstep.',
   },
   {
     id: 'faq-7',
@@ -89,7 +89,7 @@ const faqs: FAQ[] = [
     category: 'Selling & Valuation',
     badge: '7-Day Price Lock',
     question: 'How long is my online price quote valid?',
-    answer: 'Once you generate a quote on Camsik, your price is locked for 7 days. You have complete flexibility to schedule your free doorstep pickup at any convenient slot within that period without worrying about market price fluctuations.',
+    answer: 'Once you generate a quote with Maa Ambika Mobile Shop, your price is locked for 7 days. You have complete flexibility to schedule your free doorstep pickup at any convenient slot within that period without worrying about market price fluctuations.',
   },
   {
     id: 'faq-10',
@@ -154,7 +154,7 @@ export default function CamsikFaqSection() {
             Frequently Asked Questions
           </h2>
           <p className="text-slate-600 mt-2 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto">
-            Everything you need to know about selling, buying refurbished tech, or exchanging devices safely on Camsik.
+            Everything you need to know about buying new phones, repairs, accessories, recharges, or exchanging devices safely at Maa Ambika Mobile Shop.
           </p>
         </div>
 

@@ -36,170 +36,128 @@ interface HeroSlide {
 const slides: HeroSlide[] = [
   {
     id: 'slide-maa-ambika-flagship',
-    badge: '👑 MAA AMBIKA MOBILE SHOP • YOUR DIGITAL LIFE PARTNER',
-    titlePrefix: 'Best Products • ',
-    titleHighlight: 'Best Price • Best Service',
-    titleSuffix: ' Guaranteed',
+    badge: '👑 OFFICIAL SHOWROOM • GSTIN: 21ELDPS6270L1ZS',
+    titlePrefix: 'Maa Ambika ',
+    titleHighlight: 'Mobile Shop',
+    titleSuffix: ' — Your Digital Life Partner',
     description:
-      'Maa Ambika Mobile Shop is your trusted tech destination. Explore new smartphones, certified refurbished devices, instant sell & exchange, expert doorstep repairs, genuine accessories & mobile recharges. Helpline: +91 8260120467 | GSTIN: 21ELDPS6270L1ZS.',
-    ctaText: 'Visit Customer Store',
+      'Best Products • Best Price • Best Service. Explore brand new 5G smartphones, certified mobile screen repairs, original accessories, instant all-network recharges, and top cash for old devices. Helpline: +91 8260120467.',
+    ctaText: 'Explore Mobile Store',
     ctaLink: '/user',
     categoryFilter: 'cat-smartphone',
-    bgGradient: 'from-amber-950 via-slate-950 to-stone-900',
+    bgGradient: 'from-[#1a0f02] via-[#2d1b04] to-[#120a02]',
     accentColor: '#f59e0b',
     image: '/assets/images/app_logo.png',
-    imageAlt: 'Maa Ambika Mobile Shop - Your Digital Life Partner',
+    imageAlt: 'Maa Ambika Mobile Shop - Official Golden Logo & Showroom',
     stats: [
-      { label: 'Verified Service', value: '100% Genuine' },
-      { label: 'Helpline / WhatsApp', value: '+91 8260120467' },
       { label: 'GSTIN Registered', value: '21ELDPS6270L1ZS' },
+      { label: 'Store Helpline', value: '+91 8260120467' },
+      { label: 'Core Services', value: 'Sales • Service • Recharge' },
     ],
   },
   {
-    id: 'slide-smartphone',
-    badge: '📱 #1 SMARTPHONE & IPHONE STORE',
-    titlePrefix: 'Sell Used ',
-    titleHighlight: 'Smartphones & iPhones',
-    titleSuffix: ' for Peak Cash',
+    id: 'slide-sales-smartphones',
+    badge: '📱 SALES: 100% BRAND NEW 5G SMARTPHONES',
+    titlePrefix: 'Buy Latest ',
+    titleHighlight: 'iPhones & 5G Smartphones',
+    titleSuffix: ' at Best Price',
     description:
-      'Get guaranteed highest resale payout for Apple iPhone 16/15 Pro, Samsung Galaxy S24, Google Pixel & OnePlus. AI instant quote, free doorstep pickup & spot UPI payment within 15 minutes.',
-    ctaText: 'Check Phone Price',
-    ctaLink: '/sell-device-get-quote?cat=cat-smartphone',
+      'Guaranteed best market price on Apple iPhone 16 / 15 series, Samsung Galaxy S24, OnePlus 12, Vivo, Oppo, Realme & Xiaomi. Official brand sealed boxes with manufacturer warranty and GST retail invoice.',
+    ctaText: 'Browse New Phones',
+    ctaLink: '/user',
     categoryFilter: 'cat-smartphone',
     bgGradient: 'from-blue-950 via-slate-900 to-indigo-950',
     accentColor: '#3b82f6',
     image: '/assets/images/categories/smartphone-banner.png',
-    imageAlt: 'Sell Used Smartphones and iPhones on Camsik',
+    imageAlt: 'New 5G Smartphones and iPhones at Maa Ambika Mobile Shop',
     stats: [
-      { label: 'Smartphones Sold', value: '3,20,000+' },
-      { label: 'Payment Speed', value: 'Instant UPI / Bank' },
-      { label: 'Data Wipe', value: '100% Certified' },
+      { label: 'Top Brands', value: 'Apple • Samsung • OnePlus' },
+      { label: 'Official Warranty', value: '100% Brand Sealed' },
+      { label: 'GST Invoice', value: 'Instant Tax Bill' },
     ],
   },
   {
-    id: 'slide-laptop',
-    badge: '💻 MAX VALUE FOR LAPTOPS & MACBOOKS',
-    titlePrefix: 'Turn Old ',
-    titleHighlight: 'MacBook & Laptops',
-    titleSuffix: ' Into Big Money',
+    id: 'slide-service-repairs',
+    badge: '🔧 SERVICE: 30-MIN DOORSTEP & STORE REPAIR',
+    titlePrefix: 'Certified ',
+    titleHighlight: 'Mobile Screen & Battery',
+    titleSuffix: ' Repairs',
     description:
-      'Selling Apple MacBook Pro / Air M3, Dell XPS, HP Spectre, Lenovo ThinkPad or gaming laptops? Fair evaluation, zero hidden deductions & free doorstep inspection.',
-    ctaText: 'Sell Old Laptop',
-    ctaLink: '/sell-device-get-quote?cat=cat-laptop',
-    categoryFilter: 'cat-laptop',
-    bgGradient: 'from-violet-950 via-slate-900 to-purple-950',
-    accentColor: '#8b5cf6',
-    image: '/assets/images/categories/laptop.png',
-    imageAlt: 'Sell Laptops and MacBooks on Camsik',
-    stats: [
-      { label: 'Laptops Liquidated', value: '95,000+' },
-      { label: 'Doorstep Pickup', value: '100% Free' },
-      { label: 'Turnaround Time', value: '15 Minutes' },
-    ],
-  },
-  {
-    id: 'slide-tablet',
-    badge: '📟 INSTANT CASH FOR IPADS & TABLETS',
-    titlePrefix: 'Upgrade Your ',
-    titleHighlight: 'iPads & Tablets',
-    titleSuffix: ' Today',
-    description:
-      'Instant AI-driven valuation for Apple iPad Pro M4, iPad Air, Samsung Galaxy Tab S9 & Lenovo tablets. Doorstep testing, hassle-free handover and instant bank transfer.',
-    ctaText: 'Sell iPad / Tablet',
-    ctaLink: '/sell-device-get-quote?cat=cat-tablet',
-    categoryFilter: 'cat-tablet',
-    bgGradient: 'from-cyan-950 via-slate-900 to-teal-950',
-    accentColor: '#06b6d4',
-    image: '/assets/images/categories/tablet.png',
-    imageAlt: 'Sell Apple iPad and Android Tablets on Camsik',
-    stats: [
-      { label: 'Tablets Purchased', value: '62,000+' },
-      { label: 'Best Price Match', value: 'Guaranteed' },
-      { label: 'Happy Customers', value: '99.4%' },
-    ],
-  },
-  {
-    id: 'slide-dslr',
-    badge: '★ #1 CAMERA BUYBACK PLATFORM IN INDIA',
-    titlePrefix: 'Sell Used ',
-    titleHighlight: 'DSLR & Mirrorless',
-    titleSuffix: ' Cameras for Instant Cash',
-    description:
-      'Get guaranteed top market value for Canon, Nikon, Sony, LUMIX and Fujifilm cameras. AI-calculated valuation, free doorstep pickup & instant payment within minutes.',
-    ctaText: 'Check Camera Price',
-    ctaLink: '/sell-device-get-quote?cat=cat-dslr',
-    categoryFilter: 'cat-dslr',
-    bgGradient: 'from-purple-950 via-slate-900 to-indigo-950',
-    accentColor: '#9333ea',
-    image: 'https://camsik.com/img/Category/a44c5d48-0f22-4db2-bef9-f0edb0fb54f7.png',
-    imageAlt: 'Sell Used DSLR & Mirrorless Camera on Camsik',
-    stats: [
-      { label: 'Happy Sellers', value: '1,85,000+' },
-      { label: 'Google Rating', value: '4.8 / 5.0' },
-      { label: 'Doorstep Pickup', value: '100% Free' },
-    ],
-  },
-  {
-    id: 'slide-lens',
-    badge: '🔍 TOP VALUATION FOR ALL MOUNTS',
-    titlePrefix: 'Turn Old ',
-    titleHighlight: 'Camera Lenses',
-    titleSuffix: ' Into Instant Money',
-    description:
-      'Selling Sony G Master, Canon RF/EF, Nikon Z, Sigma Art, or Tamron lenses? Get objective valuation without last-minute deductions.',
-    ctaText: 'Sell Camera Lens',
-    ctaLink: '/sell-device-get-quote?cat=cat-lens',
-    categoryFilter: 'cat-lens',
-    bgGradient: 'from-blue-950 via-slate-900 to-indigo-950',
-    accentColor: '#3b82f6',
-    image: 'https://camsik.com/img/Category/808ecde1-f8e7-45b3-ab62-8ec69183b2b7.png',
-    imageAlt: 'Sell Camera Lenses on Camsik',
-    stats: [
-      { label: 'Lenses Purchased', value: '45,000+' },
-      { label: 'Payment Speed', value: 'Spot UPI / Bank' },
-      { label: 'Hidden Charges', value: '₹0 Zero' },
-    ],
-  },
-  {
-    id: 'slide-action-video',
-    badge: '🎥 ACTION & 4K CAMCORDERS',
-    titlePrefix: 'Sell 4K Video Cameras, ',
-    titleHighlight: 'GoPro & Gimbals',
-    titleSuffix: '',
-    description:
-      'Trade in your GoPro Hero, DJI Osmo Pocket, Insta360 X3, Canon XA Camcorders & 3-Axis Gimbals. Fast inspection and certified factory data wipe.',
-    ctaText: 'Sell Video / Action Gear',
-    ctaLink: '/sell-device-get-quote?cat=cat-action-camera',
-    categoryFilter: 'cat-action-camera',
+      'Cracked display, battery draining fast, charging port loose, or water damage? Certified technicians repair your phone right in front of your eyes using 100% genuine OEM parts with up to 6 months store warranty.',
+    ctaText: 'Book Fast Repair',
+    ctaLink: '/user/repair',
+    categoryFilter: 'cat-smartphone',
     bgGradient: 'from-emerald-950 via-slate-900 to-teal-950',
     accentColor: '#10b981',
-    image: 'https://camsik.com/img/Category/209c7dc4-2916-40fe-b812-723f5c0b6a0b.png',
-    imageAlt: 'Sell Video Cameras and Action Cameras on Camsik',
+    image: '/assets/images/categories/smartphone.png',
+    imageAlt: 'Certified Mobile Repair & Screen Replacement at Maa Ambika Mobile Shop',
     stats: [
-      { label: 'Action Gear Resold', value: '28,000+' },
-      { label: 'Inspection Time', value: '15 Minutes' },
-      { label: 'Data Privacy', value: '100% Guaranteed' },
+      { label: 'Repair Speed', value: '30-45 Minutes' },
+      { label: 'Service Warranty', value: 'Up to 6 Months' },
+      { label: 'Doorstep Check', value: 'Free Diagnostic' },
     ],
   },
   {
-    id: 'slide-safety',
-    badge: '🛡️ 100% SAFE, RELIABLE & VERIFIED',
-    titlePrefix: 'Selling Camera Gear is ',
-    titleHighlight: 'Safe, Fast & Easy',
+    id: 'slide-accessories',
+    badge: '🎧 ACCESSORIES: 100% ORIGINAL GEAR',
+    titlePrefix: 'AirPods, Smartwatches & ',
+    titleHighlight: 'Fast Chargers',
+    titleSuffix: ' in Stock',
+    description:
+      'Upgrade your lifestyle with original Apple AirPods, boAt/Noise smartwatches, 33W-120W GaN Super Fast Chargers, tough braided Type-C cables, shatterproof tempered glass and premium shockproof covers.',
+    ctaText: 'Shop Accessories',
+    ctaLink: '/user',
+    categoryFilter: 'cat-smartphone',
+    bgGradient: 'from-violet-950 via-slate-900 to-purple-950',
+    accentColor: '#8b5cf6',
+    image: '/assets/images/app_logo.png',
+    imageAlt: 'Original Mobile Accessories at Maa Ambika Mobile Shop',
+    stats: [
+      { label: 'Accessories Range', value: 'AirPods • Watches • Chargers' },
+      { label: 'Quality Check', value: '100% Tested' },
+      { label: 'Fast GaN Chargers', value: '33W to 120W' },
+    ],
+  },
+  {
+    id: 'slide-instant-sell',
+    badge: '💰 RECOMMERCE: INSTANT CASH FOR OLD PHONES',
+    titlePrefix: 'Sell Used Phones for ',
+    titleHighlight: 'Highest Spot Cash',
+    titleSuffix: ' at Doorstep',
+    description:
+      'Get instant AI valuation for your old smartphone. Free doorstep pickup, on-the-spot physical testing, DoD military data wipe, and immediate UPI or cash transfer before device handover.',
+    ctaText: 'Get Phone Valuation',
+    ctaLink: '/sell-device-get-quote?cat=cat-smartphone',
+    categoryFilter: 'cat-smartphone',
+    bgGradient: 'from-amber-950 via-slate-900 to-yellow-950',
+    accentColor: '#f59e0b',
+    image: '/assets/images/categories/smartphone-banner.png',
+    imageAlt: 'Sell Used Mobile Phones for Instant Cash at Maa Ambika Mobile Shop',
+    stats: [
+      { label: 'Payment Speed', value: 'Instant UPI / Cash' },
+      { label: 'Data Security', value: '100% Military Wipe' },
+      { label: 'Doorstep Pickup', value: 'Zero Charges (₹0)' },
+    ],
+  },
+  {
+    id: 'slide-exchange-recharge',
+    badge: '⚡ RECHARGE & 1-STEP PHONE EXCHANGE',
+    titlePrefix: 'Instant Mobile Recharge & ',
+    titleHighlight: '+₹5,000 Exchange Bonus',
     titleSuffix: '',
     description:
-      'Every pickup is handled by verified Camsik camera specialists. Valid purchase invoice issued on the spot with direct bank or UPI transfer.',
-    ctaText: 'Start Safe Selling',
-    ctaLink: '/sell-device-get-quote',
-    categoryFilter: 'cat-dslr',
-    bgGradient: 'from-slate-950 via-purple-950 to-slate-900',
-    accentColor: '#a855f7',
-    image: 'https://camsik.com/img/illustrations/shield_3d_check.jpg',
-    imageAlt: 'Safe & Reliable Camera Buyback Guarantee',
+      'All-network mobile prepaid/postpaid recharges (Jio, Airtel, Vi, BSNL) with zero convenience fee. Plus, exchange your old phone for any brand new 5G smartphone with up to ₹5,000 extra exchange bonus!',
+    ctaText: '1-Step Phone Exchange',
+    ctaLink: '/user/exchange',
+    categoryFilter: 'cat-smartphone',
+    bgGradient: 'from-cyan-950 via-slate-900 to-emerald-950',
+    accentColor: '#06b6d4',
+    image: '/assets/images/app_logo.png',
+    imageAlt: '1-Step Device Exchange & Mobile Recharge at Maa Ambika Mobile Shop',
     stats: [
-      { label: 'Disbursed to Date', value: '₹13,898+ Cr.' },
-      { label: 'Operating Cities', value: '200+ Cities' },
-      { label: 'Customer Trust', value: 'Since 2015' },
+      { label: 'Exchange Bonus', value: 'Up to +₹5,000' },
+      { label: 'Mobile Networks', value: 'Jio • Airtel • Vi • BSNL' },
+      { label: 'SIM Services', value: '5G SIM & Porting' },
     ],
   },
 ];
@@ -285,7 +243,7 @@ export default function HeroBannerCarousel() {
                         onFocus={() => {
                           if (searchQuery) setSearchDropdown(true);
                         }}
-                        placeholder="Search model (e.g. iPhone 16, MacBook, Sony A7...)"
+                        placeholder="Search smartphones, accessories, repairs (e.g. iPhone 16 Pro, Galaxy S24, Screen Fix...)"
                         className="w-full min-w-0 bg-transparent px-2.5 sm:px-3 py-2 text-sm text-white placeholder:text-slate-300 focus:outline-none"
                       />
                     </div>
@@ -329,7 +287,7 @@ export default function HeroBannerCarousel() {
                 {/* Popular Search Badges */}
                 <div className="flex items-center gap-2 flex-wrap text-xs text-slate-300">
                   <span className="font-semibold text-slate-400">Popular:</span>
-                  {['iPhone 16 Pro', 'MacBook Pro M3', 'iPad Pro M4', 'Galaxy S24 Ultra', 'Sony A7 III', 'Canon EOS RP'].map((item) => (
+                  {['iPhone 16 Pro', 'Galaxy S24 Ultra', 'OnePlus 12', 'Vivo V40', 'Screen Repair', 'AirPods Pro', 'Fast Charger'].map((item) => (
                     <button
                       key={item}
                       type="button"
@@ -366,25 +324,47 @@ export default function HeroBannerCarousel() {
                 } aspect-[4/3] sm:aspect-square flex items-center justify-center mx-auto`}
               >
                 {/* Glowing Orbit Rings */}
-                <div className="absolute inset-0 rounded-full border border-purple-500/20 animate-spin [animation-duration:30s] pointer-events-none" />
-                <div className="absolute inset-6 rounded-full border border-dashed border-indigo-500/30 animate-spin [animation-duration:20s] [animation-direction:reverse] pointer-events-none" />
-                <div className="absolute inset-16 rounded-full bg-gradient-to-tr from-purple-600/20 to-indigo-600/10 blur-2xl pointer-events-none" />
+                <div className={`absolute inset-0 rounded-full border ${activeSlide.id === 'slide-maa-ambika-flagship' ? 'border-amber-400/30' : 'border-purple-500/20'} animate-spin [animation-duration:30s] pointer-events-none`} />
+                <div className={`absolute inset-6 rounded-full border border-dashed ${activeSlide.id === 'slide-maa-ambika-flagship' ? 'border-yellow-400/40' : 'border-indigo-500/30'} animate-spin [animation-duration:20s] [animation-direction:reverse] pointer-events-none`} />
+                <div className={`absolute inset-16 rounded-full ${activeSlide.id === 'slide-maa-ambika-flagship' ? 'bg-gradient-to-tr from-amber-500/30 to-yellow-600/20' : 'bg-gradient-to-tr from-purple-600/20 to-indigo-600/10'} blur-2xl pointer-events-none`} />
 
                 {/* Main Hero Product Image */}
                 <div
                   className={`relative z-10 ${
-                    activeSlide.id === 'slide-smartphone' ? 'w-full h-full' : 'w-4/5 h-4/5'
+                    activeSlide.id === 'slide-smartphone' || activeSlide.id === 'slide-maa-ambika-flagship' ? 'w-full h-full' : 'w-4/5 h-4/5'
                   } flex items-center justify-center p-2 sm:p-4`}
                 >
                   <img
                     src={activeSlide.image}
                     alt={activeSlide.imageAlt}
-                    className="max-w-full max-h-full object-contain filter drop-shadow-[0_20px_35px_rgba(0,0,0,0.6)] transform hover:scale-105 transition-transform duration-500"
+                    className="max-w-full max-h-full object-contain filter drop-shadow-[0_20px_45px_rgba(245,158,11,0.35)] transform hover:scale-105 transition-transform duration-500"
                   />
                 </div>
 
-                {/* Floating Benefit Cards (rendered on slides without built-in badges) */}
-                {activeSlide.id !== 'slide-smartphone' && (
+                {/* Floating Benefit Cards */}
+                {activeSlide.id === 'slide-maa-ambika-flagship' ? (
+                  <>
+                    <div className="hidden sm:flex absolute -top-2 left-0 bg-slate-950/95 backdrop-blur-md border border-amber-500/40 rounded-2xl p-3 shadow-2xl items-center gap-3 animate-bounce [animation-duration:3s]">
+                      <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                        <ShieldCheck size={18} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-black text-amber-300">GSTIN Registered</p>
+                        <p className="text-[10px] text-slate-300 font-mono">21ELDPS6270L1ZS</p>
+                      </div>
+                    </div>
+
+                    <div className="hidden sm:flex absolute -bottom-2 right-0 bg-slate-950/95 backdrop-blur-md border border-amber-500/40 rounded-2xl p-3 shadow-2xl items-center gap-3 animate-bounce [animation-duration:4s]">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                        <Zap size={18} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-black text-white">Call Helpline</p>
+                        <p className="text-[10px] text-emerald-400 font-bold">+91 8260120467</p>
+                      </div>
+                    </div>
+                  </>
+                ) : activeSlide.id !== 'slide-smartphone' && (
                   <>
                     <div className="hidden sm:flex absolute top-4 left-0 bg-slate-900/90 backdrop-blur-md border border-white/15 rounded-2xl p-3 shadow-2xl items-center gap-3 animate-bounce [animation-duration:3s]">
                       <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">

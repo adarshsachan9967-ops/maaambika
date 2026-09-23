@@ -244,7 +244,7 @@ export default function CustomerHeader() {
                   onFocus={() => {
                     if (searchQuery.trim().length > 0) setShowResults(true);
                   }}
-                  placeholder="Search phones, laptops, tablets, cameras (e.g. iPhone 16 Pro, MacBook M3, Sony A7...)"
+                  placeholder="Search smartphones, accessories, repairs (e.g. iPhone 16 Pro, Galaxy S24, Screen Fix...)"
                   className="w-full text-sm bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none"
                 />
                 {searchQuery && (
@@ -628,7 +628,7 @@ export default function CustomerHeader() {
                 href="/why-camsik"
                 className="px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-sm font-semibold text-slate-700 hover:text-purple-600 hover:bg-purple-50/60 transition-colors whitespace-nowrap"
               >
-                Why Camsik
+                Why Maa Ambika
               </Link>
               <Link
                 href="/faq"
@@ -854,7 +854,7 @@ export default function CustomerHeader() {
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center gap-3 p-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-purple-50"
                 >
-                  Why Camsik
+                  Why Maa Ambika
                 </Link>
                 <Link
                   href="/faq"

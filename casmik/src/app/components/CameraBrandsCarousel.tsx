@@ -181,14 +181,14 @@ export default function CameraBrandsCarousel() {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-5 gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold uppercase tracking-wider mb-2.5">
-              <Sparkles size={12} className="text-purple-600" />
+              <Sparkles size={12} className="text-amber-600" />
               Supported Manufacturers
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Top Tech &amp; Camera Brands We Buy, Sell &amp; Exchange
+              Top Smartphone, Mobile &amp; Tech Brands at Maa Ambika
             </h2>
             <p className="text-slate-500 text-xs sm:text-sm mt-1">
-              Guaranteed top valuations and certified inventory across Apple, Samsung, Dell, HP, Lenovo, Sony, Canon, and DJI.
+              Official retail and certified support for Apple, Samsung, OnePlus, Vivo, Oppo, Realme, Xiaomi, boAt, Noise and leading global brands.
             </p>
           </div>
 

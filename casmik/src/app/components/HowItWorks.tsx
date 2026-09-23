@@ -117,7 +117,7 @@ export default function HowItWorks() {
             Simple 3-Step Process
           </div>
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            How <span className="bg-gradient-to-r from-emerald-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">Camsik</span> Works
+            How <span className="bg-gradient-to-r from-amber-600 via-yellow-600 to-amber-700 bg-clip-text text-transparent">Maa Ambika Mobile Shop</span> Works
           </h2>
           <p className="text-slate-600 mt-2 text-sm sm:text-base leading-relaxed">
             Sell old tech for instant liquid cash, buy certified refurbished flagships, or upgrade via 1-step doorstep exchange.

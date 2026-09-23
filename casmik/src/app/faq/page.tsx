@@ -6,8 +6,8 @@ import CustomerFooter from '@/components/CustomerFooter';
 import CamsikFaqSection from '@/app/components/CamsikFaqSection';
 
 export const metadata = {
-  title: 'Frequently Asked Questions (FAQ) — Camsik Device ReCommerce & Warranty',
-  description: 'Find answers to common questions about selling your smartphone, MacBook, laptop, tablet, or DSLR camera, 45-point inspection, refurbished warranty, and doorstep payouts on Camsik.',
+  title: 'Frequently Asked Questions (FAQ) — Maa Ambika Mobile Shop',
+  description: 'Find answers to common questions about buying new 5G smartphones, screen repairs, genuine accessories, recharges, and doorstep device exchange at Maa Ambika Mobile Shop.',
 };
 
 export default function FaqPage() {
@@ -24,19 +24,19 @@ export default function FaqPage() {
               Home
             </Link>
             <ChevronRight size={13} />
-            <span className="text-purple-400 font-bold">Frequently Asked Questions</span>
+            <span className="text-amber-400 font-bold">Frequently Asked Questions</span>
           </nav>
 
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold mb-4 border border-purple-500/30">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold mb-4 border border-amber-500/30">
               <Sparkles size={13} />
-              HELP &amp; SUPPORT CENTER
+              HELP &amp; SUPPORT CENTER • MAA AMBIKA MOBILE SHOP
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4">
               Frequently Asked Questions
             </h1>
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-              Have questions about how we value your phone, inspect laptops and MacBooks, perform certified data wipe, or conduct doorstep exchange? Explore our comprehensive FAQ or connect with our specialists directly.
+              Have questions about buying brand new 5G smartphones, getting a 30-minute certified screen repair, original accessories, recharges, or selling an old phone for instant cash? Explore our comprehensive FAQ or connect with our store specialists directly.
             </p>
           </div>
         </div>
@@ -55,20 +55,20 @@ export default function FaqPage() {
               Still have questions about your device or order?
             </h3>
             <p className="text-xs sm:text-sm text-slate-500 mb-8">
-              Our gadget specialists are available 7 days a week (9:00 AM – 9:00 PM IST) to guide you through valuations, refurbished warranties, and trade-in orders.
+              Our specialists are available 7 days a week (9:00 AM – 9:30 PM IST) at +91 8260120467 to guide you through phone models, repairs, accessories, and exchanges.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
                 href="tel:+918260120467"
-                className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-purple-600/25 transition-all btn-press"
+                className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-sm flex items-center justify-center gap-2 shadow-md shadow-amber-500/25 transition-all btn-press"
               >
                 <Phone size={16} />
                 <span>Call +91 8260120467</span>
               </a>
 
               <a
-                href="https://wa.me/918260120467?text=Hi%20Camsik%20team,%20I%20have%20a%20question%20about%20my%20device"
+                href="https://wa.me/918260120467?text=Hi%20Maa%20Ambika%20team,%20I%20have%20a%20question%20about%20my%20device"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-600/25 transition-all btn-press"

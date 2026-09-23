@@ -47,9 +47,9 @@ const footerLinks = {
     { label: 'Customer Order History', href: '/my-orders' },
   ],
   'Company & Trust': [
-    { label: 'About Camsik ReCommerce', href: '/why-camsik' },
-    { label: 'How Camsik Works', href: '/how-it-works' },
-    { label: 'Why People Choose Camsik', href: '/why-camsik' },
+    { label: 'About Maa Ambika Mobile', href: '/why-camsik' },
+    { label: 'How Maa Ambika Works', href: '/how-it-works' },
+    { label: 'Why People Choose Maa Ambika', href: '/why-camsik' },
     { label: 'Customer Video Reviews', href: '/#testimonials' },
     { label: 'Frequently Asked Questions', href: '/faq' },
   ],

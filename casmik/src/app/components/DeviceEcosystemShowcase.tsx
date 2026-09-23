@@ -80,14 +80,14 @@ export default function DeviceEcosystemShowcase() {
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold uppercase tracking-wider mb-2.5">
-            <Sparkles size={13} className="text-purple-600" />
-            Complete ReCommerce Ecosystem
+            <Sparkles size={13} className="text-amber-600" />
+            Complete Mobile &amp; Tech Ecosystem
           </div>
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            One Platform to <span className="bg-gradient-to-r from-emerald-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">Sell, Buy &amp; Exchange</span> All Tech
+            One Platform to <span className="bg-gradient-to-r from-amber-600 via-yellow-600 to-amber-700 bg-clip-text text-transparent">Sell, Buy, Repair &amp; Exchange</span> All Tech
           </h2>
           <p className="text-slate-600 mt-2 text-sm sm:text-base leading-relaxed">
-            Whether upgrading your daily smartphone, liquidating studio gear, or picking up a certified MacBook, Camsik delivers peak value with 100% security.
+            Whether buying a brand new 5G smartphone, getting a fast screen repair, or selling your old phone for cash, Maa Ambika Mobile Shop delivers peak value with 100% security.
           </p>
         </div>
 

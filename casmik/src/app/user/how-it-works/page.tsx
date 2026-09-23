@@ -27,15 +27,15 @@ export default function UserHowItWorksPage() {
           </nav>
 
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold mb-4 border border-emerald-500/30">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold mb-4 border border-amber-500/30">
               <Sparkles size={13} />
-              FAST, FAIR &amp; TRANSPARENT
+              FAST, FAIR &amp; TRANSPARENT • MAA AMBIKA
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4">
-              How the Casmik Ecosystem Works
+              How Maa Ambika Mobile Shop Works
             </h1>
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-              Selling, exchanging, or buying pre-owned gadgets in India used to mean haggling with local shops or dealing with unverified online buyers. Casmik makes it effortless, transparent, and completely risk-free across smartphones, laptops, tablets, and cameras.
+              Selling, exchanging, buying, or repairing smartphones in India used to mean haggling with local shops or dealing with unverified online buyers. Maa Ambika Mobile Shop makes it effortless, transparent, and completely risk-free across smartphones, repairs, accessories, and recharges.
             </p>
           </div>
         </div>

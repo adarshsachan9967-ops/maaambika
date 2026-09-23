@@ -22,7 +22,7 @@ const safetyPillars = [
   {
     icon: FileCheck2,
     title: 'Legal Bill of Sale & Liability Indemnity',
-    description: 'You receive an instant digitally signed GST purchase invoice and legal indemnity certificate confirming the formal transfer of serial numbers to Camsik India.',
+    description: 'You receive an instant digitally signed GST purchase invoice and legal indemnity certificate confirming the formal transfer of serial numbers to Maa Ambika Mobile Shop.',
   },
 ];
 
@@ -53,7 +53,7 @@ export default function SafeAndReliableSection() {
                 </h3>
 
                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6">
-                  Unlike unregulated open marketplaces where meeting strangers carries fraud or safety risks, Camsik provides an enterprise-grade, insured, and verified trade-in ecosystem.
+                  Unlike unregulated open marketplaces where meeting strangers carries fraud or safety risks, Maa Ambika Mobile Shop provides an enterprise-grade, insured, and verified trade-in ecosystem.
                 </p>
 
                 <div className="space-y-3 pt-4 border-t border-slate-800 text-xs sm:text-sm font-semibold text-slate-200">
@@ -67,7 +67,7 @@ export default function SafeAndReliableSection() {
                   </div>
                   <div className="flex items-center gap-2.5">
                     <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
-                    <span>Full transit insurance covered by Camsik</span>
+                    <span>Full transit insurance covered by Maa Ambika Mobile Shop</span>
                   </div>
                 </div>
 
@@ -91,10 +91,10 @@ export default function SafeAndReliableSection() {
                 Uncompromising Trust
               </span>
               <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-1">
-                The 4 Pillars of Camsik Protection
+                The 4 Pillars of Maa Ambika Protection
               </h2>
               <p className="text-slate-600 mt-2 text-sm sm:text-base">
-                How we protect your money, your privacy, and your time at every step of buying, selling, or exchanging gadgets.
+                How we protect your money, your privacy, and your time at every step of buying, selling, or repairing gadgets.
               </p>
             </div>
 

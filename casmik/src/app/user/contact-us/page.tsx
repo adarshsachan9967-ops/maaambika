@@ -18,68 +18,81 @@ import {
   Check,
   ExternalLink,
   Car,
-  Train,
   HelpCircle,
   ArrowRight,
   Headphones,
-  Calendar,
   Zap,
-  Award
+  Award,
+  Smartphone,
+  Wrench,
+  RefreshCw,
+  Coins
 } from 'lucide-react';
 import CustomerHeader from '@/components/CustomerHeader';
 import CustomerFooter from '@/components/CustomerFooter';
 
 const INQUIRY_TYPES = [
-  { id: 'sell', label: '📱 Sell Phone / Laptop / Camera', desc: 'Instant valuation & free doorstep pickup' },
-  { id: 'exchange', label: '🔄 1-Step Device Exchange', desc: 'Trade-in old gadget with extra bonus' },
-  { id: 'buy', label: '🛒 Buy Refurbished Tech', desc: 'Warranty & 45-point certification queries' },
-  { id: 'studio', label: '🏢 Corporate & Bulk Liquidation', desc: 'Multi-device office / studio sale' },
-  { id: 'support', label: '💬 General Customer Support', desc: 'Order tracking & payout questions' },
+  { id: 'sales', label: '📱 Buy New 5G Smartphone', desc: 'Latest iPhones, Samsung, OnePlus & brand sealed phones' },
+  { id: 'repair', label: '🔧 30-Min Mobile Screen & Repair', desc: 'Certified display, battery, port & board repair' },
+  { id: 'accessories', label: '🎧 Original Accessories & Chargers', desc: 'AirPods, smartwatches, covers & fast chargers' },
+  { id: 'recharge', label: '⚡ Recharge & 5G SIM Activation', desc: 'Instant prepaid/postpaid recharges (Jio, Airtel, Vi, BSNL)' },
+  { id: 'sell', label: '💰 Sell Used Phone for Instant Cash', desc: 'Instant AI valuation & doorstep spot cash transfer' },
+  { id: 'exchange', label: '🔄 1-Step Phone Exchange', desc: 'Trade old phone with up to ₹5,000 extra exchange bonus' },
 ];
 
 const FAQS = [
   {
-    q: 'Do I need an appointment before visiting the Mumbai hub?',
-    a: 'Walk-ins are always welcome during our working hours (9:00 AM – 9:00 PM IST, Monday to Sunday). However, booking in advance via WhatsApp or phone guarantees zero waiting time with our certified diagnostic technician.'
+    q: 'Do I need an appointment before visiting Maa Ambika Mobile Shop?',
+    a: 'Walk-ins are always warmly welcomed 7 days a week from 9:00 AM to 9:30 PM IST. If you want instant screen replacement or priority phone inspection, messaging us on WhatsApp (+91 8260120467) in advance ensures zero waiting time.'
   },
   {
-    q: 'Can I choose free doorstep pickup instead of visiting in person?',
-    a: 'Absolutely! If you are located in any of our covered areas or visit our showroom, a certified Maa Ambika specialist will assist you, inspect the device, and transfer your payout instantly on the spot.'
+    q: 'What mobile repair services do you offer in store?',
+    a: 'We specialize in 30-to-45 minute certified repairs: Original OLED/LCD screen replacement, battery health restoration, charging jack fix, speaker/mic replacement, camera repair, and chip-level motherboard diagnostics with up to 6 months store warranty.'
   },
   {
-    q: 'What accessories should I bring to get the maximum valuation?',
-    a: 'To receive the top estimated price, bring original charger, power adapters, original box, and invoice/bill if available. Missing accessories slightly adjust the final offer.'
+    q: 'Can I sell my old phone or exchange it for a new smartphone?',
+    a: 'Yes! We offer on-the-spot cash buyback for used smartphones, laptops, and tablets. We also provide 1-step device exchange where you trade in your old gadget, receive an extra exchange bonus (up to ₹5,000), and pay only the difference for a brand new phone.'
   },
   {
-    q: 'How is the payout transferred when selling at the office?',
-    a: 'Payouts are made instantly via IMPS Bank Transfer, NEFT, or UPI (Google Pay, PhonePe, Paytm). The funds reflect in your bank account before you hand over the device.'
+    q: 'What payment modes are accepted for sales, repairs, and buybacks?',
+    a: 'We accept UPI (PhonePe, Google Pay, Paytm), IMPS/NEFT Bank Transfers, Credit/Debit Cards, Zero-Cost EMI, and Cash. When you sell an old device, funds are transferred instantly into your bank account before device handover.'
   }
 ];
 
-export default function ContactUsPage() {
-  const [selectedInquiry, setSelectedInquiry] = useState('sell');
+export default function UserContactUsPage() {
+  const [selectedInquiry, setSelectedInquiry] = useState('sales');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    company: '',
+    deviceModel: '',
     preferredContact: 'whatsapp',
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(false);
+  const [copiedGST, setCopiedGST] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const addressText = "A-315, Shanti Shopping Center, Near Mira Road Station, Mumbai, Maharashtra - 401107";
-  const mapDirectionsUrl = "https://www.google.com/maps/dir/?api=1&destination=Shanti+Shopping+Center+Mira+Road+Mumbai+401107";
-  const googleMapEmbedSrc = "https://maps.google.com/maps?q=Shanti%20Shopping%20Center,%20Mira%20Road,%20Mumbai,%20Maharashtra%20401107&t=&z=16&ie=UTF8&iwloc=&output=embed";
+  const addressText = "Main Road, Maa Ambika Mobile Shop, Odisha, India";
+  const gstinText = "21ELDPS6270L1ZS";
+  const mapDirectionsUrl = "https://www.google.com/maps/search/?api=1&query=Maa+Ambika+Mobile+Shop+Odisha+India";
+  const googleMapEmbedSrc = "https://maps.google.com/maps?q=Odisha,%20India&t=&z=14&ie=UTF8&iwloc=&output=embed";
 
   const handleCopyAddress = () => {
-    if (navigator.clipboard) {
+    if (typeof window !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(addressText);
       setCopiedAddress(true);
       setTimeout(() => setCopiedAddress(false), 2500);
+    }
+  };
+
+  const handleCopyGST = () => {
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(gstinText);
+      setCopiedGST(true);
+      setTimeout(() => setCopiedGST(false), 2500);
     }
   };
 
@@ -102,61 +115,61 @@ export default function ContactUsPage() {
           
           {/* Breadcrumbs */}
           <nav className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-            <Link href="/" className="hover:text-primary transition-colors">
-              Home
+            <Link href="/user" className="hover:text-primary transition-colors">
+              User Home
             </Link>
             <ChevronRight size={13} />
             <span className="text-foreground font-bold">Contact Us</span>
           </nav>
 
           {/* Hero Header Banner */}
-          <div className="relative rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white p-6 sm:p-10 lg:p-12 overflow-hidden shadow-xl border border-slate-700/40">
-            {/* Subtle background glow */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-            <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -mb-20" />
+          <div className="relative rounded-3xl bg-gradient-to-br from-slate-950 via-[#1a0f02] to-slate-950 text-white p-6 sm:p-10 lg:p-12 overflow-hidden shadow-2xl border border-amber-500/30">
+            {/* Ambient golden glow */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+            <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none -mb-20" />
 
             <div className="relative z-10 max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-4 backdrop-blur-md">
-                <Sparkles size={14} className="text-emerald-400" />
-                Direct Tech Valuation &amp; ReCommerce Experience Desk
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-black uppercase tracking-wider mb-4 backdrop-blur-md">
+                <Sparkles size={14} className="text-amber-400" />
+                OFFICIAL SHOWROOM • GSTIN: 21ELDPS6270L1ZS
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight sm:leading-tight">
-                Let&apos;s Connect with Our <span className="text-emerald-400">Tech Specialists</span>
+                Connect with <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">Maa Ambika Mobile Shop</span>
               </h1>
-              <p className="mt-3 sm:mt-4 text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-2xl">
-                Looking to sell used smartphones, MacBooks, tablets, DSLR bodies, trade-in lenses, or visit our registered Mumbai inspection hub? We&apos;re here 7 days a week.
+              <p className="mt-3 sm:mt-4 text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-2xl font-medium">
+                Your Digital Life Partner — Best Products • Best Price • Best Service. Looking to buy the latest 5G smartphones, book a 30-minute certified screen repair, buy original accessories, or sell your old phone for instant spot cash? We are open 7 days a week.
               </p>
             </div>
 
             {/* Quick Value Metrics Bar */}
             <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 pt-6 border-t border-white/10 text-xs sm:text-sm">
               <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/10">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
                   <Zap size={18} />
                 </div>
                 <div>
-                  <p className="font-bold text-white">&lt; 30 Min Response</p>
-                  <p className="text-slate-400 text-xs">Rapid valuation quote</p>
+                  <p className="font-bold text-white">&lt; 15 Min Response</p>
+                  <p className="text-slate-400 text-xs">Direct call &amp; WhatsApp</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/10">
-                <div className="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
                   <ShieldCheck size={18} />
                 </div>
                 <div>
-                  <p className="font-bold text-white">Instant IMPS / UPI</p>
-                  <p className="text-slate-400 text-xs">Spot payout guarantee</p>
+                  <p className="font-bold text-white">GST Registered</p>
+                  <p className="text-slate-400 text-xs">21ELDPS6270L1ZS</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/10">
-                <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-yellow-500/20 text-yellow-300 flex items-center justify-center shrink-0">
                   <Building2 size={18} />
                 </div>
                 <div>
-                  <p className="font-bold text-white">Mumbai Walk-in Hub</p>
-                  <p className="text-slate-400 text-xs">A-315, Shanti Shopping</p>
+                  <p className="font-bold text-white">Main Road Showroom</p>
+                  <p className="text-slate-400 text-xs">Odisha, India</p>
                 </div>
               </div>
 
@@ -165,8 +178,8 @@ export default function ContactUsPage() {
                   <Navigation size={18} />
                 </div>
                 <div>
-                  <p className="font-bold text-white">12+ Major Cities</p>
-                  <p className="text-slate-400 text-xs">Doorstep pickup network</p>
+                  <p className="font-bold text-white">Doorstep Service</p>
+                  <p className="text-slate-400 text-xs">Free pickup &amp; exchange</p>
                 </div>
               </div>
             </div>
@@ -179,9 +192,9 @@ export default function ContactUsPage() {
             <div className="lg:col-span-5 bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 lg:p-9 shadow-sm flex flex-col justify-between space-y-6">
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider border border-emerald-200">
-                    <Sparkles size={13} className="text-emerald-600" />
-                    Official Headquarters
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-bold uppercase tracking-wider border border-amber-200">
+                    <Sparkles size={13} className="text-amber-600" />
+                    Official Showroom &amp; Service Desk
                   </div>
                   <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/60">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -190,28 +203,28 @@ export default function ContactUsPage() {
                 </div>
 
                 <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-2">
-                  Contact Details
+                  Store Contact Details
                 </h2>
                 <p className="text-slate-500 text-xs sm:text-sm mb-6">
-                  Direct channels for instant tech valuations, trade-in approvals, and order verification inquiries.
+                  Direct channels for new phone stock inquiries, fast repairs, exchange quotes, and mobile recharges.
                 </p>
 
                 <div className="space-y-4">
                   {/* Address Card */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50/80 border border-slate-200/70 hover:border-emerald-300 transition-colors group">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/40 border border-amber-200/70 hover:border-amber-400 transition-colors group">
                     <div className="flex items-start gap-3.5">
-                      <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 shadow-xs group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                      <div className="w-11 h-11 rounded-2xl bg-amber-500/15 text-amber-700 flex items-center justify-center shrink-0 shadow-xs group-hover:bg-amber-600 group-hover:text-white transition-all">
                         <MapPin size={22} />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between gap-2 mb-1">
                           <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-500">
-                            Registered Office &amp; Hub
+                            Flagship Store Location
                           </h3>
                           <button
                             type="button"
                             onClick={handleCopyAddress}
-                            className="text-xs font-semibold text-slate-600 hover:text-emerald-600 flex items-center gap-1 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-xs"
+                            className="text-xs font-semibold text-slate-600 hover:text-amber-700 flex items-center gap-1 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-xs"
                             title="Copy full address"
                           >
                             {copiedAddress ? (
@@ -228,14 +241,14 @@ export default function ContactUsPage() {
                           </button>
                         </div>
                         <p className="text-sm sm:text-base font-black text-slate-900 leading-snug">
-                          A-315, Shanti Shopping Center, Near Mira Road Station
+                          Main Road, Maa Ambika Mobile Shop
                         </p>
                         <p className="text-xs sm:text-sm font-semibold text-slate-600 mt-1">
-                          Mumbai, Maharashtra - 401107
+                          Odisha, India
                         </p>
                         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-bold border border-emerald-200/60">
-                            <Train size={12} /> 2 mins from Mira Road Stn (Platform 1)
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-100/70 text-amber-900 font-bold border border-amber-300/60">
+                            <Building2 size={12} /> Landmark: Main Road Showroom
                           </span>
                           <a
                             href={mapDirectionsUrl}
@@ -259,44 +272,83 @@ export default function ContactUsPage() {
                       <div className="flex-1">
                         <div className="flex items-center justify-between gap-2 mb-1">
                           <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-500">
-                            Direct Support &amp; Valuation Line
+                            Store Helpline &amp; WhatsApp
                           </h3>
                         </div>
                         <a
                           href="tel:+918260120467"
-                          className="text-lg sm:text-xl font-black text-slate-900 hover:text-blue-600 transition-colors block"
+                          className="text-lg sm:text-xl font-black text-slate-900 hover:text-blue-600 transition-colors block tracking-wide"
                         >
                           +91 8260120467
                         </a>
                         <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
                           <Clock size={12} className="text-slate-400" />
-                          <span>Monday – Sunday: <strong>9:00 AM – 9:00 PM IST</strong></span>
+                          <span>Monday – Sunday: <strong>9:00 AM – 9:30 PM IST (Open 7 Days)</strong></span>
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Email Card */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50/80 border border-slate-200/70 hover:border-indigo-300 transition-colors group">
+                  {/* GSTIN & Legal */}
+                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50/80 border border-slate-200/70 hover:border-emerald-300 transition-colors group">
                     <div className="flex items-start gap-3.5">
-                      <div className="w-11 h-11 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center shrink-0 shadow-xs group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                      <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 shadow-xs group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                        <ShieldCheck size={22} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-500">
+                            GST Registered Business
+                          </h3>
+                          <button
+                            type="button"
+                            onClick={handleCopyGST}
+                            className="text-xs font-semibold text-slate-600 hover:text-emerald-600 flex items-center gap-1 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-xs"
+                          >
+                            {copiedGST ? (
+                              <>
+                                <Check size={12} className="text-emerald-600" />
+                                <span className="text-emerald-600 font-bold">Copied</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={12} />
+                                <span>Copy</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                        <p className="text-base sm:text-lg font-mono font-black text-slate-900">
+                          {gstinText}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          Official Store Invoicing with Valid Tax Deductions
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Email Support */}
+                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50/80 border border-slate-200/70 hover:border-purple-300 transition-colors group">
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-11 h-11 rounded-2xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0 shadow-xs group-hover:bg-purple-600 group-hover:text-white transition-all">
                         <Mail size={22} />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between gap-2 mb-1">
                           <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-500">
-                            Official Inquiries &amp; Payouts
+                            Digital Helpdesk Email
                           </h3>
                         </div>
                         <a
                           href="mailto:support@maaambikamobile.com"
-                          className="text-base sm:text-lg font-black text-slate-900 hover:text-indigo-600 transition-colors block break-all"
+                          className="text-sm sm:text-base font-black text-slate-900 hover:text-purple-600 transition-colors block break-all"
                         >
                           support@maaambikamobile.com
                         </a>
                         <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
                           <Zap size={12} className="text-amber-500" />
-                          <span>Average response: under 30 minutes</span>
+                          <span>Quick response within 15–30 minutes</span>
                         </p>
                       </div>
                     </div>
@@ -307,7 +359,7 @@ export default function ContactUsPage() {
               {/* Action Buttons: WhatsApp & Call */}
               <div className="pt-4 border-t border-slate-200/80 space-y-3">
                 <a
-                  href="https://wa.me/918260120467?text=Hi%20Maa%20Ambika%20team,%20I%20want%20to%20sell/trade-in%20my%20device"
+                  href="https://wa.me/918260120467?text=Hi%20Maa%20Ambika%20Mobile%20Shop,%20I%20have%20an%20inquiry%20regarding%20phones/service"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2.5 btn-press"
@@ -321,7 +373,7 @@ export default function ContactUsPage() {
                     href="tel:+918260120467"
                     className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-center flex items-center justify-center gap-1.5 transition-colors"
                   >
-                    <Phone size={14} /> Call Office
+                    <Phone size={14} /> Call Showroom
                   </a>
                   <a
                     href={mapDirectionsUrl}
@@ -338,64 +390,65 @@ export default function ContactUsPage() {
             {/* Right Column: Send Message & Inquiry Form */}
             <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 lg:p-9 shadow-sm">
               <div className="mb-6">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-200 mb-3">
-                  <Headphones size={13} className="text-blue-600" />
-                  Fast Response Form
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-bold uppercase tracking-wider border border-amber-200 mb-3">
+                  <Headphones size={13} className="text-amber-600" />
+                  Fast Service &amp; Inquiry Form
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                  Submit Your Inquiry
+                  Send Your Inquiry
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                  Tell us what smartphone, laptop, tablet, camera, or gear you are dealing with and our valuation team will connect promptly.
+                  Fill in your details and device requirement. Our store executive will assist you immediately with pricing, quotes, or repair booking.
                 </p>
               </div>
 
               {/* Inquiry Reason Pills */}
               <div className="mb-6">
                 <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-2.5">
-                  Select Topic / Inquiry Type
+                  Select Service / Inquiry Type
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {INQUIRY_TYPES.map((type) => (
                     <button
                       key={type.id}
                       type="button"
                       onClick={() => setSelectedInquiry(type.id)}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all border ${
+                      className={`p-3 rounded-xl text-left transition-all border text-xs ${
                         selectedInquiry === type.id
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-950 font-bold shadow-xs'
                           : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                       }`}
                     >
-                      {type.label}
+                      <p className="font-extrabold">{type.label}</p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">{type.desc}</p>
                     </button>
                   ))}
                 </div>
               </div>
 
               {submitted ? (
-                <div className="p-8 rounded-3xl bg-emerald-50/90 border border-emerald-200 text-center animate-fade-in my-6">
-                  <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4 shadow-sm">
+                <div className="p-8 rounded-3xl bg-amber-50/80 border border-amber-300 text-center animate-fade-in my-6">
+                  <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center mx-auto mb-4 shadow-sm">
                     <CheckCircle2 size={36} />
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-black text-emerald-950 mb-2">
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-950 mb-2">
                     Inquiry Submitted Successfully!
                   </h3>
-                  <p className="text-sm text-emerald-800 max-w-md mx-auto mb-6 leading-relaxed">
-                    Thank you, <strong>{formData.name}</strong>. Your inquiry regarding <strong>{INQUIRY_TYPES.find(t => t.id === selectedInquiry)?.label}</strong> has been received. A Maa Ambika advisor will reach out to you via <strong>{formData.phone}</strong> shortly.
+                  <p className="text-sm text-slate-700 max-w-md mx-auto mb-6 leading-relaxed">
+                    Thank you, <strong>{formData.name}</strong>. Your inquiry regarding <strong>{INQUIRY_TYPES.find(t => t.id === selectedInquiry)?.label}</strong> has been received by Maa Ambika Mobile Shop. Our specialist will contact you on <strong>{formData.phone}</strong> right away.
                   </p>
                   <div className="flex flex-wrap justify-center gap-3">
                     <button
                       onClick={() => {
                         setSubmitted(false);
-                        setFormData({ name: '', email: '', phone: '', company: '', preferredContact: 'whatsapp', message: '' });
+                        setFormData({ name: '', email: '', phone: '', deviceModel: '', preferredContact: 'whatsapp', message: '' });
                       }}
-                      className="px-6 py-2.5 rounded-xl bg-white text-emerald-700 font-extrabold text-xs uppercase tracking-wider border border-emerald-300 hover:bg-emerald-100 transition-colors"
+                      className="px-6 py-2.5 rounded-xl bg-white text-slate-800 font-extrabold text-xs uppercase tracking-wider border border-slate-300 hover:bg-slate-100 transition-colors"
                     >
                       Send Another Inquiry
                     </button>
                     <a
-                      href={`https://wa.me/918260120467?text=Hi%20Maa%20Ambika,%20I%20just%20submitted%20an%20inquiry%20for%20${encodeURIComponent(formData.name)}`}
+                      href={`https://wa.me/918260120467?text=Hi%20Maa%20Ambika%20Mobile%20Shop,%20I%20just%20submitted%20an%20inquiry%20for%20${encodeURIComponent(formData.name)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-sm flex items-center gap-1.5 transition-colors"
@@ -410,7 +463,7 @@ export default function ContactUsPage() {
                     {/* Name */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
-                        Full Name <span className="text-rose-500">*</span>
+                        Your Full Name <span className="text-rose-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -418,14 +471,14 @@ export default function ContactUsPage() {
                         placeholder="e.g. Rahul Sharma"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
+                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:bg-white transition-all"
                       />
                     </div>
 
                     {/* Phone */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
-                        Phone Number <span className="text-rose-500">*</span>
+                        Phone / WhatsApp <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">
@@ -437,7 +490,7 @@ export default function ContactUsPage() {
                           placeholder="8260120467"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
+                          className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:bg-white transition-all"
                         />
                       </div>
                     </div>
@@ -447,114 +500,79 @@ export default function ContactUsPage() {
                     {/* Email */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
-                        Email Address <span className="text-rose-500">*</span>
+                        Email Address
                       </label>
                       <input
                         type="email"
-                        required
                         placeholder="rahul@example.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
+                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:bg-white transition-all"
                       />
                     </div>
 
-                    {/* Company */}
+                    {/* Device Model */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
-                        Company / Studio Name (Optional)
+                        Device Name / Model
                       </label>
                       <input
                         type="text"
-                        placeholder="Wedding Studio / Production House"
-                        value={formData.company}
-                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
+                        placeholder="e.g. iPhone 15 Pro / Galaxy S24 / Screen Fix"
+                        value={formData.deviceModel}
+                        onChange={(e) => setFormData({ ...formData, deviceModel: e.target.value })}
+                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:bg-white transition-all"
                       />
-                    </div>
-                  </div>
-
-                  {/* Preferred Reply Mode */}
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
-                      Preferred Way To Receive Valuation Offer
-                    </label>
-                    <div className="grid grid-cols-3 gap-2.5">
-                      {[
-                        { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle },
-                        { id: 'phone', label: 'Phone Call', icon: Phone },
-                        { id: 'email', label: 'Email', icon: Mail }
-                      ].map((mode) => {
-                        const Icon = mode.icon;
-                        const isSelected = formData.preferredContact === mode.id;
-                        return (
-                          <button
-                            key={mode.id}
-                            type="button"
-                            onClick={() => setFormData({ ...formData, preferredContact: mode.id })}
-                            className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold transition-all ${
-                              isSelected
-                                ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                                : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                            }`}
-                          >
-                            <Icon size={14} />
-                            {mode.label}
-                          </button>
-                        );
-                      })}
                     </div>
                   </div>
 
                   {/* Message */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
-                      Message &amp; Device Details <span className="text-rose-500">*</span>
+                      Message / Issue Description
                     </label>
                     <textarea
-                      required
-                      rows={4}
-                      placeholder="Mention device (e.g. iPhone 15 Pro, MacBook M3, Sony A7 IV), storage, condition, accessories, or questions..."
+                      rows={3}
+                      placeholder="Tell us what you need (e.g. want to buy new iPhone 16 Pro, need display repair for OnePlus, or want sell quote)..."
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all resize-none"
+                      className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:bg-white transition-all resize-none"
                     />
                   </div>
 
                   {/* Submit Button */}
-                  <div>
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 btn-press disabled:opacity-60"
-                    >
-                      {loading ? (
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <>
-                          <Send size={16} /> Send Valuation Inquiry
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-black text-sm uppercase tracking-wider shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <span>Sending Inquiry...</span>
+                    ) : (
+                      <>
+                        <Send size={16} />
+                        <span>Send Message to Maa Ambika Team</span>
+                      </>
+                    )}
+                  </button>
                 </form>
               )}
             </div>
           </div>
 
-          {/* Interactive Google Map Section */}
+          {/* Showroom Map & Walk-In Section */}
           <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 lg:p-10 shadow-sm">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-4">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider border border-emerald-200 mb-2">
-                  <MapPin size={13} className="text-emerald-600" />
-                  Live Location &amp; Navigation
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-bold uppercase tracking-wider border border-amber-200 mb-2">
+                  <MapPin size={13} className="text-amber-600" />
+                  Showroom Location &amp; Directions
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                  Visit Our Mumbai Inspection Center
+                  Visit Maa Ambika Mobile Shop Showroom
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
-                  Drop by our registered facility for on-the-spot physical inspection, hardware diagnostics, and instant bank payout.
+                  Drop by our store on Main Road, Odisha for instant sales, hands-on device testing, 30-minute certified repairs, and spot cash buybacks.
                 </p>
               </div>
 
@@ -563,9 +581,9 @@ export default function ContactUsPage() {
                   href={mapDirectionsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-sm"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-amber-400 text-xs font-bold transition-all shadow-sm"
                 >
-                  <Navigation size={14} className="text-emerald-400" />
+                  <Navigation size={14} className="text-amber-400" />
                   Open in Google Maps
                 </a>
               </div>
@@ -573,8 +591,7 @@ export default function ContactUsPage() {
 
             {/* Map Canvas with Floating Info Overlay */}
             <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
-              {/* Google Maps Embed iframe */}
-              <div className="w-full h-[380px] sm:h-[460px] lg:h-[500px]">
+              <div className="w-full h-[360px] sm:h-[440px] lg:h-[480px]">
                 <iframe
                   title="Maa Ambika Mobile Shop Location"
                   src={googleMapEmbedSrc}
@@ -588,29 +605,29 @@ export default function ContactUsPage() {
                 />
               </div>
 
-              {/* Floating Overlay Badge on Map (Desktop & Tablet) */}
-              <div className="hidden sm:block absolute top-4 left-4 max-w-sm bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-slate-200/80 z-10 text-xs">
+              {/* Floating Overlay Badge on Map */}
+              <div className="hidden sm:block absolute top-4 left-4 max-w-sm bg-slate-950/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-amber-500/40 z-10 text-xs text-white">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-extrabold text-slate-900 uppercase tracking-wider text-[11px]">
-                    Maa Ambika Mobile Shop
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
+                  <span className="font-extrabold text-amber-300 uppercase tracking-wider text-[11px]">
+                    MAA AMBIKA MOBILE SHOP
                   </span>
                 </div>
-                <p className="font-bold text-slate-800 leading-snug">
-                  A-315, Shanti Shopping Center
+                <p className="font-bold text-white leading-snug">
+                  Main Road, Maa Ambika Mobile Shop
                 </p>
-                <p className="text-slate-500 text-[11px] mt-0.5">
-                  Near Mira Road Railway Station, Mumbai 401107
+                <p className="text-slate-400 text-[11px] mt-0.5">
+                  Odisha, India &bull; GSTIN: 21ELDPS6270L1ZS
                 </p>
-                <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-slate-600 font-semibold">
+                <div className="mt-3 pt-2.5 border-t border-slate-800 flex items-center justify-between text-slate-300 font-semibold">
                   <span className="flex items-center gap-1">
-                    <Clock size={12} className="text-slate-400" /> 9:00 AM – 9:00 PM
+                    <Clock size={12} className="text-amber-400" /> 9:00 AM – 9:30 PM (7 Days)
                   </span>
                   <a
                     href={mapDirectionsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-emerald-600 hover:text-emerald-700 font-bold flex items-center gap-1"
+                    className="text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"
                   >
                     Directions <ChevronRight size={12} />
                   </a>
@@ -618,101 +635,101 @@ export default function ContactUsPage() {
               </div>
             </div>
 
-            {/* Travel & Commute Highlights */}
+            {/* Travel Highlights */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
-                  <Train size={18} />
-                </div>
-                <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">
-                    By Local Train
-                  </h4>
-                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                    100 meters (2-min walk) from <strong>Mira Road Station</strong> (Western Line, Platform 1 exit).
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
-                <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
-                  <Car size={18} />
-                </div>
-                <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">
-                    By Car / Cab
-                  </h4>
-                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                    Direct access from <strong>Western Express Highway (WEH)</strong> via Mira-Bhayandar Flyover.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
-                <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
+              <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/80 flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-800 flex items-center justify-center shrink-0">
                   <Building2 size={18} />
                 </div>
                 <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">
-                    Building Landmark
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-900">
+                    Prime Main Road Location
                   </h4>
                   <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                    Inside <strong>Shanti Shopping Center</strong>, Wing A, 3rd Floor, Room 315. Ample parking space.
+                    Easy accessibility right on the main commercial strip with clear signage and prominent storefront.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200/80 flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-800 flex items-center justify-center shrink-0">
+                  <Car size={18} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-900">
+                    Dedicated Parking Space
+                  </h4>
+                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                    Hassle-free 2-wheeler and 4-wheeler customer parking right in front of the showroom.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-200/80 flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-800 flex items-center justify-center shrink-0">
+                  <Wrench size={18} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-900">
+                    Live Diagnostics Lab
+                  </h4>
+                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                    Watch our certified technicians repair your phone live behind transparent diagnostic stations.
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 3-Step Walk-In Selling Process */}
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl">
+          {/* 3-Step Store Experience */}
+          <div className="bg-gradient-to-br from-slate-950 via-[#1a0f02] to-slate-900 rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl border border-amber-500/30">
             <div className="max-w-2xl mb-8">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-2 border border-emerald-500/30">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-wider mb-2 border border-amber-500/40">
                 <Award size={13} />
-                Walk-In Experience
+                Store Experience
               </div>
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
-                How Walk-In Selling &amp; Testing Works
+                How Maa Ambika Store Service Works
               </h2>
               <p className="text-slate-300 text-xs sm:text-sm mt-1">
-                Transparent 15-minute process from gear hand-in to instant funds transfer.
+                Fast, honest, and transparent experience from inquiry to delivery.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 font-black text-lg flex items-center justify-center mb-4">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 font-black text-lg flex items-center justify-center mb-4">
                   1
                 </div>
                 <h3 className="text-base font-black text-white mb-2">
-                  Bring Your Device &amp; ID Proof
+                  Choose Phone or Bring Device
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Bring your phone, laptop, tablet, or camera body, accessories, charger, and any Govt ID (Aadhaar / PAN / Driving License).
+                  Browse latest 5G smartphones or bring your existing device for screen repair, battery fix, or instant buyback quote.
                 </p>
               </div>
 
               <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 font-black text-lg flex items-center justify-center mb-4">
+                <div className="w-10 h-10 rounded-xl bg-yellow-500/20 text-yellow-400 font-black text-lg flex items-center justify-center mb-4">
                   2
                 </div>
                 <h3 className="text-base font-black text-white mb-2">
-                  10-Min Live Technical Check
+                  15-Min Live Check &amp; Repair
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Our certified technician conducts 45-point hardware diagnostics, tests battery &amp; display health, and verifies certified data wipe in front of you.
+                  Our certified technicians test display, battery, and hardware right in front of your eyes using genuine OEM grade components.
                 </p>
               </div>
 
               <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 font-black text-lg flex items-center justify-center mb-4">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 font-black text-lg flex items-center justify-center mb-4">
                   3
                 </div>
                 <h3 className="text-base font-black text-white mb-2">
-                  Instant Bank / UPI Credit
+                  Official Bill &amp; Instant Transfer
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Approve your quote and receive the agreed amount instantly through verified IMPS or UPI before leaving the counter.
+                  Receive official GST bill with up to 6 months store repair warranty, or receive immediate cash/UPI payment for sold devices.
                 </p>
               </div>
             </div>
@@ -739,7 +756,7 @@ export default function ContactUsPage() {
                     onClick={() => setOpenFaq(isOpen ? null : index)}
                     className={`p-5 rounded-2xl border transition-all cursor-pointer ${
                       isOpen
-                        ? 'bg-slate-50/80 border-emerald-400 shadow-sm'
+                        ? 'bg-amber-50/70 border-amber-400 shadow-sm'
                         : 'bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50/40'
                     }`}
                   >
@@ -749,13 +766,13 @@ export default function ContactUsPage() {
                       </h3>
                       <ChevronRight
                         size={16}
-                        className={`shrink-0 text-slate-400 transition-transform ${
-                          isOpen ? 'rotate-90 text-emerald-600' : ''
+                        className={`text-slate-400 shrink-0 mt-0.5 transition-transform duration-200 ${
+                          isOpen ? 'rotate-90 text-amber-600' : ''
                         }`}
                       />
                     </div>
                     {isOpen && (
-                      <p className="text-xs sm:text-sm text-slate-600 mt-3 pt-3 border-t border-slate-200/60 leading-relaxed animate-fade-in">
+                      <p className="text-xs sm:text-sm text-slate-600 mt-3 pt-3 border-t border-amber-200/60 leading-relaxed">
                         {faq.a}
                       </p>
                     )}
@@ -767,32 +784,6 @@ export default function ContactUsPage() {
 
         </div>
       </section>
-
-      {/* Floating Call & WhatsApp Buttons */}
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
-        <a
-          href="https://wa.me/918260120467?text=Hi%20Maa%20Ambika%20team,%20I%20have%20an%20inquiry"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-13 h-13 rounded-full bg-emerald-500 text-white shadow-xl flex items-center justify-center hover:scale-110 transition-transform ring-4 ring-emerald-500/20 group relative"
-          aria-label="Chat on WhatsApp"
-        >
-          <MessageCircle size={26} />
-          <span className="hidden group-hover:block absolute right-16 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
-            Chat on WhatsApp
-          </span>
-        </a>
-        <a
-          href="tel:+918260120467"
-          className="w-13 h-13 rounded-full bg-blue-600 text-white shadow-xl flex items-center justify-center hover:scale-110 transition-transform ring-4 ring-blue-600/20 group relative"
-          aria-label="Call Maa Ambika Support"
-        >
-          <Phone size={24} />
-          <span className="hidden group-hover:block absolute right-16 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
-            Call +91 8260120467
-          </span>
-        </a>
-      </div>
 
       <CustomerFooter />
     </main>

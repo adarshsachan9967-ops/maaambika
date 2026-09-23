@@ -8,8 +8,8 @@ import SafeAndReliableSection from '@/app/components/SafeAndReliableSection';
 import CamsikTrustScore from '@/app/components/CamsikTrustScore';
 
 export const metadata = {
-  title: 'How It Works — Camsik Device Buyback, Refurbished Sales & Exchange Process',
-  description: 'Learn how to sell, trade-in, or buy certified smartphones, laptops, MacBooks, tablets, and DSLR cameras on Camsik with instant online quote, free doorstep pickup, and instant bank transfer.',
+  title: 'How It Works — Maa Ambika Mobile Shop Device Buyback, Sales & Exchange Process',
+  description: 'Learn how to sell, trade-in, or buy certified smartphones, laptops, MacBooks, tablets, and mobile devices at Maa Ambika Mobile Shop with instant online quote, free doorstep pickup, and instant bank transfer.',
 };
 
 export default function HowItWorksPage() {
@@ -26,19 +26,19 @@ export default function HowItWorksPage() {
               Home
             </Link>
             <ChevronRight size={13} />
-            <span className="text-purple-400 font-bold">How It Works</span>
+            <span className="text-amber-400 font-bold">How It Works</span>
           </nav>
 
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold mb-4 border border-purple-500/30">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold mb-4 border border-amber-500/30">
               <Sparkles size={13} />
-              FAST, FAIR &amp; TRANSPARENT
+              FAST, FAIR &amp; TRANSPARENT • MAA AMBIKA
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4">
-              How Camsik Works
+              How Maa Ambika Works
             </h1>
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-              Selling, exchanging, or buying pre-owned gadgets in India used to mean haggling with local shops or dealing with unverified online buyers. Camsik makes it effortless, transparent, and completely risk-free across smartphones, laptops, tablets, and cameras.
+              Selling, exchanging, buying, or repairing phones in India used to mean haggling with local shops or dealing with unverified online buyers. Maa Ambika Mobile Shop makes it effortless, transparent, and completely risk-free across smartphones, repairs, accessories, and recharges.
             </p>
           </div>
         </div>
