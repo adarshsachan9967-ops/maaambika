@@ -714,8 +714,16 @@ class _CamsikAuthScreenState extends State<CamsikAuthScreen> {
                           ),
                         ],
                       ),
-                      child: const Center(
-                        child: Icon(Icons.camera_alt_rounded, color: Colors.white, size: 32),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Image.asset(
+                            'assets/images/app_logo.png',
+                            fit: BoxFit.contain,
+                            errorBuilder: (c, e, s) => const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 32),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -1198,8 +1206,16 @@ class _UserMainNavigationScreenState extends State<UserMainNavigationScreen> {
                       ),
                     ],
                   ),
-                  child: const Center(
-                    child: Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Image.asset(
+                        'assets/images/app_logo.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (c, e, s) => const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),

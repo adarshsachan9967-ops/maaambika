@@ -148,14 +148,19 @@ class _AdminMainNavigationScreenState extends State<AdminMainNavigationScreen> {
         title: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(6),
+              width: 36,
+              height: 36,
+              padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
-                ),
+                color: const Color(0xFF0F172A),
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFD97706), width: 1),
               ),
-              child: const Icon(Icons.shield, color: Colors.white, size: 20),
+              child: Image.asset(
+                'assets/images/app_logo.png',
+                fit: BoxFit.contain,
+                errorBuilder: (c, e, s) => const Icon(Icons.shield, color: Colors.white, size: 20),
+              ),
             ),
             const SizedBox(width: 10),
             const Column(

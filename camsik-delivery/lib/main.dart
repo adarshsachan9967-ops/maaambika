@@ -134,12 +134,19 @@ class _DeliveryMainNavigationScreenState extends State<DeliveryMainNavigationScr
         title: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(6),
+              width: 36,
+              height: 36,
+              padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
-                color: const Color(0xFF2563EB),
+                color: const Color(0xFF0F172A),
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFD97706), width: 1),
               ),
-              child: const Icon(Icons.two_wheeler, color: Colors.white, size: 20),
+              child: Image.asset(
+                'assets/images/app_logo.png',
+                fit: BoxFit.contain,
+                errorBuilder: (c, e, s) => const Icon(Icons.two_wheeler, color: Colors.white, size: 20),
+              ),
             ),
             const SizedBox(width: 10),
             Column(
