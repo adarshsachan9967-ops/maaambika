@@ -246,7 +246,7 @@ export default function AppDownloadCTA() {
                         <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
                       </span>
                       <div>
-                        <span className="text-xs font-bold text-white block">Camsik AI Smart Diagnostic</span>
+                        <span className="text-xs font-bold text-white block">Maa Ambika Mobile AI Smart Diagnostic</span>
                         <span className="text-[10px] text-slate-400">Automated 45-Pt Verification</span>
                       </div>
                     </div>
@@ -312,7 +312,7 @@ export default function AppDownloadCTA() {
               </div>
 
               <p className="text-[11px] text-slate-500 mt-2.5 text-center">
-                Tap any category above to simulate AI diagnostic tests on the Camsik App
+                Tap any category above to simulate AI diagnostic tests on the Maa Ambika Mobile App
               </p>
             </div>
 

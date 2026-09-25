@@ -76,7 +76,7 @@ const reasons = [
     id: 'why-warranty',
     icon: Award,
     title: '6 to 12 Months Refurbished Warranty',
-    desc: 'Every pre-owned certified device sold through Camsik comes with comprehensive warranty coverage, genuine parts verification, and 7-day easy replacement.',
+    desc: 'Every pre-owned certified device sold through Maa Ambika Mobile comes with comprehensive warranty coverage, genuine parts verification, and 7-day easy replacement.',
     badge: 'Certified Warranty',
     color: 'bg-cyan-50 text-cyan-600 border-cyan-200',
   },
