@@ -1,11 +1,12 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { orders as defaultOrders, getOrderStatusColor, getOrderStatusLabel, getTypeColor } from '@/lib/casmikData';
+import { orders as defaultOrders, deliveryAgents, getOrderStatusColor, getOrderStatusLabel, getTypeColor } from '@/lib/casmikData';
 import type { Order, OrderStatus } from '@/lib/casmikData';
-import { Search, CheckCircle, XCircle, Eye, Phone, MapPin, X, Truck, Wifi, WifiOff, ChevronDown, SlidersHorizontal, ClipboardCheck, Sparkles, Lock, CreditCard, ArrowRight, ShieldAlert } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Eye, Phone, MapPin, X, Truck, Wifi, WifiOff, ChevronDown, SlidersHorizontal, ClipboardCheck, Sparkles, Lock, CreditCard, ArrowRight, ShieldAlert, Scan, UserCheck } from 'lucide-react';
 import LiveOrderTracker from '@/components/LiveOrderTracker';
 import { triggerNotification } from '@/lib/notifications';
+import QRScannerModal from '@/components/QRScannerModal';
 
 const PARTNER_ID = 'partner-002';
 
@@ -128,6 +129,15 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
   const [payoutMethod, setPayoutMethod] = useState<'upi' | 'imps' | 'cash'>('upi');
   const [payoutRef, setPayoutRef] = useState('');
   const [isProcessingPayout, setIsProcessingPayout] = useState(false);
+
+  // Delivery Executive Assignment State
+  const [assignDeliveryOrder, setAssignDeliveryOrder] = useState<Order | null>(null);
+  const [selectedDeliveryAgentId, setSelectedDeliveryAgentId] = useState<string>('');
+  const [customDeliveryName, setCustomDeliveryName] = useState<string>('');
+  const [isAssigningDelivery, setIsAssigningDelivery] = useState(false);
+
+  // QR Code Scanner State
+  const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
 
   const supabase = createClient();
 
@@ -343,6 +353,88 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
   const handleReject = (id: string) => handleStatusChange(id, 'rejected');
   const handlePickup = (id: string) => handleStatusChange(id, 'picked_up');
 
+  // Handle Assigning Order to Delivery Agent
+  const handleAssignDelivery = async () => {
+    if (!assignDeliveryOrder) return;
+    setIsAssigningDelivery(true);
+
+    let agentName = '';
+    let agentId = selectedDeliveryAgentId;
+
+    if (selectedDeliveryAgentId === 'custom') {
+      if (!customDeliveryName.trim()) {
+        setIsAssigningDelivery(false);
+        return;
+      }
+      agentName = customDeliveryName.trim();
+      agentId = `custom-del-${Date.now()}`;
+    } else {
+      const found = deliveryAgents.find(a => a.id === selectedDeliveryAgentId);
+      agentName = found ? found.name : 'Delivery Executive';
+    }
+
+    const updatedOrder: Order = {
+      ...assignDeliveryOrder,
+      deliveryAgentId: agentId,
+      deliveryAgentName: agentName,
+      status: 'pickup_scheduled',
+      notes: `${assignDeliveryOrder.notes || ''} [Assigned to Delivery Executive: ${agentName}]`.trim(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setOrderList(prev => {
+      const updated = prev.map(o => o.id === assignDeliveryOrder.id ? updatedOrder : o);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('casmik_partner_orders_v1', JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    if (typeof window !== 'undefined') {
+      try {
+        const savedGlobal = localStorage.getItem('casmik_orders_v1');
+        if (savedGlobal) {
+          const list = JSON.parse(savedGlobal);
+          if (Array.isArray(list)) {
+            const updated = list.map((o: any) => o.id === assignDeliveryOrder.id ? updatedOrder : o);
+            localStorage.setItem('casmik_orders_v1', JSON.stringify(updated));
+          }
+        }
+      } catch {}
+    }
+
+    try {
+      await supabase.from('orders').update({
+        delivery_agent_id: agentId,
+        delivery_agent_name: agentName,
+        status: 'pickup_scheduled',
+        notes: updatedOrder.notes,
+      }).eq('id', assignDeliveryOrder.id);
+    } catch {}
+
+    triggerNotification({
+      type: 'status_update',
+      targetRole: 'all',
+      title: `Order #${assignDeliveryOrder.orderNumber} Assigned to ${agentName}`,
+      shortDetails: `Executive ${agentName} assigned for doorstep pickup & device inspection.`,
+      orderNumber: assignDeliveryOrder.orderNumber,
+      deviceName: assignDeliveryOrder.deviceName,
+      customerName: assignDeliveryOrder.customerName,
+      price: assignDeliveryOrder.finalPrice || assignDeliveryOrder.quotedPrice,
+      status: 'pickup_scheduled',
+    });
+
+    setStatusToast({
+      message: `Assigned #${assignDeliveryOrder.orderNumber} to ${agentName}!`,
+    });
+    setTimeout(() => setStatusToast(null), 4000);
+
+    setIsAssigningDelivery(false);
+    setAssignDeliveryOrder(null);
+    setSelectedDeliveryAgentId('');
+    setCustomDeliveryName('');
+  };
+
   const filtered = orderList.filter(o =>
     (o.orderNumber.toLowerCase().includes(query.toLowerCase()) || o.customerName.toLowerCase().includes(query.toLowerCase())) &&
     (filterStatus === 'all' || o.status === filterStatus)
@@ -392,8 +484,17 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
               {isConnected ? 'Live Synced' : `Active Store Orders (${orderList.length})`}
             </span>
           </h2>
-          <p className="text-sm text-gray-500">Manage your assigned orders and update order statuses</p>
+          <p className="text-sm text-gray-500">Manage your assigned orders, assign delivery executives, and scan inspection passes</p>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsQRScannerOpen(true)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-black shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+        >
+          <Scan size={14} />
+          <span>Scan Customer QR Code</span>
+        </button>
       </div>
 
       {/* View Tabs */}
@@ -500,7 +601,7 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
                   <span>🕐 {order.pickupSlot || '10:00 AM - 1:00 PM'}</span>
                 </div>
 
-                {/* Card Actions Bar: Accept, Details, Call, Disburse Payout, and Forward-Only Status Dropdown */}
+                {/* Card Actions Bar: Accept, Details, Call, Disburse Payout, Assign Delivery, and Forward-Only Status Dropdown */}
                 <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100" onClick={(e) => e.stopPropagation()}>
                   <button
                     type="button"
@@ -508,6 +609,19 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 hover:bg-primary hover:text-white hover:border-primary transition-colors cursor-pointer"
                   >
                     <Eye size={13} /> Details
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAssignDeliveryOrder(order);
+                      setSelectedDeliveryAgentId(order.deliveryAgentId || deliveryAgents[0]?.id || '');
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-blue-200 bg-blue-50/60 text-xs font-bold text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer"
+                    title="Assign to delivery executive"
+                  >
+                    <Truck size={13} />
+                    <span>{order.deliveryAgentName ? `Agent: ${order.deliveryAgentName.split(' ')[0]}` : 'Assign Delivery'}</span>
                   </button>
 
                   <a
@@ -1026,6 +1140,144 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
               </div>
             </div>
           )}
+
+          {/* Delivery Assignment Modal */}
+          {assignDeliveryOrder && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+              <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative animate-in fade-in zoom-in-95">
+                <button
+                  type="button"
+                  onClick={() => setAssignDeliveryOrder(null)}
+                  className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors"
+                >
+                  <X size={18} />
+                </button>
+
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200 shadow-xs">
+                    <Truck size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-slate-900">Assign Delivery Executive</h3>
+                    <p className="text-xs text-slate-500 font-semibold">Order #{assignDeliveryOrder.orderNumber}</p>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 mb-4 text-xs space-y-1">
+                  <p className="font-bold text-slate-800">{assignDeliveryOrder.deviceName}</p>
+                  <p className="text-slate-500">{assignDeliveryOrder.customerName} · {assignDeliveryOrder.customerAddress}, {assignDeliveryOrder.city}</p>
+                </div>
+
+                <div className="space-y-3 mb-5">
+                  <label className="block text-xs font-bold text-slate-700">Choose Available Field Executive</label>
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    {deliveryAgents.map((agent) => (
+                      <label
+                        key={agent.id}
+                        className={`flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition-all ${
+                          selectedDeliveryAgentId === agent.id
+                            ? 'border-blue-500 bg-blue-50/50 shadow-xs'
+                            : 'border-slate-200 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="delivery_agent"
+                            value={agent.id}
+                            checked={selectedDeliveryAgentId === agent.id}
+                            onChange={() => setSelectedDeliveryAgentId(agent.id)}
+                            className="text-blue-600 focus:ring-blue-500"
+                          />
+                          <div>
+                            <p className="text-xs font-bold text-slate-900">{agent.name}</p>
+                            <p className="text-[11px] text-slate-500">+91 {agent.phone} · {agent.vehicle}</p>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          {agent.city}
+                        </span>
+                      </label>
+                    ))}
+
+                    <label
+                      className={`flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition-all ${
+                        selectedDeliveryAgentId === 'custom'
+                          ? 'border-blue-500 bg-blue-50/50 shadow-xs'
+                          : 'border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="delivery_agent"
+                          value="custom"
+                          checked={selectedDeliveryAgentId === 'custom'}
+                          onChange={() => setSelectedDeliveryAgentId('custom')}
+                          className="text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-xs font-bold text-slate-900">Custom Delivery Partner</span>
+                      </div>
+                    </label>
+                  </div>
+
+                  {selectedDeliveryAgentId === 'custom' && (
+                    <div className="pt-2">
+                      <input
+                        type="text"
+                        placeholder="Enter Delivery Executive Name"
+                        value={customDeliveryName}
+                        onChange={e => setCustomDeliveryName(e.target.value)}
+                        className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAssignDeliveryOrder(null)}
+                    className="flex-1 py-3 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isAssigningDelivery || !selectedDeliveryAgentId || (selectedDeliveryAgentId === 'custom' && !customDeliveryName.trim())}
+                    onClick={handleAssignDelivery}
+                    className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    {isAssigningDelivery ? 'Assigning...' : 'Confirm Assignment'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* QR Code Scanner Modal */}
+          <QRScannerModal
+            isOpen={isQRScannerOpen}
+            onClose={() => setIsQRScannerOpen(false)}
+            onScanSuccess={(detectedCode) => {
+              setIsQRScannerOpen(false);
+              const match = orderList.find(o =>
+                o.orderNumber?.toLowerCase() === detectedCode.toLowerCase() ||
+                o.id === detectedCode
+              );
+              if (match) {
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('casmik_active_inspection_id', match.id);
+                }
+                handleStatusChange(match.id, 'inspection');
+                onStartInspection?.(match.id);
+              } else {
+                window.location.href = `/partner/inspection?orderId=${encodeURIComponent(detectedCode)}`;
+              }
+            }}
+            title="Scan Customer Booking QR Pass"
+            subtitle="Point camera at customer booking QR code to launch device inspection"
+          />
         </>
       )}
     </div>

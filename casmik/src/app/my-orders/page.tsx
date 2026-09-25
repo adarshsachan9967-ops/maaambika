@@ -20,10 +20,12 @@ import {
   User,
   Phone,
   Tag,
+  QrCode,
 } from 'lucide-react';
 import CustomerHeader from '@/components/CustomerHeader';
 import CustomerFooter from '@/components/CustomerFooter';
 import { getCurrentUser, getCustomerOrders, CustomerUser, CustomerOrderRecord } from '@/lib/auth';
+import BookingQRCode from '@/components/BookingQRCode';
 
 export default function MyOrdersPage() {
   const [user, setUser] = useState<CustomerUser | null>(null);
@@ -31,6 +33,7 @@ export default function MyOrdersPage() {
   const [activeTab, setActiveTab] = useState<'all' | 'exchange' | 'buy' | 'sell'>('all');
   const [phoneSearch, setPhoneSearch] = useState('');
   const [selectedReceiptOrder, setSelectedReceiptOrder] = useState<CustomerOrderRecord | null>(null);
+  const [selectedQRModalOrder, setSelectedQRModalOrder] = useState<CustomerOrderRecord | null>(null);
 
   useEffect(() => {
     const currentUser = getCurrentUser();
@@ -234,7 +237,19 @@ export default function MyOrdersPage() {
                       </div>
 
                       <div className="flex items-center gap-3">
-                        {order.balanceOwedToUser && order.balanceOwedToUser > 0 ? (
+                        {order.type === 'sell' && order.status !== 'completed' && order.paymentStatus !== 'paid' ? (
+                          <>
+                            <div className="text-right">
+                              <span className="text-[10px] text-amber-700 font-bold block">Estimated Buyback</span>
+                              <span className="text-base font-black text-slate-900 font-mono tracking-wider">
+                                ₹ ****
+                              </span>
+                            </div>
+                            <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800 border border-amber-300">
+                              Pending Inspection
+                            </span>
+                          </>
+                        ) : order.balanceOwedToUser && order.balanceOwedToUser > 0 ? (
                           <>
                             <div className="text-right">
                               <span className="text-[10px] text-emerald-700 font-bold block">Balance to Receive</span>
@@ -243,7 +258,7 @@ export default function MyOrdersPage() {
                               </span>
                             </div>
                             <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300">
-                              Payout on Handover
+                              {order.paymentStatus === 'paid' ? 'Paid on Handover' : 'Payout on Handover'}
                             </span>
                           </>
                         ) : (
@@ -367,6 +382,15 @@ export default function MyOrdersPage() {
                         </div>
 
                         <div className="flex items-center gap-2.5">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedQRModalOrder(order)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                          >
+                            <QrCode size={13} className="text-emerald-400" />
+                            <span>Inspection QR</span>
+                          </button>
+
                           <button
                             type="button"
                             onClick={() => setSelectedReceiptOrder(order)}
@@ -494,6 +518,38 @@ export default function MyOrdersPage() {
                 className="w-full mt-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all cursor-pointer"
               >
                 Close Receipt
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Inspection QR Code Modal */}
+        {selectedQRModalOrder && (
+          <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-sm w-full p-6 relative animate-in fade-in zoom-in-95 duration-200">
+              <button
+                type="button"
+                onClick={() => setSelectedQRModalOrder(null)}
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+
+              <div className="mb-2">
+                <BookingQRCode
+                  orderNumber={selectedQRModalOrder.orderNumber}
+                  orderId={selectedQRModalOrder.id}
+                  deviceName={selectedQRModalOrder.newDevice?.model || selectedQRModalOrder.oldDevice?.model || 'Device'}
+                  customerName={selectedQRModalOrder.customerName}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedQRModalOrder(null)}
+                className="w-full mt-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+              >
+                Close Pass
               </button>
             </div>
           </div>

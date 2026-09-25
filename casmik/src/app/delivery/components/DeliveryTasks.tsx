@@ -26,11 +26,18 @@ import {
   SlidersHorizontal,
   ChevronRight,
   ExternalLink,
-  UploadCloud
+  UploadCloud,
+  Scan,
+  ClipboardCheck,
+  Sparkles,
+  CreditCard,
+  PlusCircle,
+  CheckCircle2
 } from 'lucide-react';
 import LiveOrderTracker from '@/components/LiveOrderTracker';
 import { orders } from '@/lib/casmikData';
 import { triggerNotification } from '@/lib/notifications';
+import QRScannerModal from '@/components/QRScannerModal';
 
 const DELIVERY_AGENT_ID = 'delivery-001';
 
@@ -123,6 +130,19 @@ export default function DeliveryTasks() {
   const [sortBy, setSortBy] = useState<'default' | 'price_desc' | 'slot'>('default');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [capturedPhotos, setCapturedPhotos] = useState<string[]>([]);
+
+  // QR Scanner State
+  const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
+
+  // Doorstep Inspection & Spot Payout State
+  const [inspectingTask, setInspectingTask] = useState<Order | null>(null);
+  const [inspectionResults, setInspectionResults] = useState<Record<string, 'pass' | 'fail' | 'bonus'>>({});
+  const [customerConfirmedPrice, setCustomerConfirmedPrice] = useState(false);
+  const [payoutMode, setPayoutMode] = useState<'upi' | 'cash' | 'imps'>('upi');
+  const [payoutRef, setPayoutRef] = useState('');
+  const [isProcessingPayout, setIsProcessingPayout] = useState(false);
+  const [inspectionNotes, setInspectionNotes] = useState('');
+
   const supabase = createClient();
 
   const fetchTasks = useCallback(async () => {
@@ -249,6 +269,82 @@ export default function DeliveryTasks() {
     setActiveTask(null);
   };
 
+  // Diagnostic items with additions & deductions for field executive
+  const deliveryCheckItems = [
+    { id: 'screen', label: 'Screen & Touch', subtext: 'Dead pixels, cracks, lines, touch response', deductionPct: 25, bonusPct: 5, bonusLabel: 'Flawless Screen (+5%)' },
+    { id: 'body', label: 'Body & Frame', subtext: 'Dents, scratches, bezel condition', deductionPct: 12, bonusPct: 4, bonusLabel: 'Like New Scratchless (+4%)' },
+    { id: 'battery', label: 'Battery Health', subtext: 'Battery backup and health percentage', deductionPct: 10, bonusPct: 4, bonusLabel: 'Battery > 90% (+4%)' },
+    { id: 'camera', label: 'Camera & Optics', subtext: 'Front/back camera focus and lens glass', deductionPct: 15 },
+    { id: 'biometrics', label: 'Biometrics', subtext: 'Face ID or fingerprint scanner response', deductionPct: 12 },
+    { id: 'box_charger', label: 'Original Box & Charger', subtext: 'Authentic retail box and fast charger included', deductionPct: 5, bonusPct: 4, bonusLabel: 'Box & Charger Present (+4%)' },
+  ];
+
+  // Calculation for active inspection task
+  const quotedPrice = inspectingTask?.quotedPrice || 0;
+  const bonusItems = deliveryCheckItems.filter(item => inspectionResults[item.id] === 'bonus');
+  const totalBonusPct = bonusItems.reduce((acc, item) => acc + (item.bonusPct || 0), 0);
+  const totalAdditionAmount = Math.round(quotedPrice * (totalBonusPct / 100));
+
+  const failedItems = deliveryCheckItems.filter(item => inspectionResults[item.id] === 'fail');
+  const totalDeductionPct = Math.min(
+    failedItems.reduce((acc, item) => acc + item.deductionPct, 0),
+    75
+  );
+  const totalDeductionAmount = Math.round(quotedPrice * (totalDeductionPct / 100));
+
+  const finalCalculatedPayout = Math.max(
+    Math.round(quotedPrice + totalAdditionAmount - totalDeductionAmount),
+    Math.round(quotedPrice * 0.25)
+  );
+
+  // Handle Complete Inspection & Payout Disbursal
+  const handleCompleteInspection = async () => {
+    if (!inspectingTask || !customerConfirmedPrice) return;
+    setIsProcessingPayout(true);
+
+    const completedTask: Order = {
+      ...inspectingTask,
+      finalPrice: finalCalculatedPayout,
+      status: 'completed',
+      paymentStatus: 'paid',
+      notes: `${inspectingTask.notes || ''} [Doorstep Inspected & Paid: ₹${finalCalculatedPayout.toLocaleString('en-IN')} via ${payoutMode.toUpperCase()} (${payoutRef || 'Instant Disbursal'})]`.trim(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setTaskList(prev => {
+      const updated = prev.map(t => t.id === inspectingTask.id ? completedTask : t);
+      saveLocalTasks(updated);
+      return updated;
+    });
+
+    try {
+      await supabase.from('orders').update({
+        final_price: finalCalculatedPayout,
+        status: 'completed',
+        payment_status: 'paid',
+        notes: completedTask.notes,
+      }).eq('id', inspectingTask.id);
+    } catch {}
+
+    triggerNotification({
+      type: 'payout',
+      targetRole: 'all',
+      title: `🎉 Delivery Inspection Complete: ₹${finalCalculatedPayout.toLocaleString('en-IN')} Paid!`,
+      shortDetails: `Executive inspected #${inspectingTask.orderNumber} (${inspectingTask.deviceName}) and disbursed ₹${finalCalculatedPayout.toLocaleString('en-IN')} via ${payoutMode.toUpperCase()}. Order is finalized.`,
+      orderNumber: inspectingTask.orderNumber,
+      deviceName: inspectingTask.deviceName,
+      customerName: inspectingTask.customerName,
+      price: finalCalculatedPayout,
+      status: 'completed',
+    });
+
+    setIsProcessingPayout(false);
+    setInspectingTask(null);
+    setCustomerConfirmedPrice(false);
+    setInspectionResults({});
+    setPayoutRef('');
+  };
+
   // Filter and search
   const filtered = useMemo(() => {
     return taskList.filter(t => {
@@ -323,8 +419,16 @@ export default function DeliveryTasks() {
             </p>
           </div>
 
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-2 self-start lg:self-auto">
+          {/* View Mode & Scanner Toggle */}
+          <div className="flex items-center gap-2 self-start lg:self-auto flex-wrap">
+            <button
+              type="button"
+              onClick={() => setIsQRScannerOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-black shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+            >
+              <Scan size={14} /> Scan Customer QR Pass
+            </button>
+
             <button
               onClick={() => setActiveTab('list')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
@@ -584,6 +688,23 @@ export default function DeliveryTasks() {
                     >
                       <Navigation size={15} />
                     </a>
+
+                    {/* Action: Inspect & Pay button for field delivery agent */}
+                    {!isDone && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInspectingTask(task);
+                          setInspectionResults({});
+                          setCustomerConfirmedPrice(false);
+                        }}
+                        className="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+                        title="Doorstep physical inspection & spot payout"
+                      >
+                        <ClipboardCheck size={13} />
+                        <span>Inspect &amp; Pay</span>
+                      </button>
+                    )}
 
                     {/* Dynamic Primary CTA */}
                     {isAssigned && (
@@ -874,6 +995,218 @@ export default function DeliveryTasks() {
           </div>
         </div>
       )}
+
+      {/* ─── DOORSTEP INSPECTION & SPOT PAYOUT MODAL ────────────────── */}
+      {inspectingTask && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95">
+            <button
+              type="button"
+              onClick={() => setInspectingTask(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-2 rounded-full hover:bg-slate-100 transition-colors"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200 shadow-xs">
+                <ClipboardCheck size={20} />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-slate-900">Doorstep Device Inspection</h3>
+                <p className="text-xs text-slate-500 font-semibold">Order #{inspectingTask.orderNumber} · {inspectingTask.deviceName}</p>
+              </div>
+            </div>
+
+            {/* Live Pricing Breakdown Card */}
+            <div className="bg-gradient-to-br from-slate-950 to-slate-900 text-white rounded-2xl p-5 mb-5 shadow-lg">
+              <div className="flex justify-between items-center text-xs text-slate-400 mb-1">
+                <span>Calculated Spot Payout</span>
+                <span className="font-mono text-emerald-400 font-bold">Base: ₹{quotedPrice.toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <p className="text-3xl font-black text-white font-mono">
+                  ₹{finalCalculatedPayout.toLocaleString('en-IN')}
+                </p>
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
+                  {totalAdditionAmount > 0 ? `+₹${totalAdditionAmount.toLocaleString('en-IN')} ` : ''}
+                  {totalDeductionAmount > 0 ? `-₹${totalDeductionAmount.toLocaleString('en-IN')}` : 'Full Value'}
+                </span>
+              </div>
+            </div>
+
+            {/* Checklist items with Additions & Deductions */}
+            <div className="space-y-2 mb-5">
+              <p className="text-xs font-bold text-slate-700">Diagnostic Checklist (Select Bonus or Deduction):</p>
+              <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 overflow-hidden">
+                {deliveryCheckItems.map(item => {
+                  const res = inspectionResults[item.id];
+                  const deductionAmt = Math.round(quotedPrice * (item.deductionPct / 100));
+                  const bonusAmt = item.bonusPct ? Math.round(quotedPrice * (item.bonusPct / 100)) : 0;
+
+                  return (
+                    <div key={item.id} className="p-3 bg-white flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="text-xs font-bold text-slate-900">{item.label}</p>
+                          {res === 'fail' && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-100 text-red-700">
+                              -{item.deductionPct}% (-₹{deductionAmt.toLocaleString('en-IN')})
+                            </span>
+                          )}
+                          {res === 'bonus' && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                              +{item.bonusPct}% (+₹{bonusAmt.toLocaleString('en-IN')})
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-0.5 truncate">{item.subtext}</p>
+                      </div>
+
+                      <div className="flex gap-1 flex-shrink-0">
+                        {item.bonusPct ? (
+                          <button
+                            type="button"
+                            onClick={() => setInspectionResults(prev => ({ ...prev, [item.id]: 'bonus' }))}
+                            className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                              res === 'bonus' ? 'bg-emerald-700 text-white' : 'bg-slate-100 text-emerald-700 hover:bg-emerald-50'
+                            }`}
+                          >
+                            +{item.bonusPct}%
+                          </button>
+                        ) : null}
+
+                        <button
+                          type="button"
+                          onClick={() => setInspectionResults(prev => ({ ...prev, [item.id]: 'pass' }))}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                            res === 'pass' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          Pass
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setInspectionResults(prev => ({ ...prev, [item.id]: 'fail' }))}
+                          className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                            res === 'fail' ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-red-50'
+                          }`}
+                        >
+                          -{item.deductionPct}%
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ─── Tell Customer & Customer Confirmation Box ─── */}
+            <div className="p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-300 space-y-3 mb-5">
+              <div className="flex items-center gap-2 text-emerald-900">
+                <CheckCircle2 size={16} className="text-emerald-600" />
+                <span className="font-black text-xs uppercase tracking-wider">Customer Payout Confirmation</span>
+              </div>
+              <p className="text-xs text-emerald-800">
+                Tell customer: <strong>&ldquo;We can pay you ₹{finalCalculatedPayout.toLocaleString('en-IN')} right now for this device.&rdquo;</strong>
+              </p>
+              <label className="flex items-start gap-2.5 p-3 bg-white rounded-xl border border-emerald-200 cursor-pointer shadow-xs">
+                <input
+                  type="checkbox"
+                  checked={customerConfirmedPrice}
+                  onChange={e => setCustomerConfirmedPrice(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+                />
+                <span className="text-xs font-black text-slate-900">
+                  Customer verified condition and confirmed acceptance of ₹{finalCalculatedPayout.toLocaleString('en-IN')}
+                </span>
+              </label>
+
+              {customerConfirmedPrice && (
+                <div className="pt-2 border-t border-emerald-200/60 space-y-2 text-xs">
+                  <div className="flex gap-2">
+                    {['upi', 'cash'].map(mode => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => setPayoutMode(mode as any)}
+                        className={`flex-1 py-1.5 rounded-lg border font-bold text-xs uppercase ${
+                          payoutMode === mode ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white border-slate-200 text-slate-700'
+                        }`}
+                      >
+                        {mode === 'upi' ? 'UPI Transfer' : 'Cash Handover'}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    placeholder={payoutMode === 'cash' ? 'Cash receipt note (optional)' : 'Enter customer UPI ID or UTR'}
+                    value={payoutRef}
+                    onChange={e => setPayoutRef(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-emerald-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setInspectingTask(null)}
+                className="flex-1 py-3 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={!customerConfirmedPrice || isProcessingPayout}
+                onClick={handleCompleteInspection}
+                className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {isProcessingPayout ? 'Disbursing & Closing...' : `Pay ₹${finalCalculatedPayout.toLocaleString('en-IN')} & Close Booking`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* QR Scanner Modal for Field Executive */}
+      <QRScannerModal
+        isOpen={isQRScannerOpen}
+        onClose={() => setIsQRScannerOpen(false)}
+        onScanSuccess={(detectedCode) => {
+          setIsQRScannerOpen(false);
+          const match = taskList.find(t =>
+            t.orderNumber?.toLowerCase() === detectedCode.toLowerCase() ||
+            t.id === detectedCode
+          );
+          if (match) {
+            setInspectingTask(match);
+            setInspectionResults({});
+            setCustomerConfirmedPrice(false);
+          } else {
+            // Check global orders in localStorage
+            try {
+              const raw = localStorage.getItem('casmik_orders_v1');
+              if (raw) {
+                const all = JSON.parse(raw);
+                const found = all.find((o: any) =>
+                  o.orderNumber?.toLowerCase() === detectedCode.toLowerCase() ||
+                  o.id === detectedCode
+                );
+                if (found) {
+                  setInspectingTask(found);
+                  setInspectionResults({});
+                  setCustomerConfirmedPrice(false);
+                }
+              }
+            } catch {}
+          }
+        }}
+        title="Scan Customer Booking Pass"
+        subtitle="Point camera at customer's QR code to launch doorstep physical inspection"
+      />
     </div>
   );
 }

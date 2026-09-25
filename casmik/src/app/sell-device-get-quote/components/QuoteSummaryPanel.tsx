@@ -65,8 +65,8 @@ export default function QuoteSummaryPanel({ sellState, currentStep }: Props) {
             <div className="space-y-2.5 mb-4">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Base Market Price</span>
-                <span className="font-semibold text-foreground font-tabular">
-                  ₹{sellState.basePrice.toLocaleString('en-IN')}
+                <span className="font-semibold text-foreground font-tabular tracking-wider">
+                  ₹ ****
                 </span>
               </div>
 
@@ -76,8 +76,8 @@ export default function QuoteSummaryPanel({ sellState, currentStep }: Props) {
                     <TrendingUp size={11} className="text-primary flex-shrink-0" />
                     <span className="truncate">{adj.reason}</span>
                   </span>
-                  <span className="font-semibold text-primary font-tabular flex-shrink-0">
-                    +₹{Math.abs(adj.amount).toLocaleString('en-IN')}
+                  <span className="font-semibold text-primary font-tabular flex-shrink-0 tracking-wider">
+                    +₹ ****
                   </span>
                 </div>
               ))}
@@ -88,8 +88,8 @@ export default function QuoteSummaryPanel({ sellState, currentStep }: Props) {
                     <TrendingDown size={11} className="text-danger flex-shrink-0" />
                     <span className="truncate">{adj.reason}</span>
                   </span>
-                  <span className="font-semibold text-danger font-tabular flex-shrink-0">
-                    -₹{Math.abs(adj.amount).toLocaleString('en-IN')}
+                  <span className="font-semibold text-danger font-tabular flex-shrink-0 tracking-wider">
+                    -₹ ****
                   </span>
                 </div>
               ))}
@@ -105,7 +105,7 @@ export default function QuoteSummaryPanel({ sellState, currentStep }: Props) {
                     <TrendingUp size={11} className="text-primary flex-shrink-0" />
                     Instant Payment Bonus
                   </span>
-                  <span className="font-semibold text-primary font-tabular">+₹1,000</span>
+                  <span className="font-semibold text-primary font-tabular tracking-wider">+₹ ****</span>
                 </div>
               )}
             </div>
@@ -114,8 +114,8 @@ export default function QuoteSummaryPanel({ sellState, currentStep }: Props) {
             <div className="border-t-2 border-dashed border-border pt-3 mb-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-foreground">You Get</span>
-                <span className="text-2xl font-extrabold text-primary font-tabular">
-                  ₹{sellState.currentPrice.toLocaleString('en-IN')}
+                <span className="text-2xl font-extrabold text-primary font-tabular tracking-wider">
+                  ₹ ****
                 </span>
               </div>
             </div>
@@ -124,7 +124,7 @@ export default function QuoteSummaryPanel({ sellState, currentStep }: Props) {
             <div className="flex items-start gap-2 p-3 rounded-xl bg-primary-50 border border-primary/20">
               <CheckCircle size={14} className="text-primary flex-shrink-0 mt-0.5" />
               <p className="text-xs text-foreground leading-relaxed">
-                <strong>No hidden charges.</strong> What you see is what you get!
+                <strong>Best Price Guarantee.</strong> Exact amount calculated upon technician inspection &amp; paid instantly!
               </p>
             </div>
           </>

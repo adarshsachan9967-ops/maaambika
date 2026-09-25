@@ -3,9 +3,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { getOrderStatusLabel, getOrderStatusColor, getTypeColor } from '@/lib/casmikData';
 import type { OrderStatus } from '@/lib/casmikData';
-import { Package, CheckCircle, Clock, Truck, Search, Wrench, CreditCard, MapPin, Phone, X, Wifi, WifiOff } from 'lucide-react';
-import Icon from '@/components/ui/AppIcon';
-
+import { Package, CheckCircle, Clock, Truck, Search, Wrench, CreditCard, MapPin, Phone, X, Wifi, WifiOff, QrCode, ShieldCheck } from 'lucide-react';
+import BookingQRCode from '@/components/BookingQRCode';
 
 interface LiveOrder {
   id: string;
@@ -54,35 +53,109 @@ const REPAIR_STEPS = [
 
 export default function CustomerOrderTracker() {
   const [orders, setOrders] = useState<LiveOrder[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [searchPhone, setSearchPhone] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<LiveOrder | null>(null);
+  const [qrModalOrder, setQrModalOrder] = useState<LiveOrder | null>(null);
   const [recentUpdate, setRecentUpdate] = useState<string | null>(null);
   const supabase = createClient();
 
-  const fetchOrders = useCallback(async (phone: string) => {
-    if (!phone) return;
-    setLoading(true);
+  const getLocalMatchingOrders = (query: string): LiveOrder[] => {
+    if (typeof window === 'undefined') return [];
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('customer_phone', phone)
-        .order('created_at', { ascending: false });
-      if (error) {
-        if (error.code?.startsWith('42')) throw error;
-        console.log('Customer orders error:', error.message);
+      const saved = localStorage.getItem('casmik_orders_v1');
+      if (saved) {
+        const list = JSON.parse(saved);
+        if (Array.isArray(list)) {
+          const q = query.toLowerCase().trim();
+          return list
+            .filter((o: any) =>
+              o.customerPhone?.includes(q) ||
+              o.orderNumber?.toLowerCase().includes(q) ||
+              o.id?.toLowerCase().includes(q)
+            )
+            .map((o: any) => ({
+              id: o.id,
+              order_number: o.orderNumber,
+              order_type: o.type,
+              status: o.status,
+              customer_name: o.customerName,
+              customer_phone: o.customerPhone,
+              device_name: o.deviceName,
+              quoted_price: o.quotedPrice || 0,
+              final_price: o.finalPrice || 0,
+              partner_name: o.partnerName || null,
+              delivery_agent_name: o.deliveryAgentName || null,
+              pickup_date: o.pickupDate || null,
+              pickup_slot: o.pickupSlot || null,
+              city: o.city || null,
+              pin_code: o.pinCode || null,
+              payment_status: o.paymentStatus || 'pending',
+              inspection_score: o.inspectionScore || null,
+              notes: o.notes || null,
+              updated_at: o.updatedAt || new Date().toISOString(),
+            }));
+        }
+      }
+    } catch {}
+    return [];
+  };
+
+  const fetchOrders = useCallback(async (query: string) => {
+    if (!query) return;
+    setLoading(true);
+    const localMatches = getLocalMatchingOrders(query);
+
+    try {
+      const isPhoneNumber = /^\d+$/.test(query.trim());
+      let queryBuilder = supabase.from('orders').select('*');
+
+      if (isPhoneNumber) {
+        queryBuilder = queryBuilder.eq('customer_phone', query.trim());
+      } else {
+        queryBuilder = queryBuilder.or(`order_number.ilike.%${query.trim()}%,id.eq.${query.trim()}`);
+      }
+
+      const { data, error } = await queryBuilder.order('created_at', { ascending: false });
+      if (!error && data && data.length > 0) {
+        // Merge remote and local without duplicates
+        const map = new Map();
+        data.forEach(item => map.set(item.id, item));
+        localMatches.forEach(item => {
+          if (!map.has(item.id)) map.set(item.id, item);
+        });
+        setOrders(Array.from(map.values()));
         return;
       }
-      setOrders(data || []);
     } catch (err: any) {
       console.log('Customer orders error:', err.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+
+    if (localMatches.length > 0) {
+      setOrders(localMatches);
+    }
+  }, [supabase]);
+
+  // Handle URL params on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const paramOrderId = params.get('orderId');
+      const paramPhone = params.get('phone');
+      if (paramOrderId) {
+        setSearchInput(paramOrderId);
+        fetchOrders(paramOrderId);
+      } else if (paramPhone) {
+        setSearchPhone(paramPhone);
+        setSearchInput(paramPhone);
+        fetchOrders(paramPhone);
+      }
+    }
+  }, [fetchOrders]);
 
   useEffect(() => {
     if (!searchPhone) return;
@@ -106,11 +179,13 @@ export default function CustomerOrderTracker() {
       .subscribe(status => setIsConnected(status === 'SUBSCRIBED'));
 
     return () => { supabase.removeChannel(channel); };
-  }, [searchPhone]);
+  }, [searchPhone, supabase]);
 
   const handleSearch = () => {
-    if (searchInput.trim().length >= 10) {
-      setSearchPhone(searchInput.trim());
+    if (searchInput.trim().length >= 3) {
+      if (/^\d{10,}$/.test(searchInput.trim())) {
+        setSearchPhone(searchInput.trim());
+      }
       fetchOrders(searchInput.trim());
     }
   };
@@ -128,25 +203,25 @@ export default function CustomerOrderTracker() {
           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <Package size={32} className="text-primary" />
           </div>
-          <h1 className="text-2xl font-black text-gray-900 mb-2">Track Your Order</h1>
-          <p className="text-gray-500 text-sm">Enter your phone number to see live order status</p>
+          <h1 className="text-2xl font-black text-gray-900 mb-2">Track Your Order &amp; Inspection</h1>
+          <p className="text-gray-500 text-sm">Enter your phone number or Order ID (e.g. CSM-2024-XXX) to see live status &amp; QR pass</p>
         </div>
 
         {/* Search */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6">
           <div className="flex gap-3">
             <div className="relative flex-1">
-              <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 value={searchInput}
                 onChange={e => setSearchInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                placeholder="Enter your mobile number (e.g. 9876543210)"
+                placeholder="Enter mobile number or Order ID (e.g. CSM-2024-123)"
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
             <button onClick={handleSearch}
-              className="px-5 py-3 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary/90 transition-colors">
+              className="px-5 py-3 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary/90 transition-colors cursor-pointer">
               Track
             </button>
           </div>
@@ -172,32 +247,33 @@ export default function CustomerOrderTracker() {
         )}
 
         {/* Orders */}
-        {searchPhone && !loading && (
+        {searchInput && !loading && (
           <div className="space-y-4">
             {orders.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
                 <p className="text-4xl mb-3">📭</p>
                 <p className="font-bold text-gray-700 mb-1">No orders found</p>
-                <p className="text-sm text-gray-400">No orders found for {searchPhone}</p>
+                <p className="text-sm text-gray-400">No orders found for &ldquo;{searchInput}&rdquo;</p>
               </div>
             ) : (
               orders.map(order => {
                 const steps = getSteps(order.order_type);
                 const currentIdx = getStepIndex(steps, order.status);
                 const isTerminal = ['completed', 'cancelled', 'rejected'].includes(order.status);
+                const isSell = order.order_type === 'sell';
+                const isCompleted = order.status === 'completed' || order.payment_status === 'paid';
 
                 return (
                   <div key={order.id}
-                    className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all cursor-pointer hover:shadow-md ${
+                    className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all ${
                       recentUpdate === order.order_number ? 'border-green-300 ring-2 ring-green-100' : 'border-gray-100'
-                    }`}
-                    onClick={() => setSelectedOrder(order)}>
+                    }`}>
                     <div className="p-5">
                       {/* Order Header */}
                       <div className="flex items-start justify-between mb-4">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-black text-gray-500">{order.order_number}</span>
+                            <span className="text-xs font-black text-gray-500">#{order.order_number}</span>
                             <span className={`text-xs font-bold px-2 py-0.5 rounded-lg capitalize ${getTypeColor(order.order_type as any)}`}>
                               {order.order_type}
                             </span>
@@ -206,14 +282,52 @@ export default function CustomerOrderTracker() {
                             )}
                           </div>
                           <p className="font-bold text-gray-900">{order.device_name}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">{order.city} · {order.pickup_date}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{order.city || 'Delhi NCR'} · {order.pickup_date || 'Scheduled'}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-black text-gray-900">₹{(order.final_price || order.quoted_price || 0).toLocaleString('en-IN')}</p>
-                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-lg ${getOrderStatusColor(order.status as OrderStatus)}`}>
+                          {isSell && !isCompleted ? (
+                            <div>
+                              <p className="text-lg font-black text-slate-900 font-mono tracking-wider">₹ ****</p>
+                              <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 block mt-0.5">
+                                Pending Inspection
+                              </span>
+                            </div>
+                          ) : (
+                            <div>
+                              <p className="text-lg font-black text-emerald-600 font-tabular">
+                                ₹{(order.final_price || order.quoted_price || 0).toLocaleString('en-IN')}
+                              </p>
+                              {isCompleted && (
+                                <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 block mt-0.5">
+                                  ✅ Paid on Spot
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-lg mt-1 inline-block ${getOrderStatusColor(order.status as OrderStatus)}`}>
                             {getOrderStatusLabel(order.status as OrderStatus)}
                           </span>
                         </div>
+                      </div>
+
+                      {/* Prominent Inspection QR Action */}
+                      <div className="mb-4 p-3 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                            <QrCode size={18} />
+                          </div>
+                          <div>
+                            <p className="text-xs font-black text-emerald-900">Doorstep Inspection Pass</p>
+                            <p className="text-[11px] text-emerald-700">Show QR code to technician to begin</p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setQrModalOrder(order)}
+                          className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer whitespace-nowrap"
+                        >
+                          View QR Pass
+                        </button>
                       </div>
 
                       {/* Progress Steps */}
@@ -224,10 +338,10 @@ export default function CustomerOrderTracker() {
                           const isCurrent = idx === currentIdx;
                           return (
                             <div key={step.key} className={`flex items-center gap-3 py-1.5 px-3 rounded-xl transition-all ${
-                              isCurrent ? 'bg-primary/5 border border-primary/20' : isDone ?'opacity-60' : 'opacity-30'
+                              isCurrent ? 'bg-primary/5 border border-primary/20' : isDone ? 'opacity-60' : 'opacity-30'
                             }`}>
                               <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
-                                isDone ? 'bg-green-500 text-white' : isCurrent ?'bg-primary text-white ring-2 ring-primary/30': 'bg-gray-100 text-gray-400'
+                                isDone ? 'bg-green-500 text-white' : isCurrent ? 'bg-primary text-white ring-2 ring-primary/30' : 'bg-gray-100 text-gray-400'
                               }`}>
                                 <Icon size={13} />
                               </div>
@@ -244,8 +358,8 @@ export default function CustomerOrderTracker() {
                       </div>
 
                       {/* Partner/Agent Info */}
-                      {(order.partner_name || order.delivery_agent_name) && (
-                        <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs">
+                      <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2">
                           {order.partner_name && (
                             <div className="flex items-center gap-1.5 text-gray-600">
                               <MapPin size={12} className="text-primary" />
@@ -259,7 +373,15 @@ export default function CustomerOrderTracker() {
                             </div>
                           )}
                         </div>
-                      )}
+
+                        <button
+                          type="button"
+                          onClick={() => setSelectedOrder(order)}
+                          className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition-colors cursor-pointer"
+                        >
+                          View Details
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -268,14 +390,42 @@ export default function CustomerOrderTracker() {
           </div>
         )}
 
-        {!searchPhone && (
+        {!searchInput && (
           <div className="text-center py-12 text-gray-400">
             <p className="text-5xl mb-4">📦</p>
-            <p className="font-semibold text-gray-500">Enter your phone number above to track your orders</p>
-            <p className="text-sm mt-1">Real-time updates will appear automatically</p>
+            <p className="font-semibold text-gray-500">Enter your phone number or Order ID above to track your orders</p>
+            <p className="text-sm mt-1">Real-time updates and doorstep inspection QR code will appear automatically</p>
           </div>
         )}
       </div>
+
+      {/* QR Code Modal */}
+      {qrModalOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs">
+          <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 z-10 animate-in fade-in zoom-in-95">
+            <button
+              onClick={() => setQrModalOrder(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors"
+            >
+              <X size={18} />
+            </button>
+            <div className="mb-2">
+              <BookingQRCode
+                orderNumber={qrModalOrder.order_number}
+                orderId={qrModalOrder.id}
+                deviceName={qrModalOrder.device_name}
+                customerName={qrModalOrder.customer_name}
+              />
+            </div>
+            <button
+              onClick={() => setQrModalOrder(null)}
+              className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Order Detail Modal */}
       {selectedOrder && (
@@ -283,7 +433,7 @@ export default function CustomerOrderTracker() {
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setSelectedOrder(null)} />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 z-10 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-black text-gray-900">{selectedOrder.order_number}</h3>
+              <h3 className="text-lg font-black text-gray-900">#{selectedOrder.order_number}</h3>
               <button onClick={() => setSelectedOrder(null)} className="p-2 rounded-xl hover:bg-gray-100"><X size={18} /></button>
             </div>
             <div className="space-y-4">
@@ -295,22 +445,49 @@ export default function CustomerOrderTracker() {
                 <p className="text-xs font-bold text-gray-500 mb-2">Device</p>
                 <p className="font-bold text-gray-900">{selectedOrder.device_name}</p>
               </div>
+
+              {/* QR Code Embedded in Details */}
+              <div className="p-2 bg-slate-50 rounded-2xl border border-slate-200">
+                <BookingQRCode
+                  orderNumber={selectedOrder.order_number}
+                  orderId={selectedOrder.id}
+                  deviceName={selectedOrder.device_name}
+                  customerName={selectedOrder.customer_name}
+                  size={160}
+                  showDetails={false}
+                  showDownload={true}
+                />
+              </div>
+
               <div className="bg-green-50 rounded-xl p-4">
-                <p className="text-xs font-bold text-gray-500 mb-2">Pricing</p>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Quoted</span>
-                  <span className="font-bold text-gray-900">₹{(selectedOrder.quoted_price || 0).toLocaleString('en-IN')}</span>
-                </div>
-                {selectedOrder.final_price > 0 && (
-                  <div className="flex justify-between mt-1">
-                    <span className="text-sm text-gray-600">Final</span>
-                    <span className="font-bold text-green-700">₹{selectedOrder.final_price.toLocaleString('en-IN')}</span>
+                <p className="text-xs font-bold text-gray-500 mb-2">Pricing Status</p>
+                {selectedOrder.order_type === 'sell' && selectedOrder.status !== 'completed' && selectedOrder.payment_status !== 'paid' ? (
+                  <div className="space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Quoted Valuation</span>
+                      <span className="font-bold text-gray-900 font-mono tracking-wider">₹ ****</span>
+                    </div>
+                    <p className="text-xs text-amber-700 bg-amber-100/60 p-2 rounded-lg mt-2">
+                      🔒 Exact final price calculated on doorstep physical inspection &amp; transferred instantly to your UPI/Bank.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Final Paid Price</span>
+                      <span className="font-black text-emerald-700 text-lg">
+                        ₹{(selectedOrder.final_price || selectedOrder.quoted_price || 0).toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-emerald-700 font-semibold">
+                      ✅ Disbursed &amp; Order Finalized
+                    </p>
                   </div>
                 )}
               </div>
               {selectedOrder.pickup_date && (
                 <div className="bg-blue-50 rounded-xl p-4">
-                  <p className="text-xs font-bold text-gray-500 mb-1">Pickup Details</p>
+                  <p className="text-xs font-bold text-gray-500 mb-1">Pickup Schedule</p>
                   <p className="text-sm font-bold text-gray-900">📅 {selectedOrder.pickup_date}</p>
                   {selectedOrder.pickup_slot && <p className="text-xs text-gray-500">🕐 {selectedOrder.pickup_slot}</p>}
                 </div>

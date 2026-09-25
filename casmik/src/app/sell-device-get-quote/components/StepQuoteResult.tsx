@@ -5,6 +5,7 @@ import { CheckCircle, Shield, Truck, Zap, Ban, TrendingUp, Clock, MapPin, Calend
 import type { SellState } from './SellDeviceWorkflow';
 import { triggerNotification } from '@/lib/notifications';
 import { createClient } from '@/lib/supabase/client';
+import BookingQRCode from '@/components/BookingQRCode';
 
 interface Props {
   sellState: SellState;
@@ -152,19 +153,27 @@ export default function StepQuoteResult({ sellState, onSchedulePickup, onBack }:
               Your order <span className="font-mono font-bold underline">#{bookedOrderNumber || 'CSM-2024-LIVE'}</span> has been confirmed. Our executive will arrive at your scheduled slot.
             </p>
           </div>
-          <div className="p-6 space-y-3 bg-slate-50/50">
-            <div className="flex justify-between items-center text-sm py-2 border-b border-border/50">
-              <span className="text-muted-foreground font-medium">Order Number</span>
-              <span className="font-mono font-bold text-primary">{bookedOrderNumber || 'CSM-2024-LIVE'}</span>
-            </div>
-            <div className="flex justify-between items-center text-sm py-2 border-b border-border/50">
-              <span className="text-muted-foreground font-medium">Device</span>
-              <span className="font-semibold text-slate-800">{sellState.brandName} {sellState.modelName}</span>
-            </div>
-            <div className="flex justify-between items-center text-sm py-2 border-b border-border/50">
-              <span className="text-muted-foreground font-medium">Guaranteed Quoted Value</span>
-              <span className="font-black text-lg text-emerald-600">₹{price.toLocaleString('en-IN')}</span>
-            </div>
+          <div className="p-6 space-y-4 bg-slate-50/50">
+            {/* Doorstep Inspection QR Code */}
+            <BookingQRCode
+              orderNumber={bookedOrderNumber || 'CSM-2024-LIVE'}
+              deviceName={`${sellState.brandName} ${sellState.modelName}`}
+              customerName={name}
+            />
+
+            <div className="bg-white rounded-2xl p-4 border border-border space-y-2.5">
+              <div className="flex justify-between items-center text-sm py-1.5 border-b border-border/50">
+                <span className="text-muted-foreground font-medium">Order Number</span>
+                <span className="font-mono font-bold text-primary">{bookedOrderNumber || 'CSM-2024-LIVE'}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm py-1.5 border-b border-border/50">
+                <span className="text-muted-foreground font-medium">Device</span>
+                <span className="font-semibold text-slate-800">{sellState.brandName} {sellState.modelName}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm py-1.5 border-b border-border/50">
+                <span className="text-muted-foreground font-medium">Guaranteed Quoted Value</span>
+                <span className="font-black text-lg text-emerald-600 font-mono tracking-wider">₹ **** <span className="text-xs font-normal text-muted-foreground block text-right">(Payable on Doorstep Inspection)</span></span>
+              </div>
             <div className="flex justify-between items-center text-sm py-2 border-b border-border/50">
               <span className="text-muted-foreground font-medium">Customer</span>
               <span className="font-semibold text-slate-800">{name} ({phone})</span>
@@ -173,9 +182,10 @@ export default function StepQuoteResult({ sellState, onSchedulePickup, onBack }:
               <span className="text-muted-foreground font-medium">Pickup Schedule</span>
               <span className="font-semibold text-indigo-700">{selectedDate} · {selectedSlot}</span>
             </div>
-            <div className="flex justify-between items-center text-sm py-2">
-              <span className="text-muted-foreground font-medium">Payment Mode</span>
-              <span className="font-bold text-slate-800 bg-white px-2.5 py-1 rounded-lg border border-border">{paymentMethod} Instant Transfer</span>
+              <div className="flex justify-between items-center text-sm py-1.5">
+                <span className="text-muted-foreground font-medium">Payment Mode</span>
+                <span className="font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg border border-border">{paymentMethod} Instant Transfer</span>
+              </div>
             </div>
           </div>
           <div className="p-5 bg-white border-t border-border flex flex-col sm:flex-row gap-3">
@@ -275,7 +285,7 @@ export default function StepQuoteResult({ sellState, onSchedulePickup, onBack }:
 
         <div className="bg-white rounded-2xl border border-border p-4">
           <div className="flex justify-between text-sm mb-1"><span className="text-muted-foreground">Device</span><span className="font-semibold">{sellState.brandName} {sellState.modelName}</span></div>
-          <div className="flex justify-between text-sm font-bold"><span>Quoted Price</span><span className="text-primary">₹{price.toLocaleString('en-IN')}</span></div>
+          <div className="flex justify-between text-sm font-bold"><span>Quoted Price</span><span className="text-primary font-mono tracking-wider">₹ ****</span></div>
         </div>
 
         <button
@@ -309,9 +319,12 @@ export default function StepQuoteResult({ sellState, onSchedulePickup, onBack }:
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <p className="text-sm font-semibold text-muted-foreground mb-2">Your Best Price</p>
-              <div className="text-5xl font-extrabold text-foreground font-tabular mb-3">
-                ₹{price.toLocaleString('en-IN')}
+              <p className="text-sm font-semibold text-muted-foreground mb-1">Estimated Value</p>
+              <div className="text-5xl font-extrabold text-foreground font-tabular mb-2 tracking-widest">
+                ₹ ****
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold mb-3 border border-emerald-200">
+                🔒 Payout verified &amp; disbursed during doorstep inspection
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock size={14} className="text-warning" />

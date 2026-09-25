@@ -142,10 +142,8 @@ export default function StepConditionQuestions({ sellState, onUpdate, onNext, on
       <div className={`bg-white rounded-2xl border border-border shadow-sm p-5 flex items-center justify-between ${priceAnimation ? 'price-pulse' : ''}`}>
         <div>
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Current Estimated Value</p>
-          <div className={`text-3xl font-extrabold font-tabular transition-all duration-300 ${
-            priceAnimation === 'up' ? 'text-primary scale-105' : priceAnimation === 'down' ? 'text-danger scale-105' : 'text-foreground'
-          }`}>
-            ₹{sellState.currentPrice.toLocaleString('en-IN')}
+          <div className="text-3xl font-extrabold font-tabular tracking-widest text-foreground">
+            ₹ ****
           </div>
         </div>
         {lastDelta !== 0 && priceAnimation && (
@@ -153,7 +151,7 @@ export default function StepConditionQuestions({ sellState, onUpdate, onNext, on
             lastDelta > 0 ? 'bg-primary-100 text-primary' : 'bg-red-50 text-danger'
           }`}>
             {lastDelta > 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-            {lastDelta > 0 ? '+' : ''}₹{Math.abs(lastDelta).toLocaleString('en-IN')}
+            {lastDelta > 0 ? '+' : '-'}₹ ****
           </div>
         )}
         <div className="text-right hidden sm:block">
@@ -221,7 +219,7 @@ export default function StepConditionQuestions({ sellState, onUpdate, onNext, on
                       <p className="text-xs text-muted-foreground leading-tight line-clamp-2">{opt.desc}</p>
                       {opt.adjustment !== 0 && (
                         <span className={`text-xs font-black px-2 py-0.5 rounded-full ${opt.adjustment > 0 ? 'bg-primary-100 text-primary' : 'bg-red-50 text-danger'}`}>
-                          {opt.adjustment > 0 ? '+' : ''}₹{Math.abs(opt.adjustment / 1000)}K
+                          {opt.adjustment > 0 ? '+' : '-'}₹ ****
                         </span>
                       )}
                       {selected && <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center"><span className="text-white text-xs">✓</span></div>}
@@ -256,7 +254,7 @@ export default function StepConditionQuestions({ sellState, onUpdate, onNext, on
       {allAnswered && (
         <div className="fade-in">
           <button onClick={onNext} className="w-full py-4 gradient-green text-white rounded-2xl font-bold text-base shadow-green btn-press">
-            🎉 Get My Final Quote — ₹{sellState.currentPrice.toLocaleString('en-IN')}
+            🎉 Get My Final Quote — ₹ ****
           </button>
         </div>
       )}
@@ -288,7 +286,7 @@ export default function StepConditionQuestions({ sellState, onUpdate, onNext, on
                     </div>
                     {opt.adjustment !== 0 && (
                       <span className={`text-xs font-black px-2 py-0.5 rounded-full ${opt.adjustment > 0 ? 'bg-primary-100 text-primary' : 'bg-red-50 text-danger'}`}>
-                        {opt.adjustment > 0 ? '+' : ''}₹{Math.abs(opt.adjustment).toLocaleString('en-IN')}
+                        {opt.adjustment > 0 ? '+' : '-'}₹ ****
                       </span>
                     )}
                   </button>

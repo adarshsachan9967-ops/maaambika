@@ -2896,13 +2896,13 @@ class _SellWorkflowWidgetState extends State<SellWorkflowWidget> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           color: const Color(0xFF0F172A),
-          child: Row(
+          child: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Estimated Payout:', style: TextStyle(color: Colors.white70, fontSize: 12)),
+              Text('Estimated Payout:', style: TextStyle(color: Colors.white70, fontSize: 12)),
               Text(
-                formatCurrency(_calculatedPrice),
-                style: const TextStyle(color: Color(0xFF34D399), fontWeight: FontWeight.w900, fontSize: 18),
+                '$kRupee ****',
+                style: TextStyle(color: Color(0xFF34D399), fontWeight: FontWeight.w900, fontSize: 18),
               ),
             ],
           ),
@@ -2976,7 +2976,7 @@ class _SellWorkflowWidgetState extends State<SellWorkflowWidget> {
                               ),
                               if (adj != 0)
                                 Text(
-                                  adj > 0 ? '+${formatCurrency(adj)}' : '-${formatCurrency(adj.abs())}',
+                                  adj > 0 ? '+$kRupee ****' : '-$kRupee ****',
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
@@ -3036,9 +3036,9 @@ class _SellWorkflowWidgetState extends State<SellWorkflowWidget> {
               children: [
                 const Text('Guaranteed Instant Payout Quote', style: TextStyle(color: Colors.white70, fontSize: 12)),
                 const SizedBox(height: 6),
-                Text(
-                  formatCurrency(_calculatedPrice),
-                  style: const TextStyle(color: Color(0xFF34D399), fontWeight: FontWeight.w900, fontSize: 32),
+                const Text(
+                  '$kRupee ****',
+                  style: TextStyle(color: Color(0xFF34D399), fontWeight: FontWeight.w900, fontSize: 32),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -3060,7 +3060,7 @@ class _SellWorkflowWidgetState extends State<SellWorkflowWidget> {
             ),
             child: Column(
               children: [
-                _buildBreakdownRow('Base Market Value', formatCurrency(_basePrice), isNeutral: true),
+                _buildBreakdownRow('Base Market Value', '$kRupee ****', isNeutral: true),
                 const Divider(height: 16),
                 ...List.generate(_questions.length, (qIdx) {
                   final optIdx = _selectedAnswers[qIdx] ?? 0;
@@ -3087,8 +3087,8 @@ class _SellWorkflowWidgetState extends State<SellWorkflowWidget> {
                           adj == 0
                               ? '$kRupee 0'
                               : adj > 0
-                                  ? '+${formatCurrency(adj)}'
-                                  : '-${formatCurrency(adj.abs())}',
+                                  ? '+$kRupee ****'
+                                  : '-$kRupee ****',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
@@ -3104,7 +3104,7 @@ class _SellWorkflowWidgetState extends State<SellWorkflowWidget> {
                   );
                 }),
                 const Divider(height: 16),
-                _buildBreakdownRow('Final Handover Cash', formatCurrency(_calculatedPrice), isHighlight: true),
+                _buildBreakdownRow('Final Handover Cash', '$kRupee ****', isHighlight: true),
               ],
             ),
           ),
@@ -5076,7 +5076,12 @@ class UserProfileWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(formatCurrency(o.amount), style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF0F172A), fontSize: 14)),
+              Text(
+                (o.type == 'sell' && o.status.toLowerCase() != 'completed' && o.status.toLowerCase() != 'delivered' && o.status.toLowerCase() != 'paid')
+                    ? '$kRupee ****'
+                    : formatCurrency(o.amount),
+                style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF0F172A), fontSize: 14),
+              ),
               Text('OTP: ${o.otp}', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4F46E5), fontSize: 12)),
             ],
           ),
