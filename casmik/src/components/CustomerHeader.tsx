@@ -21,6 +21,7 @@ import {
   User,
   Package,
   LogOut,
+  ShoppingBag,
 } from 'lucide-react';
 import { deviceModels, brands, categories } from '@/lib/casmikData';
 import { getCurrentUser, logoutUser, CustomerUser } from '@/lib/auth';
@@ -64,9 +65,11 @@ export default function CustomerHeader() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [buyMenuOpen, setBuyMenuOpen] = useState(false);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
+  const buyMenuRef = useRef<HTMLDivElement>(null);
 
   const [user, setUser] = useState<CustomerUser | null>(null);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -108,6 +111,9 @@ export default function CustomerHeader() {
       }
       if (megaMenuRef.current && !megaMenuRef.current.contains(e.target as Node)) {
         setMegaMenuOpen(false);
+      }
+      if (buyMenuRef.current && !buyMenuRef.current.contains(e.target as Node)) {
+        setBuyMenuOpen(false);
       }
       if (userDropdownRef.current && !userDropdownRef.current.contains(e.target as Node)) {
         setUserDropdownOpen(false);
@@ -594,67 +600,115 @@ export default function CustomerHeader() {
                 )}
               </div>
 
+              {/* Buy Refurbished Dropdown */}
+              <div ref={buyMenuRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setBuyMenuOpen(!buyMenuOpen)}
+                  onMouseEnter={() => setBuyMenuOpen(true)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                    buyMenuOpen
+                      ? 'text-blue-700 bg-blue-50'
+                      : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50/60'
+                  }`}
+                >
+                  <ShoppingBag size={15} className="text-blue-600" />
+                  <span>Buy Refurbished</span>
+                  <ChevronDown size={14} className={`transition-transform duration-200 ${buyMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Dropdown Card */}
+                {buyMenuOpen && (
+                  <div
+                    onMouseLeave={() => setBuyMenuOpen(false)}
+                    className="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl border border-slate-200 shadow-2xl p-3 z-50 animate-in fade-in-50 slide-in-from-top-2 duration-200"
+                  >
+                    <div className="px-3 py-2 border-b border-slate-100 mb-1">
+                      <p className="text-xs font-black uppercase tracking-wider text-slate-400">Certified Pre-Owned Devices</p>
+                      <p className="text-[11px] text-slate-500">32-point inspection • 6-12 mo warranty</p>
+                    </div>
+                    <div className="space-y-1">
+                      {[
+                        { title: 'Refurbished iPhones', desc: 'iPhone 13, 14 & 15 Pro series', href: '/buy-refurbished?category=smartphone&brand=apple' },
+                        { title: 'Refurbished Samsung', desc: 'Galaxy S24, S23 & Z-Fold', href: '/buy-refurbished?category=smartphone&brand=samsung' },
+                        { title: 'Refurbished MacBooks & Laptops', desc: 'M1/M2/M3 & Dell XPS', href: '/buy-refurbished?category=laptop' },
+                        { title: 'Certified iPads & Tablets', desc: 'iPad Pro, Air & Galaxy Tab', href: '/buy-refurbished?category=tablet' },
+                        { title: 'Verified DSLR & Mirrorless', desc: 'Canon, Sony & Nikon Bodies', href: '/buy-refurbished?category=dslr' },
+                      ].map((item) => (
+                        <Link
+                          key={item.title}
+                          href={item.href}
+                          onClick={() => setBuyMenuOpen(false)}
+                          className="flex items-center justify-between p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group"
+                        >
+                          <div>
+                            <p className="text-xs font-bold text-slate-900 group-hover:text-blue-600">{item.title}</p>
+                            <p className="text-[10px] text-slate-500">{item.desc}</p>
+                          </div>
+                          <ChevronRight size={14} className="text-slate-300 group-hover:text-blue-600 transition-colors" />
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Repair Device Link */}
               <Link
-                href="/buy-refurbished"
-                className="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-700 hover:text-purple-600 hover:bg-purple-50/60 transition-colors"
+                href="/repair-device"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-700 hover:text-purple-600 hover:bg-purple-50/60 transition-colors"
               >
-                Buy Refurbished
+                <Layers size={15} className="text-purple-600" />
+                <span>Repair Device</span>
               </Link>
-              <Link
-                href="/exchange-device"
-                className="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-700 hover:text-purple-600 hover:bg-purple-50/60 transition-colors"
-              >
-                Exchange Device
-              </Link>
-              <Link
-                href="/my-orders"
-                className="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-700 hover:text-purple-600 hover:bg-purple-50/60 transition-colors"
-              >
-                My Orders
-              </Link>
-              <Link
-                href="/track-order"
-                className="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-700 hover:text-purple-600 hover:bg-purple-50/60 transition-colors"
-              >
-                Track Order
-              </Link>
+
+              {/* How It Works Link */}
               <Link
                 href="/how-it-works"
-                className="px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-sm font-semibold text-slate-700 hover:text-purple-600 hover:bg-purple-50/60 transition-colors whitespace-nowrap"
+                className="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50/60 transition-colors whitespace-nowrap"
               >
                 How It Works
               </Link>
+
+              {/* Exchange Device Link */}
               <Link
-                href="/why-camsik"
-                className="px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-sm font-semibold text-slate-700 hover:text-purple-600 hover:bg-purple-50/60 transition-colors whitespace-nowrap"
+                href="/exchange-device"
+                className="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50/60 transition-colors whitespace-nowrap"
               >
-                Why Maa Ambika
+                Exchange
               </Link>
+
+              {/* Track Order Link */}
               <Link
-                href="/faq"
-                className="px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-sm font-semibold text-slate-700 hover:text-purple-600 hover:bg-purple-50/60 transition-colors whitespace-nowrap"
+                href="/track-order"
+                className="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50/60 transition-colors whitespace-nowrap"
               >
-                FAQ
+                Track Order
               </Link>
+
+              {/* My Orders Link */}
               <Link
-                href="/contact-us"
-                className="px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-sm font-semibold text-slate-700 hover:text-purple-600 hover:bg-purple-50/60 transition-colors whitespace-nowrap"
+                href="/my-orders"
+                className="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50/60 transition-colors whitespace-nowrap"
               >
-                Contact Us
+                My Orders
               </Link>
             </nav>
 
-            {/* Help & Support pill */}
+            {/* Right: Secure & Trusted Badge + Helpline (Reference Image 2) */}
             <div className="flex items-center gap-3 text-xs text-slate-500 flex-shrink-0 pl-3">
-              <span className="hidden xl:inline-flex items-center gap-1 font-medium text-emerald-600 whitespace-nowrap">
-                <ShieldCheck size={14} /> 100% Secure Valuation
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200/80 shadow-2xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <ShieldCheck size={14} className="text-emerald-600" />
+                <span>Secure &amp; Trusted</span>
               </span>
-              <span className="hidden xl:inline">•</span>
+              <span className="hidden xl:inline text-slate-300">•</span>
               <a
                 href="tel:+918260120467"
-                className="font-bold text-slate-700 hover:text-primary transition-colors inline-flex items-center gap-1 whitespace-nowrap"
+                className="font-bold text-slate-700 hover:text-blue-600 transition-colors inline-flex items-center gap-1 whitespace-nowrap"
+                title="Call 24/7 Helpline"
               >
-                <Phone size={12} className="text-primary" /> +91 8260120467
+                <Phone size={12} className="text-blue-600" /> +91 8260120467
               </a>
             </div>
           </div>

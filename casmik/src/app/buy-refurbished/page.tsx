@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import CustomerHeader from '@/components/CustomerHeader';
 import CustomerFooter from '@/components/CustomerFooter';
+import FloatingWhatsAppCTA from '@/components/FloatingWhatsAppCTA';
 import {
   RefurbishedProduct,
   ProductCategory,
@@ -1133,6 +1134,7 @@ export default function BuyRefurbishedPage() {
       )}
 
       <CustomerFooter />
+      <FloatingWhatsAppCTA />
     </main>
   );
 }

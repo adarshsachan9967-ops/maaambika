@@ -1398,8 +1398,8 @@ class _UserMainNavigationScreenState extends State<UserMainNavigationScreen> {
 
           const SizedBox(height: 10),
 
-          // 2. COMPACT HORIZONTAL 1-ROW ACTION HUB (SELL | BUY | EXCHANGE)
-          _buildCompactHorizontalActionHub(),
+          // 2. THREE SERVICE CARDS (MATCHING REFERENCE IMAGE 1: SELL, BUY, REPAIR)
+          _buildThreeServiceCards(),
 
           const SizedBox(height: 24),
 
@@ -1418,191 +1418,29 @@ class _UserMainNavigationScreenState extends State<UserMainNavigationScreen> {
 
           const SizedBox(height: 24),
 
-          // 6. 3-STEP RECOMMERCE WORKFLOW
-          _buildHowItWorksSection(),
+          // 6. 6-STEP BUYBACK WORKFLOW (MATCHING REFERENCE IMAGE 3)
+          _buildSixStepBuybackSection(),
 
           const SizedBox(height: 24),
 
-          // 7. WHY CAMSIK
+          // 7. REAL CUSTOMER REVIEWS (MATCHING REFERENCE IMAGE 4)
+          _buildCustomerFeedbackSection(),
+
+          const SizedBox(height: 24),
+
+          // 8. WHY CAMSIK
           _buildWhyCamsikSection(),
 
           const SizedBox(height: 24),
 
-          // 8. FAQS & GUARANTEES (FULL 10 FAQS WITH CATEGORY TABS)
+          // 9. FAQS & GUARANTEES (FULL 10 FAQS WITH CATEGORY TABS)
           const CamsikFaqSectionWidget(),
         ],
       ),
     );
   }
 
-  // COMPACT HORIZONTAL 1-ROW ACTION HUB: SELL | BUY | EXCHANGE
-  Widget _buildCompactHorizontalActionHub() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Action 1: Sell
-            Expanded(
-              child: InkWell(
-                onTap: () => setState(() => _currentIndex = 1),
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF059669), Color(0xFF10B981)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(14),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF059669).withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Center(
-                          child: Text(
-                            kRupee,
-                            style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w900),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Sell',
-                        style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w900, fontSize: 13),
-                      ),
-                      const Text(
-                        'Instant Cash',
-                        style: TextStyle(color: Color(0xFF059669), fontSize: 10, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Container(width: 1, height: 48, color: const Color(0xFFE2E8F0)),
-            // Action 2: Buy
-            Expanded(
-              child: InkWell(
-                onTap: () => setState(() => _currentIndex = 2),
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF4F46E5), Color(0xFF6366F1)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(14),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF4F46E5).withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Center(
-                          child: Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 22),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Buy',
-                        style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w900, fontSize: 13),
-                      ),
-                      const Text(
-                        'Refurbished',
-                        style: TextStyle(color: Color(0xFF4F46E5), fontSize: 10, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Container(width: 1, height: 48, color: const Color(0xFFE2E8F0)),
-            // Action 3: Exchange
-            Expanded(
-              child: InkWell(
-                onTap: () => setState(() => _currentIndex = 3),
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF7C3AED), Color(0xFF9333EA)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(14),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF7C3AED).withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Center(
-                          child: Icon(Icons.swap_horiz_rounded, color: Colors.white, size: 24),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Exchange',
-                        style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w900, fontSize: 13),
-                      ),
-                      const Text(
-                        '+$kRupee 5,000 Bonus',
-                        style: TextStyle(color: Color(0xFF7C3AED), fontSize: 10, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   // 3. 8 TECH CATEGORIES
   Widget _buildEightCategoriesBar() {
@@ -1900,91 +1738,101 @@ class _UserMainNavigationScreenState extends State<UserMainNavigationScreen> {
     );
   }
 
-  // 6. HOW IT WORKS SECTION
-  Widget _buildHowItWorksSection() {
+  // 2. THREE SERVICE CARDS (MATCHING REFERENCE IMAGE 1: SELL, BUY, REPAIR)
+  Widget _buildThreeServiceCards() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Section Heading
           const Text(
-            'How Camsik ReCommerce Works',
+            'Sell, Buy & Repair Devices',
             style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: Color(0xFF0F172A)),
           ),
           const SizedBox(height: 12),
-          _buildStepCard(
-            step: '01',
-            title: 'Instant 60-Sec AI Valuation',
-            desc: 'Select your device model, answer category-specific condition questions and get a guaranteed quote.',
-            icon: Icons.speed,
-            color: const Color(0xFF059669),
-          ),
-          const SizedBox(height: 8),
-          _buildStepCard(
-            step: '02',
-            title: 'Free Doorstep Verification',
-            desc: 'A verified Camsik camera technician visits your doorstep at your scheduled slot in 200+ cities.',
-            icon: Icons.doorbell_outlined,
-            color: const Color(0xFF4F46E5),
-          ),
-          const SizedBox(height: 8),
-          _buildStepCard(
-            step: '03',
-            title: 'Instant Spot UPI Transfer',
-            desc: 'Full payout credited directly to your bank account or UPI ID before the device leaves your hands.',
-            icon: Icons.account_balance_wallet_outlined,
-            color: const Color(0xFF7C3AED),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildStepCard({
-    required String step,
-    required String title,
-    required String desc,
-    required IconData icon,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Center(child: Icon(icon, color: color, size: 18)),
+          // CARD 1: SELL YOUR DEVICE (GREEN)
+          _buildServiceCardItem(
+            titlePrefix: 'Sell ',
+            titleHighlight: 'Your Device',
+            highlightColor: const Color(0xFF059669),
+            subtitle: 'Get the best value for your old devices in 60 seconds.',
+            buttonText: 'Get Device Value',
+            buttonColor: const Color(0xFF059669),
+            icon: Icons.local_offer_outlined,
+            iconBg: const Color(0xFFECFDF5),
+            features: [
+              'Best Price Guaranteed',
+              'Free Doorstep Pickup',
+              'Instant Payment',
+              '100% Safe & Secure',
+            ],
+            imagePath: 'assets/images/categories/smartphone.png',
+            proofText: '50,000+ devices sold last month',
+            onTap: () => setState(() => _currentIndex = 1),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(height: 12),
+
+          // CARD 2: BUY REFURBISHED (BLUE)
+          _buildServiceCardItem(
+            titlePrefix: 'Buy ',
+            titleHighlight: 'Refurbished',
+            highlightColor: const Color(0xFF2563EB),
+            subtitle: 'Certified, tested and reliable devices at the best prices.',
+            buttonText: 'Explore Devices',
+            buttonColor: const Color(0xFF2563EB),
+            icon: Icons.shopping_bag_outlined,
+            iconBg: const Color(0xFFEFF6FF),
+            features: [
+              '32 Point Quality Check',
+              '6 Months Warranty',
+              'Easy Returns',
+              'Best Market Prices',
+            ],
+            imagePath: 'assets/images/categories/laptop.png',
+            proofText: '10,000+ happy buyers',
+            onTap: () => setState(() => _currentIndex = 2),
+          ),
+          const SizedBox(height: 12),
+
+          // CARD 3: REPAIR YOUR DEVICE (PURPLE)
+          _buildServiceCardItem(
+            titlePrefix: 'Repair ',
+            titleHighlight: 'Your Device',
+            highlightColor: const Color(0xFF7C3AED),
+            subtitle: 'Expert repair services with original parts & warranty.',
+            buttonText: 'Book a Repair',
+            buttonColor: const Color(0xFF7C3AED),
+            icon: Icons.build_outlined,
+            iconBg: const Color(0xFFF5F3FF),
+            features: [
+              'Screen & Battery Repair',
+              'Original Parts Used',
+              'Expert Technicians',
+              'Warranty on Repair',
+            ],
+            imagePath: 'assets/images/categories/dslr.png',
+            proofText: '25,000+ repairs completed',
+            onTap: () => setState(() => _currentIndex = 1),
+          ),
+          const SizedBox(height: 14),
+
+          // SUBTLE TRUST STRIP BELOW CARDS (Reference Image 1)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'STEP $step $kBullet ',
-                      style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      title,
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(desc, style: const TextStyle(color: Color(0xFF64748B), fontSize: 11)),
+                _buildTrustMiniPill(icon: Icons.local_shipping_outlined, label: 'Free Pickup', color: const Color(0xFF059669)),
+                _buildTrustMiniPill(icon: Icons.bolt_outlined, label: 'Instant Pay', color: const Color(0xFFD97706)),
+                _buildTrustMiniPill(icon: Icons.shield_outlined, label: '100% Safe', color: const Color(0xFF2563EB)),
+                _buildTrustMiniPill(icon: Icons.headset_mic_outlined, label: '24/7 Helpline', color: const Color(0xFFDC2626)),
               ],
             ),
           ),
@@ -1992,6 +1840,404 @@ class _UserMainNavigationScreenState extends State<UserMainNavigationScreen> {
       ),
     );
   }
+
+  Widget _buildServiceCardItem({
+    required String titlePrefix,
+    required String titleHighlight,
+    required Color highlightColor,
+    required String subtitle,
+    required String buttonText,
+    required Color buttonColor,
+    required IconData icon,
+    required Color iconBg,
+    required List<String> features,
+    required String imagePath,
+    required String proofText,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Icon Pill
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: iconBg,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(child: Icon(icon, color: highlightColor, size: 20)),
+          ),
+          const SizedBox(height: 12),
+
+          // Title & Subtitle + Image Row
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: titlePrefix,
+                            style: const TextStyle(
+                              color: Color(0xFF0F172A),
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                            ),
+                          ),
+                          TextSpan(
+                            text: titleHighlight,
+                            style: TextStyle(
+                              color: highlightColor,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(color: Color(0xFF64748B), fontSize: 11, height: 1.3),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 1,
+                child: Image.asset(
+                  imagePath,
+                  height: 55,
+                  fit: BoxFit.contain,
+                  errorBuilder: (c, e, s) => Icon(Icons.devices, size: 40, color: highlightColor),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Features Checklist
+          ...features.map((f) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle_rounded, size: 14, color: highlightColor),
+                    const SizedBox(width: 6),
+                    Text(
+                      f,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF334155),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+          const SizedBox(height: 12),
+
+          // Button
+          SizedBox(
+            width: double.infinity,
+            height: 42,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                elevation: 1,
+              ),
+              onPressed: onTap,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(buttonText, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 12)),
+                  const SizedBox(width: 6),
+                  const Icon(Icons.arrow_forward_rounded, size: 15),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          // Social Proof
+          Row(
+            children: [
+              const Icon(Icons.verified, size: 13, color: Color(0xFF059669)),
+              const SizedBox(width: 4),
+              Text(
+                proofText,
+                style: const TextStyle(fontSize: 10, color: Color(0xFF64748B), fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 6. 6-STEP BUYBACK WORKFLOW (MATCHING REFERENCE IMAGE 3)
+  Widget _buildSixStepBuybackSection() {
+    final sixSteps = [
+      {'num': '01', 'title': 'Get Instant Quote', 'desc': 'Search device & answer simple diagnostic questions.'},
+      {'num': '02', 'title': 'Schedule Pickup', 'desc': 'Choose convenient date & slot for free doorstep visit.'},
+      {'num': '03', 'title': 'Device Inspection', 'desc': 'Technician inspects device on-spot with QR code pass.'},
+      {'num': '04', 'title': 'Get Best Offer', 'desc': 'Final price offer based on test with zero hidden cuts.'},
+      {'num': '05', 'title': 'Secure Data Wipe', 'desc': '100% military-grade DoD sanitization for your privacy.'},
+      {'num': '06', 'title': 'Instant Payment', 'desc': 'Receive spot UPI or bank transfer right at your door.'},
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF6FF),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: const Color(0xFFBFDBFE)),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.bolt, size: 12, color: Color(0xFF2563EB)),
+                    SizedBox(width: 4),
+                    Text(
+                      'SIMPLE. FAST. SECURE.',
+                      style: TextStyle(color: Color(0xFF2563EB), fontSize: 9, fontWeight: FontWeight.w900),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'How Maa Ambika Buyback Works',
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: Color(0xFF0F172A)),
+          ),
+          const SizedBox(height: 12),
+          ...sixSteps.map((s) => Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF2563EB),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text(
+                          s['num']!,
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            s['title']!,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF0F172A)),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            s['desc']!,
+                            style: const TextStyle(fontSize: 10, color: Color(0xFF64748B)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  // 7. REAL CUSTOMER REVIEWS (MATCHING REFERENCE IMAGE 4)
+  Widget _buildCustomerFeedbackSection() {
+    final reviews = [
+      {'name': 'Nitin Gowda', 'city': 'BANGALORE', 'color': const Color(0xFFD97706), 'text': 'Flawless experience. Instant credit. No haggling whatsoever — exactly what I expected.'},
+      {'name': 'Pawan Mishra', 'city': 'PUNE', 'color': const Color(0xFF059669), 'text': 'Excellent services! The pickup was too good and the security checking was professional.'},
+      {'name': 'Ritu Sharma', 'city': 'JAIPUR', 'color': const Color(0xFFDC2626), 'text': 'Super easy process. Got a great price for my old Samsung. Will definitely use again!'},
+      {'name': 'Vidyankit Official', 'city': 'HYDERABAD', 'color': const Color(0xFFDB2777), 'text': 'Sold my Realme GT Neo. Very smooth process, no negotiation unlike other apps. Highly recommend!'},
+      {'name': 'Mayank Doshi', 'city': 'AHMEDABAD', 'color': const Color(0xFF4F46E5), 'text': 'Very prompt service and got a very good price. Absolutely hassle-free.'},
+      {'name': 'Aakash Mehta', 'city': 'CHENNAI', 'color': const Color(0xFFDC2626), 'text': 'Loved the transparent pricing. No last minute deductions. Payment received in under 10 minutes.'},
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Real Feedback From Customers',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF0F172A)),
+                  ),
+                  Text(
+                    'Thousands trust Maa Ambika Mobile Shop',
+                    style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.star, size: 14, color: Color(0xFFF59E0B)),
+                    SizedBox(width: 4),
+                    Text('4.9/5', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: Color(0xFF0F172A))),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 135,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: reviews.length,
+              separatorBuilder: (c, i) => const SizedBox(width: 10),
+              itemBuilder: (ctx, idx) {
+                final r = reviews[idx];
+                return Container(
+                  width: 260,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 14,
+                            backgroundColor: r['color'] as Color,
+                            child: Text(
+                              (r['name'] as String).substring(0, 1),
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  r['name'] as String,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF0F172A)),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  r['city'] as String,
+                                  style: const TextStyle(fontSize: 9, color: Color(0xFF94A3B8), fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Row(
+                            children: [
+                              Icon(Icons.star, size: 11, color: Color(0xFFF59E0B)),
+                              Icon(Icons.star, size: 11, color: Color(0xFFF59E0B)),
+                              Icon(Icons.star, size: 11, color: Color(0xFFF59E0B)),
+                              Icon(Icons.star, size: 11, color: Color(0xFFF59E0B)),
+                              Icon(Icons.star, size: 11, color: Color(0xFFF59E0B)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '“${r['text']}”',
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 10, color: Color(0xFF475569), height: 1.3),
+                      ),
+                      const Row(
+                        children: [
+                          Icon(Icons.check_circle_outline, size: 11, color: Color(0xFF059669)),
+                          SizedBox(width: 4),
+                          Text('Verified Customer', style: TextStyle(color: Color(0xFF059669), fontSize: 9, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTrustMiniPill({required IconData icon, required String label, required Color color}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 13, color: color),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF334155)),
+        ),
+      ],
+    );
+  }
+
+
 
   // 7. WHY CAMSIK
   Widget _buildWhyCamsikSection() {

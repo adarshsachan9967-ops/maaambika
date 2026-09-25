@@ -1,29 +1,25 @@
 import React from 'react';
 import CustomerHeader from '@/components/CustomerHeader';
 import CustomerFooter from '@/components/CustomerFooter';
-import HeroBannerCarousel from '@/app/components/HeroBannerCarousel';
-import QuickActionHub from '@/app/components/QuickActionHub';
+import ModernHeroSection from '@/app/components/ModernHeroSection';
+import ThreeServiceCards from '@/app/components/ThreeServiceCards';
 import CameraCategoryBar from '@/app/components/CameraCategoryBar';
 import TopDealsShowcase from '@/app/components/TopDealsShowcase';
-import DeviceEcosystemShowcase from '@/app/components/DeviceEcosystemShowcase';
-import CamsikTrustScore from '@/app/components/CamsikTrustScore';
-import WhyCamsik from '@/app/components/WhyCamsik';
-import HowItWorks from '@/app/components/HowItWorks';
-import CustomerVideoReviewsCarousel from '@/app/components/CustomerVideoReviewsCarousel';
-import SafeAndReliableSection from '@/app/components/SafeAndReliableSection';
-import CameraBrandsCarousel from '@/app/components/CameraBrandsCarousel';
+import HowBuybackWorksSection from '@/app/components/HowBuybackWorksSection';
+import CustomerFeedbackSection from '@/app/components/CustomerFeedbackSection';
 import CompetitiveComparisonTable from '@/app/components/CompetitiveComparisonTable';
 import CamsikFaqSection from '@/app/components/CamsikFaqSection';
 import AppDownloadCTA from '@/app/components/AppDownloadCTA';
+import FloatingWhatsAppCTA from '@/components/FloatingWhatsAppCTA';
 
 import Link from 'next/link';
 import { ShieldCheck, Building, Truck, User } from 'lucide-react';
 
 export default function CustomerHomePage() {
   return (
-    <main className="min-h-screen bg-background flex flex-col overflow-x-hidden w-full max-w-full">
+    <main className="min-h-screen bg-white flex flex-col overflow-x-hidden w-full max-w-full">
       {/* Top Multi-Panel Navigation Banner */}
-      <div className="bg-slate-950 text-white text-xs py-2.5 px-4 border-b border-amber-500/20">
+      <div className="bg-slate-950 text-white text-xs py-2 px-4 border-b border-amber-500/20">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
@@ -53,51 +49,41 @@ export default function CustomerHomePage() {
         </div>
       </div>
 
+      {/* Main Navigation Header with Sell/Buy Dropdowns, Search, City, Account */}
       <CustomerHeader />
       
-      {/* 1. Hero Banner Promo Carousel with search & live navigation */}
-      <HeroBannerCarousel />
+      {/* 1. Hero Section matching Reference Image 2 (Sell Old. Upgrade Smart., Search Box, 3D Podium, Floating Badges) */}
+      <ModernHeroSection />
 
-      {/* 2. Three Action Hub: Sell, Buy, Exchange (Prominent world-class boxes below banners) */}
-      <QuickActionHub />
+      {/* 2. Three Core Action Cards matching Reference Image 1 (Sell, Buy Refurbished, Repair with Checklists & Floating Devices) */}
+      <ThreeServiceCards />
 
-      {/* 3. Explore All 8 Device Categories Bar (Phones, Laptops, Tablets, Cameras, etc.) */}
+      {/* 3. Device Categories Bar (Smartphones, Laptops, Tablets, Cameras, Lenses) */}
       <CameraCategoryBar />
 
-      {/* 4. Top Deals Showcase: Top Selling, Top Buying (Refurbished) & Top Exchange with Category Filters */}
+      {/* 4. Top Deals & Certified Marketplace Showcase */}
       <TopDealsShowcase />
 
-      {/* 5. Complete Device Ecosystem (Smartphones, MacBooks, DSLRs, iPads with Sell/Buy/Exchange tags) */}
-      <DeviceEcosystemShowcase />
+      {/* 5. How Buyback Works matching Reference Image 3 (6 Steps: Quote, Schedule, Inspection, Best Offer, Wipe, Payment) */}
+      <HowBuybackWorksSection />
 
-      {/* 6. Live Trust & ReCommerce Stats (₹18,400+ Cr disbursed, 3.4L+ devices handled) */}
-      <CamsikTrustScore />
+      {/* 6. Real Customer Feedback matching Reference Image 4 (4.9/5 Rating Badge & Authentic Review Grid) */}
+      <CustomerFeedbackSection />
 
-      {/* 7. 3-Step Process for Selling, Buying Refurbished & 1-Step Doorstep Exchange */}
-      <HowItWorks />
-
-      {/* 8. Why Camsik: 9 Value Propositions covering all tech (DoD data wipe, 45-pt QA, instant payout) */}
-      <WhyCamsik />
-
-      {/* 9. Customer Video Reviews & Stories (iPhones, MacBooks, DSLRs, Tablets & Exchange) */}
-      <CustomerVideoReviewsCarousel />
-
-      {/* 10. Safe & Reliable Section: 4 Pillars of Protection (Diagnostics, DoD wipe, Indemnity, Payout) */}
-      <SafeAndReliableSection />
-
-      {/* 11. Top Tech & Camera Brands Carousel (Apple, Samsung, Dell, HP, Sony, Canon, DJI) */}
-      <CameraBrandsCarousel />
-
-      {/* 12. Market Comparison Table: Camsik vs Offline Shops vs Classifieds */}
+      {/* 7. Competitive Comparison Table: Maa Ambika vs Offline Shops vs Classifieds */}
       <CompetitiveComparisonTable />
 
-      {/* 13. Comprehensive FAQs on Selling, Refurbished Warranties & Exchange */}
+      {/* 8. Comprehensive FAQs on Selling, Warranties & Doorstep Inspection */}
       <CamsikFaqSection />
 
-      {/* 14. Official Camsik App Download Banner */}
+      {/* 9. Official Mobile App Download Banner */}
       <AppDownloadCTA />
 
+      {/* Footer */}
       <CustomerFooter />
+
+      {/* Floating WhatsApp Chat Assistant (as seen in references) */}
+      <FloatingWhatsAppCTA />
     </main>
   );
 }
