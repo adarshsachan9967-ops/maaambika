@@ -38,6 +38,7 @@ import LiveOrderTracker from '@/components/LiveOrderTracker';
 import { orders } from '@/lib/casmikData';
 import { triggerNotification } from '@/lib/notifications';
 import QRScannerModal from '@/components/QRScannerModal';
+import AadhaarVerificationSection from '@/components/AadhaarVerificationSection';
 
 const DELIVERY_AGENT_ID = 'delivery-001';
 
@@ -142,6 +143,7 @@ export default function DeliveryTasks() {
   const [payoutRef, setPayoutRef] = useState('');
   const [isProcessingPayout, setIsProcessingPayout] = useState(false);
   const [inspectionNotes, setInspectionNotes] = useState('');
+  const [deliveryIdentityVerified, setDeliveryIdentityVerified] = useState(false);
 
   const supabase = createClient();
 
@@ -1151,6 +1153,16 @@ export default function DeliveryTasks() {
             </div>
 
             <div className="flex gap-2">
+              {/* 🔐 Delivery Agent Identity Verification Gate */}
+              {customerConfirmedPrice && (
+                <div className="w-full mb-2">
+                  <p className="text-xs font-bold text-slate-700 mb-2">🔐 Identity Verification Required to Release Payment</p>
+                  <AadhaarVerificationSection
+                    userType="delivery"
+                    onVerified={() => setDeliveryIdentityVerified(true)}
+                  />
+                </div>
+              )}
               <button
                 type="button"
                 onClick={() => setInspectingTask(null)}
@@ -1160,7 +1172,7 @@ export default function DeliveryTasks() {
               </button>
               <button
                 type="button"
-                disabled={!customerConfirmedPrice || isProcessingPayout}
+                disabled={!customerConfirmedPrice || !deliveryIdentityVerified || isProcessingPayout}
                 onClick={handleCompleteInspection}
                 className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >

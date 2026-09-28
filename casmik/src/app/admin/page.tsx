@@ -23,8 +23,9 @@ import AdminRepairIssues from './components/AdminRepairIssues';
 import AdminInventory from './components/AdminInventory';
 import AdminSupportTickets from './components/AdminSupportTickets';
 import AdminCoupons from './components/AdminCoupons';
+import AdminIdentityVerification from './components/AdminIdentityVerification';
 
-export type AdminSection = 'overview' | 'orders' | 'categories' | 'brands' | 'models' | 'pricing' | 'partners' | 'delivery' | 'customers' | 'payouts' | 'cms' | 'reports' | 'settings' | 'notifications' | 'push_notifications' | 'refurbished' | 'repair_issues' | 'inventory' | 'support_tickets' | 'coupons';
+export type AdminSection = 'overview' | 'orders' | 'categories' | 'brands' | 'models' | 'pricing' | 'partners' | 'delivery' | 'customers' | 'payouts' | 'cms' | 'reports' | 'settings' | 'notifications' | 'push_notifications' | 'refurbished' | 'repair_issues' | 'inventory' | 'support_tickets' | 'coupons' | 'identity_verification';
 
 export interface AdminNavigationOptions {
   filterStatus?: string;
@@ -138,6 +139,7 @@ export default function AdminPage() {
       case 'inventory': return <AdminInventory />;
       case 'support_tickets': return <AdminSupportTickets />;
       case 'coupons': return <AdminCoupons />;
+      case 'identity_verification': return <AdminIdentityVerification />;
       default: return <AdminOverview onNavigate={handleNavigate} />;
     }
   };

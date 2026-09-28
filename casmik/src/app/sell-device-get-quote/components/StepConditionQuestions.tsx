@@ -2,6 +2,8 @@
 import React, { useState, useRef } from 'react';
 import { ChevronLeft, TrendingUp, TrendingDown, X } from 'lucide-react';
 import type { SellState } from './SellDeviceWorkflow';
+import DeviceVerificationSection from './DeviceVerificationSection';
+import type { DeviceVerificationReport } from '@/lib/deviceVerification/types';
 
 // Illustrated condition questions with proper answer cards like reference screenshot
 const questions = [
@@ -250,12 +252,34 @@ export default function StepConditionQuestions({ sellState, onUpdate, onNext, on
         </div>
       </div>
 
-      {/* Continue button */}
+      {/* Device Verification Gate + Continue button */}
       {allAnswered && (
-        <div className="fade-in">
-          <button onClick={onNext} className="w-full py-4 gradient-green text-white rounded-2xl font-bold text-base shadow-green btn-press">
-            🎉 Get My Final Quote — ₹ ****
-          </button>
+        <div className="fade-in space-y-3">
+          <DeviceVerificationSection
+            selectedBrand={sellState.brandName}
+            selectedModel={sellState.modelName}
+            selectedVariant={sellState.storage || undefined}
+            verificationReport={sellState.deviceVerificationReport}
+            onVerified={(report: DeviceVerificationReport) =>
+              onUpdate({ deviceVerificationReport: report })
+            }
+            onRecheck={() => onUpdate({ deviceVerificationReport: null })}
+          />
+
+          {sellState.deviceVerificationReport?.status === 'verified' && (
+            <button
+              onClick={onNext}
+              className="w-full py-4 gradient-green text-white rounded-2xl font-bold text-base shadow-green btn-press"
+            >
+              🎉 Get My Final Quote — ₹ ****
+            </button>
+          )}
+
+          {!sellState.deviceVerificationReport && (
+            <p className="text-xs text-center text-muted-foreground">
+              ⚠ Please verify your device before generating a quote.
+            </p>
+          )}
         </div>
       )}
 

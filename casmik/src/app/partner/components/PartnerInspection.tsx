@@ -5,6 +5,7 @@ import type { Order } from '@/lib/casmikData';
 import { createClient } from '@/lib/supabase/client';
 import { triggerNotification } from '@/lib/notifications';
 import QRScannerModal from '@/components/QRScannerModal';
+import AadhaarVerificationSection from '@/components/AadhaarVerificationSection';
 import { 
   Camera, 
   CheckCircle, 
@@ -120,6 +121,7 @@ export default function PartnerInspection({ initialOrderId, onBackToOrders }: Pa
   const [payoutMode, setPayoutMode] = useState<'upi' | 'imps' | 'cash'>('upi');
   const [payoutUpiOrRef, setPayoutUpiOrRef] = useState('');
   const [isProcessingPayout, setIsProcessingPayout] = useState(false);
+  const [partnerIdentityVerified, setPartnerIdentityVerified] = useState(false);
 
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const multiFileInputRef = useRef<HTMLInputElement | null>(null);
@@ -745,10 +747,24 @@ export default function PartnerInspection({ initialOrderId, onBackToOrders }: Pa
                 </div>
               )}
 
+              {/* 🔐 Partner Identity Verification Gate */}
+              {customerConfirmedPrice && (
+                <div className="pt-2 border-t border-slate-100">
+                  <p className="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                    <Lock size={12} className="text-amber-500" />
+                    Identity Verification Required for Payout
+                  </p>
+                  <AadhaarVerificationSection
+                    userType="partner"
+                    onVerified={() => setPartnerIdentityVerified(true)}
+                  />
+                </div>
+              )}
+
               {/* Pay & Close Booking Button */}
               <button
                 type="button"
-                disabled={!customerConfirmedPrice || isProcessingPayout}
+                disabled={!customerConfirmedPrice || !partnerIdentityVerified || isProcessingPayout}
                 onClick={handleInstantPayout}
                 className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-2xl font-black text-sm shadow-xl shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >

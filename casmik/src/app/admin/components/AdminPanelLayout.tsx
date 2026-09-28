@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { AdminSection } from '../page';
-import { LayoutDashboard, ShoppingBag, Tag, Globe, Package, Calculator, Users, Handshake, Truck, FileText, BarChart3, Settings, ChevronLeft, ChevronRight, Bell, Menu, X, CreditCard, Send, LogOut, Wrench, Warehouse, MessageSquare, Percent, RefreshCw } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Tag, Globe, Package, Calculator, Users, Handshake, Truck, FileText, BarChart3, Settings, ChevronLeft, ChevronRight, Bell, Menu, X, CreditCard, Send, LogOut, Wrench, Warehouse, MessageSquare, Percent, RefreshCw, Shield } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
 
 interface NavItem { id: AdminSection; icon: React.ElementType; label: string; badge?: string | number; badgeColor?: string; }
@@ -29,6 +29,7 @@ const navGroups: NavGroup[] = [
     { id: 'customers', icon: Users, label: 'Customers' },
     { id: 'partners', icon: Handshake, label: 'Partners', badge: 3, badgeColor: 'bg-yellow-500' },
     { id: 'delivery', icon: Truck, label: 'Delivery Agents' },
+    { id: 'identity_verification', icon: Shield, label: 'Identity (KYC)', badge: '!', badgeColor: 'bg-amber-500' },
   ]},
   { group: 'Finance', items: [
     { id: 'payouts', icon: CreditCard, label: 'Wallet & Payouts', badge: '₹2.4L', badgeColor: 'bg-orange-500' },

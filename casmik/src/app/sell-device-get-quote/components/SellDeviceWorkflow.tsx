@@ -9,6 +9,7 @@ import StepConditionQuestions from './StepConditionQuestions';
 import StepQuoteResult from './StepQuoteResult';
 import QuoteSummaryPanel from './QuoteSummaryPanel';
 import { categories, brands, deviceModels } from '@/lib/casmikData';
+import type { DeviceVerificationReport } from '@/lib/deviceVerification/types';
 
 export type SellState = {
   category: string | null;
@@ -23,6 +24,7 @@ export type SellState = {
   currentPrice: number;
   basePrice: number;
   adjustments: { label: string; amount: number; reason: string }[];
+  deviceVerificationReport: DeviceVerificationReport | null;
 };
 
 const INITIAL_STATE: SellState = {
@@ -38,6 +40,7 @@ const INITIAL_STATE: SellState = {
   currentPrice: 0,
   basePrice: 0,
   adjustments: [],
+  deviceVerificationReport: null,
 };
 
 const steps = [
@@ -101,6 +104,7 @@ export default function SellDeviceWorkflow() {
           currentPrice: matchedModel.basePrice,
           basePrice: matchedModel.basePrice,
           adjustments: [],
+          deviceVerificationReport: null,
         });
         setCurrentStep(3); // Land directly on condition inspection questions
         return;
