@@ -20,7 +20,10 @@ import {
   ChevronRight,
   Flame,
   Zap,
-  CheckCircle2
+  CheckCircle2,
+  X,
+  Gift,
+  Award
 } from 'lucide-react';
 
 interface DeliveryDashboardProps {
@@ -31,8 +34,10 @@ interface DeliveryDashboardProps {
 export default function DeliveryDashboard({ onNavigateToTasks, onNavigateToEarnings }: DeliveryDashboardProps) {
   const [taskList, setTaskList] = useState<Order[]>([]);
   const [agent, setAgent] = useState(deliveryAgents[0]);
+  const [showBonusModal, setShowBonusModal] = useState(false);
+  const [bonusClaimed, setBonusClaimed] = useState(false);
 
-  useEffect(() => {
+  const loadTasks = () => {
     try {
       const savedSession = localStorage.getItem('casmik_delivery_session');
       if (savedSession) {
@@ -51,11 +56,28 @@ export default function DeliveryDashboard({ onNavigateToTasks, onNavigateToEarni
       }
     } catch {}
     setTaskList(orders);
+  };
+
+  useEffect(() => {
+    loadTasks();
+    const handleSync = () => loadTasks();
+    window.addEventListener('casmik_orders_updated', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('casmik_orders_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
   }, []);
 
   const pendingPickups = taskList.filter(o => ['assigned', 'accepted', 'pickup_scheduled'].includes(o.status));
   const inTransit = taskList.filter(o => ['picked_up', 'in_transit', 'inspection'].includes(o.status));
   const completedToday = taskList.filter(o => o.status === 'completed' || o.paymentStatus === 'paid');
+
+  const dailyTarget = 6;
+  const completedCount = completedToday.length;
+  const pickupsRemaining = Math.max(0, dailyTarget - completedCount);
+  const targetPercent = Math.min(100, Math.round((completedCount / dailyTarget) * 100));
+  const dailyEarnings = 1800 + completedCount * 450 + (bonusClaimed ? 300 : 0);
 
   const nextTask = pendingPickups[0] || inTransit[0] || taskList[0];
 
@@ -125,7 +147,7 @@ export default function DeliveryDashboard({ onNavigateToTasks, onNavigateToEarni
             </div>
             <div className="text-center px-2 sm:px-4">
               <p className="text-xs text-emerald-200 font-bold uppercase tracking-wider">Earned</p>
-              <p className="text-xl sm:text-2xl font-black mt-0.5 text-amber-300">₹{(agent?.earnings || 3200).toLocaleString('en-IN')}</p>
+              <p className="text-xl sm:text-2xl font-black mt-0.5 text-amber-300">₹{dailyEarnings.toLocaleString('en-IN')}</p>
               <span className="text-[10px] text-white/70">Today</span>
             </div>
           </div>
@@ -197,8 +219,8 @@ export default function DeliveryDashboard({ onNavigateToTasks, onNavigateToEarni
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <p className="text-3xl font-black text-slate-900">₹{(agent?.earnings || 3200).toLocaleString('en-IN')}</p>
-            <span className="text-xs text-emerald-600 font-bold">+23% vs yesterday</span>
+            <p className="text-3xl font-black text-slate-900">₹{dailyEarnings.toLocaleString('en-IN')}</p>
+            <span className="text-xs text-emerald-600 font-bold">Live settlement sync</span>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span>Settlement mode:</span>
@@ -333,35 +355,46 @@ export default function DeliveryDashboard({ onNavigateToTasks, onNavigateToEarni
 
         {/* RIGHT COLUMN: PERFORMANCE, GOALS & LIVE HELPLINE (4 Cols) */}
         <div className="xl:col-span-4 space-y-6">
-          {/* Daily Goal & Incentive Milestone */}
-          <div className="bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 rounded-3xl p-6 text-white shadow-md">
+          {/* Daily Goal & Incentive Milestone (Interactive Clickable Card) */}
+          <div 
+            onClick={() => setShowBonusModal(true)}
+            className="bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 rounded-3xl p-6 text-white shadow-md cursor-pointer hover:shadow-xl transition-all hover:scale-[1.01]"
+            title="Click to view daily ₹300 bonus incentive milestone details"
+          >
             <div className="flex items-center justify-between mb-3">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-black/20 text-white">
-                Daily Peak Incentive
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-black/20 text-white flex items-center gap-1">
+                <span>Daily Peak Incentive</span>
+                {bonusClaimed && <span className="bg-emerald-400 text-slate-900 px-1 rounded font-bold">CLAIMED</span>}
               </span>
               <Flame size={20} className="text-amber-200 animate-pulse" />
             </div>
 
             <h3 className="text-xl font-black">₹300 Extra Bonus Target</h3>
             <p className="text-xs text-amber-100 mt-1 leading-relaxed">
-              Complete <strong>2 more pickups</strong> before 6:00 PM today to unlock the full daily speed milestone bonus.
+              {pickupsRemaining === 0 
+                ? 'Goal Achieved! You have hit today’s speed milestone target.'
+                : `Complete ${pickupsRemaining} more pickup${pickupsRemaining > 1 ? 's' : ''} before 8:00 PM today to unlock the full daily speed milestone bonus.`}
             </p>
 
             <div className="mt-4 bg-black/20 rounded-2xl p-3">
               <div className="flex items-center justify-between text-xs font-bold mb-1">
-                <span>Progress: 4 of 6 pickups</span>
-                <span>66%</span>
+                <span>Progress: {completedCount} of {dailyTarget} pickups</span>
+                <span>{targetPercent}%</span>
               </div>
               <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: '66%' }} />
+                <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${targetPercent}%` }} />
               </div>
             </div>
 
             <button
-              onClick={onNavigateToEarnings}
-              className="mt-4 w-full py-2.5 bg-white text-orange-600 rounded-xl text-xs font-black hover:bg-amber-50 transition-colors shadow-sm cursor-pointer"
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowBonusModal(true);
+              }}
+              className="mt-4 w-full py-2.5 bg-white text-orange-600 rounded-xl text-xs font-black hover:bg-amber-50 transition-colors shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
             >
-              View Full Earnings Breakdown →
+              <span>{pickupsRemaining === 0 && !bonusClaimed ? 'Claim ₹300 Bonus Now →' : 'View Target Details →'}</span>
             </button>
           </div>
 
@@ -436,6 +469,117 @@ export default function DeliveryDashboard({ onNavigateToTasks, onNavigateToEarni
           </div>
         </div>
       </div>
+      {/* ─── ₹300 EXTRA BUDGET BONUS MODAL ─── */}
+      {showBonusModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative animate-in zoom-in-95">
+            <button
+              type="button"
+              onClick={() => setShowBonusModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center shadow-md shadow-orange-500/20 text-2xl font-black">
+                🎯
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-slate-900">₹300 Daily Peak Bonus</h3>
+                <p className="text-xs text-slate-500">Fleet Executive Speed &amp; Volume Target</p>
+              </div>
+            </div>
+
+            {/* Target Progress Box */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 mb-4">
+              <div className="flex justify-between items-center text-xs text-slate-300 mb-1">
+                <span>Daily Pickups Completed</span>
+                <span className="font-bold text-amber-300">{completedCount} / {dailyTarget}</span>
+              </div>
+              <div className="h-2.5 bg-white/20 rounded-full overflow-hidden mb-2">
+                <div className="h-full bg-amber-400 rounded-full transition-all duration-500" style={{ width: `${targetPercent}%` }} />
+              </div>
+              <p className="text-[11px] text-slate-400">
+                {pickupsRemaining === 0
+                  ? '🎉 Congratulations! You have achieved all 6 pickups for today.'
+                  : `${pickupsRemaining} more pickup${pickupsRemaining > 1 ? 's' : ''} needed to unlock the ₹300 incentive.`}
+              </p>
+            </div>
+
+            {/* Milestone Tiers */}
+            <div className="space-y-2 mb-5">
+              <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">Incentive Tiers Today</p>
+              
+              <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200 text-xs flex items-center justify-between">
+                <div>
+                  <p className="font-bold text-emerald-950">Tier 1: 3 Pickups</p>
+                  <p className="text-[11px] text-emerald-700">Fuel &amp; Attendance Allowance</p>
+                </div>
+                <span className="font-black text-emerald-700 text-sm">✓ +₹100</span>
+              </div>
+
+              <div className={`p-3 rounded-2xl border text-xs flex items-center justify-between ${
+                completedCount >= 5 ? 'bg-emerald-50 border-emerald-200 text-emerald-950' : 'bg-slate-50 border-slate-200 text-slate-700'
+              }`}>
+                <div>
+                  <p className="font-bold">Tier 2: 5 Pickups</p>
+                  <p className="text-[11px] text-slate-500">Peak Shift Bonus</p>
+                </div>
+                <span className={`font-black text-sm ${completedCount >= 5 ? 'text-emerald-700' : 'text-slate-500'}`}>
+                  {completedCount >= 5 ? '✓ +₹150' : '+₹150'}
+                </span>
+              </div>
+
+              <div className={`p-3 rounded-2xl border text-xs flex items-center justify-between ${
+                completedCount >= 6 ? 'bg-amber-50 border-amber-300 text-amber-950' : 'bg-slate-50 border-slate-200 text-slate-700'
+              }`}>
+                <div>
+                  <p className="font-bold">Tier 3: 6+ Pickups Target</p>
+                  <p className="text-[11px] text-slate-500">Super Volume Speed Bonus</p>
+                </div>
+                <span className={`font-black text-sm ${completedCount >= 6 ? 'text-amber-700' : 'text-slate-500'}`}>
+                  {bonusClaimed ? '✓ CLAIMED' : '+₹300'}
+                </span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              {completedCount >= dailyTarget && !bonusClaimed ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBonusClaimed(true);
+                    alert('🎉 ₹300 Daily Peak Bonus credited to your account settlement!');
+                  }}
+                  className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-md cursor-pointer transition-all"
+                >
+                  Claim ₹300 Bonus Now 💰
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowBonusModal(false);
+                    onNavigateToTasks?.();
+                  }}
+                  className="flex-1 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
+                >
+                  {bonusClaimed ? 'Bonus Credited · Return to Tasks' : 'Open Active Tasks Queue →'}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setShowBonusModal(false)}
+                className="px-4 py-3 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { Search, CheckCircle, XCircle, Eye, Phone, MapPin, X, Truck, Wifi, WifiO
 import LiveOrderTracker from '@/components/LiveOrderTracker';
 import { triggerNotification } from '@/lib/notifications';
 import QRScannerModal from '@/components/QRScannerModal';
+import { checkPartnerWalletSufficiency, deductPartnerWalletBalance, getPartnerWalletBalance, addPartnerWalletBalance } from '@/lib/wallet';
 
 const PARTNER_ID = 'partner-002';
 
@@ -157,36 +158,55 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
   // QR Code Scanner State
   const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
 
+  // Partner Wallet Insufficient Balance Modal State
+  const [walletShortfallModal, setWalletShortfallModal] = useState<{ required: number; available: number; shortfall: number } | null>(null);
+
   const supabase = createClient();
 
   const fetchOrders = useCallback(async () => {
     const currentPid = getActivePartnerId();
     setPartnerId(currentPid);
     try {
+      const localAssigned = getStoredPartnerOrders(currentPid);
       const { data, error } = await supabase
         .from('orders')
         .select('*')
         .eq('partner_id', currentPid)
         .order('created_at', { ascending: false });
+
       if (!error && data) {
-        if (data.length > 0) {
-          setOrderList(data.map(dbToOrder));
-          setIsConnected(true);
-          return;
-        } else {
-          // If 0 returned from remote, fallback to local storage strictly filtered for this partner
-          const localAssigned = getStoredPartnerOrders(currentPid);
-          setOrderList(localAssigned);
-          setIsConnected(true);
-          return;
-        }
+        const remoteOrders = data.map(dbToOrder);
+        // Robust merge: remote + local store without losing newly assigned or offline orders
+        const orderMap = new Map<string, Order>();
+        remoteOrders.forEach(o => orderMap.set(o.id, o));
+        localAssigned.forEach(o => {
+          if (!orderMap.has(o.id)) {
+            orderMap.set(o.id, o);
+          } else {
+            const existing = orderMap.get(o.id)!;
+            const existingTime = new Date(existing.updatedAt || existing.createdAt || 0).getTime();
+            const localTime = new Date(o.updatedAt || o.createdAt || 0).getTime();
+            if (localTime >= existingTime) {
+              orderMap.set(o.id, o);
+            }
+          }
+        });
+        const merged = Array.from(orderMap.values()).sort(
+          (a, b) => new Date(b.createdAt || b.updatedAt || 0).getTime() - new Date(a.createdAt || a.updatedAt || 0).getTime()
+        );
+        setOrderList(merged);
+        setIsConnected(true);
+        return;
       }
     } catch (err: any) {
       console.log('Partner orders remote notice:', err.message);
     } finally {
       setLoading(false);
     }
-    setOrderList(getStoredPartnerOrders(currentPid));
+    const localAssigned = getStoredPartnerOrders(currentPid).sort(
+      (a, b) => new Date(b.createdAt || b.updatedAt || 0).getTime() - new Date(a.createdAt || a.updatedAt || 0).getTime()
+    );
+    setOrderList(localAssigned);
   }, [supabase]);
 
   useEffect(() => {
@@ -231,6 +251,15 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
     if (currentOrder.status === 'completed') {
       setStatusToast({
         message: `⚠️ This order is completed & locked. No further changes can be made.`,
+      });
+      setTimeout(() => setStatusToast(null), 4000);
+      return;
+    }
+
+    // Strict lock if assigned to delivery executive: only delivery executive can update status!
+    if (currentOrder.deliveryAgentId) {
+      setStatusToast({
+        message: `⚠️ Assigned to delivery executive (${currentOrder.deliveryAgentName}). Status updates must be performed by the delivery executive.`,
       });
       setTimeout(() => setStatusToast(null), 4000);
       return;
@@ -314,11 +343,33 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
     }
   };
 
-  // Complete Payout & Lock Order permanently
+  // Complete Payout & Lock Order permanently with Partner Wallet Check & Deduction
   const handleDisbursePayout = async () => {
     if (!payoutOrder) return;
     setIsProcessingPayout(true);
     const amount = payoutOrder.finalPrice > 0 ? payoutOrder.finalPrice : payoutOrder.quotedPrice;
+
+    // 1. Check partner wallet balance sufficiency
+    const currentPid = payoutOrder.partnerId || getActivePartnerId();
+    const sufficiency = checkPartnerWalletSufficiency(currentPid, amount);
+    if (!sufficiency.sufficient) {
+      setIsProcessingPayout(false);
+      setWalletShortfallModal({
+        required: amount,
+        available: sufficiency.currentBalance,
+        shortfall: sufficiency.shortfall,
+      });
+      return;
+    }
+
+    // 2. Deduct from partner's persistent wallet
+    const deducted = deductPartnerWalletBalance(currentPid, amount, payoutOrder.orderNumber, `Spot Payout (${payoutMethod.toUpperCase()})`);
+    if (!deducted) {
+      setIsProcessingPayout(false);
+      setStatusToast({ message: '⚠️ Wallet deduction failed. Please verify partner wallet funds.' });
+      setTimeout(() => setStatusToast(null), 4000);
+      return;
+    }
 
     const updatedOrder: Order = {
       ...payoutOrder,
@@ -475,10 +526,14 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
     setCustomDeliveryName('');
   };
 
-  const filtered = orderList.filter(o =>
-    (o.orderNumber.toLowerCase().includes(query.toLowerCase()) || o.customerName.toLowerCase().includes(query.toLowerCase())) &&
-    (filterStatus === 'all' || o.status === filterStatus)
-  );
+  const filtered = orderList
+    .filter(o =>
+      (o.orderNumber.toLowerCase().includes(query.toLowerCase()) || 
+       o.customerName.toLowerCase().includes(query.toLowerCase()) ||
+       (o.deviceName && o.deviceName.toLowerCase().includes(query.toLowerCase()))) &&
+      (filterStatus === 'all' || o.status === filterStatus)
+    )
+    .sort((a, b) => new Date(b.createdAt || b.updatedAt || 0).getTime() - new Date(a.createdAt || a.updatedAt || 0).getTime());
 
   const tabs = [
     { id: 'all', label: 'All', count: orderList.length },
@@ -672,7 +727,12 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
                   </a>
 
                   {/* Action buttons depending on order status */}
-                  {order.status !== 'accepted' && order.status !== 'completed' && order.status !== 'picked_up' && order.status !== 'inspection' ? (
+                  {order.deliveryAgentId ? (
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-800 text-xs font-bold rounded-xl border border-blue-200" title="Assigned to delivery executive. Only delivery executive can update status.">
+                      <Truck size={13} className="text-blue-600" />
+                      <span>Assigned to {order.deliveryAgentName || 'Delivery Executive'} (Executive Action Only)</span>
+                    </div>
+                  ) : order.status !== 'accepted' && order.status !== 'completed' && order.status !== 'picked_up' && order.status !== 'inspection' ? (
                     <button
                       type="button"
                       onClick={() => handleAccept(order.id)}
@@ -738,7 +798,7 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
                       <Lock size={12} className="text-emerald-600" />
                       <span>Completed &amp; Locked</span>
                     </div>
-                  ) : (
+                  ) : order.deliveryAgentId ? null : (
                     <div className="flex items-center gap-1.5 ml-auto">
                       <span className="text-[11px] font-bold text-gray-500 hidden sm:inline">Advance:</span>
                       <div className="relative">
@@ -816,6 +876,24 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
                       </div>
                       <p className="text-xs text-emerald-800 leading-relaxed mt-2">
                         Customer payout of <strong>₹{(selectedOrder.finalPrice || selectedOrder.quotedPrice).toLocaleString('en-IN')}</strong> has been finalized and disbursed. This order is in terminal completed state and cannot be modified or reverted.
+                      </p>
+                    </div>
+                  ) : selectedOrder.deliveryAgentId ? (
+                    <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 shadow-sm text-xs text-blue-900">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+                          <Truck size={14} />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-black text-blue-900">Assigned to Delivery Executive</h4>
+                          <p className="text-[11px] text-blue-700 font-semibold">{selectedOrder.deliveryAgentName} · Field Dispatch Active</p>
+                        </div>
+                        <span className="ml-auto px-2.5 py-1 bg-blue-200/90 text-blue-900 text-[10px] font-extrabold rounded-md uppercase tracking-wider">
+                          Executive Only
+                        </span>
+                      </div>
+                      <p className="text-blue-800 leading-relaxed mt-2">
+                        This order has been handed over for doorstep pickup. Status transitions and doorstep payouts are locked for the partner and must be performed directly by the delivery executive.
                       </p>
                     </div>
                   ) : (
@@ -1175,6 +1253,74 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
                     className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                   >
                     {isProcessingPayout ? 'Processing...' : `Confirm & Complete Payout`}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PARTNER WALLET INSUFFICIENT BALANCE POPUP */}
+          {walletShortfallModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-in fade-in">
+              <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 border border-red-100 animate-in zoom-in-95">
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center font-bold">
+                      <ShieldAlert size={20} />
+                    </div>
+                    <div>
+                      <h3 className="font-black text-gray-900 text-base">Insufficient Wallet Balance</h3>
+                      <p className="text-xs text-red-600 font-semibold">Funds required for customer spot payout</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setWalletShortfallModal(null)}
+                    className="p-1.5 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-700 cursor-pointer"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="p-4 bg-red-50 rounded-2xl border border-red-200 mb-4 text-xs text-red-900 space-y-2">
+                  <p className="font-bold text-sm">
+                    You don&apos;t have enough balance in your partner wallet to disburse this payout.
+                  </p>
+                  <p className="text-red-700">
+                    Please add funds to your wallet balance before completing this customer payout.
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-red-200/60 font-mono text-xs">
+                    <div>
+                      <span className="text-gray-500 block text-[10px] uppercase font-sans">Payout Required</span>
+                      <span className="font-black text-red-700 text-sm">₹{walletShortfallModal.required.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block text-[10px] uppercase font-sans">Available in Wallet</span>
+                      <span className="font-black text-gray-800 text-sm">₹{walletShortfallModal.available.toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      addPartnerWalletBalance(getActivePartnerId(), walletShortfallModal.shortfall + 10000, 'Partner Wallet Top-up');
+                      setStatusToast({
+                        message: `✅ ₹${(walletShortfallModal.shortfall + 10000).toLocaleString('en-IN')} added to your partner wallet!`,
+                      });
+                      setTimeout(() => setStatusToast(null), 4000);
+                      setWalletShortfallModal(null);
+                    }}
+                    className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <CreditCard size={14} /> Add ₹{(walletShortfallModal.shortfall + 10000).toLocaleString('en-IN')} to Wallet
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setWalletShortfallModal(null)}
+                    className="px-4 py-3 border border-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    Cancel
                   </button>
                 </div>
               </div>

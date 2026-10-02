@@ -1,6 +1,5 @@
-'use client';
-import React from 'react';
-import { orders, partners, deliveryAgents, customers } from '@/lib/casmikData';
+import React, { useState, useEffect } from 'react';
+import { orders as defaultOrders, partners, deliveryAgents, customers, Order } from '@/lib/casmikData';
 import { TrendingUp, TrendingDown, ShoppingBag, Users, Handshake, Truck, DollarSign, CheckCircle, Clock, Zap, ArrowRight, Eye, ChevronRight, ExternalLink } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import type { AdminSection, AdminNavigationOptions } from '../page';
@@ -28,9 +27,49 @@ interface AdminOverviewProps {
 }
 
 export default function AdminOverview({ onNavigate }: AdminOverviewProps) {
-  const totalRevenue = orders.filter(o => o.paymentStatus === 'paid').reduce((s, o) => s + o.finalPrice, 0);
-  const completedOrders = orders.filter(o => o.status === 'completed').length;
-  const pendingOrders = orders.filter(o => ['created', 'assigned', 'accepted', 'pickup_scheduled'].includes(o.status)).length;
+  const [orderList, setOrderList] = useState<Order[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('casmik_orders_v1');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {
+        console.warn('Failed to parse orders in AdminOverview', e);
+      }
+    }
+    return defaultOrders;
+  });
+
+  useEffect(() => {
+    const handleSync = () => {
+      try {
+        const saved = localStorage.getItem('casmik_orders_v1');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setOrderList(parsed);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to sync orders in AdminOverview', e);
+      }
+    };
+
+    window.addEventListener('casmik_orders_updated', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('casmik_orders_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, []);
+
+  const totalRevenue = orderList
+    .filter(o => o.paymentStatus === 'paid' || o.status === 'completed')
+    .reduce((s, o) => s + (o.finalPrice || o.quotedPrice || 0), 0);
+  const completedOrders = orderList.filter(o => o.status === 'completed' || o.paymentStatus === 'paid').length;
+  const pendingOrders = orderList.filter(o => ['created', 'assigned', 'accepted', 'pickup_scheduled'].includes(o.status)).length;
   const activePartners = partners.filter(p => p.status === 'active').length;
 
   const navigateTo = (section: AdminSection, options?: AdminNavigationOptions) => {
@@ -53,19 +92,19 @@ export default function AdminOverview({ onNavigate }: AdminOverviewProps) {
     },
     {
       label: 'Total Orders',
-      value: orders.length.toString(),
-      sub: '+12.4% vs last week',
+      value: orderList.length.toString(),
+      sub: `${orderList.length} total orders active`,
       icon: ShoppingBag,
       color: 'bg-blue-50 text-blue-600',
       trend: 'up',
-      actionHint: 'Manage all 47 orders →',
+      actionHint: `Manage all ${orderList.length} orders →`,
       onClick: () => navigateTo('orders', { filterStatus: 'all' }),
       borderHover: 'hover:border-blue-400',
     },
     {
       label: 'Completed',
       value: completedOrders.toString(),
-      sub: `${Math.round(completedOrders / orders.length * 100)}% completion rate`,
+      sub: `${orderList.length > 0 ? Math.round((completedOrders / orderList.length) * 100) : 0}% completion rate`,
       icon: CheckCircle,
       color: 'bg-emerald-50 text-emerald-600',
       trend: 'up',
@@ -130,7 +169,9 @@ export default function AdminOverview({ onNavigate }: AdminOverviewProps) {
     },
   ];
 
-  const recentOrders = orders.slice(0, 8);
+  const recentOrders = [...orderList]
+    .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+    .slice(0, 8);
 
   return (
     <div className="space-y-6">
@@ -252,9 +293,9 @@ export default function AdminOverview({ onNavigate }: AdminOverviewProps) {
           </div>
           <button
             onClick={() => navigateTo('orders')}
-            className="text-xs text-primary font-bold hover:underline flex items-center gap-1 bg-primary/10 px-3 py-1.5 rounded-xl border border-primary/20 hover:bg-primary/20 transition-all"
+            className="text-xs text-primary font-bold hover:underline flex items-center gap-1 bg-primary/10 px-3 py-1.5 rounded-xl border border-primary/20 hover:bg-primary/20 transition-all cursor-pointer"
           >
-            View All 47 Orders <ArrowRight size={13} />
+            View All {orderList.length} Orders <ArrowRight size={13} />
           </button>
         </div>
         <div className="overflow-x-auto">

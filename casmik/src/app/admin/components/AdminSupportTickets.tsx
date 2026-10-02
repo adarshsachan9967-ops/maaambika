@@ -49,13 +49,42 @@ const userTypeIcons: Record<TicketUserType, React.ElementType> = { user: User, p
 const userTypeColors: Record<TicketUserType, string> = { user: 'bg-blue-50 text-blue-700', partner: 'bg-purple-50 text-purple-700', delivery: 'bg-green-50 text-green-700' };
 
 export default function AdminSupportTickets() {
-  const [tickets, setTickets] = useState(initialTickets);
+  const [tickets, setTickets] = useState<SupportTicket[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('casmik_support_tickets_v1');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {
+        console.warn('Failed to parse saved tickets', e);
+      }
+    }
+    return initialTickets;
+  });
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterType, setFilterType] = useState('all');
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [replyText, setReplyText] = useState('');
   const [showNewTicket, setShowNewTicket] = useState(false);
+
+  // New ticket form state
+  const [newSubject, setNewSubject] = useState('');
+  const [newDesc, setNewDesc] = useState('');
+  const [newCategory, setNewCategory] = useState('Payment');
+  const [newPriority, setNewPriority] = useState<TicketPriority>('high');
+  const [newUserType, setNewUserType] = useState<TicketUserType>('user');
+
+  // Save tickets helper
+  const saveTickets = (updated: SupportTicket[]) => {
+    setTickets(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('casmik_support_tickets_v1', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('casmik_support_tickets_updated'));
+    }
+  };
 
   const filtered = tickets.filter(t => {
     const matchSearch = t.subject.toLowerCase().includes(search.toLowerCase()) || t.ticketNumber.toLowerCase().includes(search.toLowerCase()) || t.userName.toLowerCase().includes(search.toLowerCase());
@@ -67,15 +96,41 @@ export default function AdminSupportTickets() {
   const sendReply = () => {
     if (!replyText.trim() || !selectedTicket) return;
     const reply: TicketReply = { id: `r-${Date.now()}`, author: 'Admin Support', authorType: 'admin', message: replyText, createdAt: new Date().toISOString() };
-    const updated = { ...selectedTicket, replies: [...selectedTicket.replies, reply], status: 'in_progress' as TicketStatus, updatedAt: new Date().toISOString() };
-    setTickets(prev => prev.map(t => t.id === selectedTicket.id ? updated : t));
-    setSelectedTicket(updated);
+    const updatedTicket = { ...selectedTicket, replies: [...selectedTicket.replies, reply], status: 'in_progress' as TicketStatus, updatedAt: new Date().toISOString() };
+    const updatedList = tickets.map(t => t.id === selectedTicket.id ? updatedTicket : t);
+    saveTickets(updatedList);
+    setSelectedTicket(updatedTicket);
     setReplyText('');
   };
 
   const updateStatus = (ticketId: string, status: TicketStatus) => {
-    setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, status, updatedAt: new Date().toISOString() } : t));
+    const updatedList = tickets.map(t => t.id === ticketId ? { ...t, status, updatedAt: new Date().toISOString() } : t);
+    saveTickets(updatedList);
     if (selectedTicket?.id === ticketId) setSelectedTicket(prev => prev ? { ...prev, status } : null);
+  };
+
+  const handleCreateTicket = () => {
+    if (!newSubject.trim() || !newDesc.trim()) return;
+    const newTkt: SupportTicket = {
+      id: `tkt-${Date.now()}`,
+      ticketNumber: `TKT-2025-${Math.floor(100 + Math.random() * 900)}`,
+      subject: newSubject.trim(),
+      description: newDesc.trim(),
+      category: newCategory,
+      status: 'open',
+      priority: newPriority,
+      userType: newUserType,
+      userName: newUserType === 'partner' ? 'Partner Support' : newUserType === 'delivery' ? 'Delivery Agent' : 'Customer',
+      userEmail: 'support@casmik.com',
+      userPhone: '+91 98765 43210',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      replies: [],
+    };
+    saveTickets([newTkt, ...tickets]);
+    setShowNewTicket(false);
+    setNewSubject('');
+    setNewDesc('');
   };
 
   const openCount = tickets.filter(t => t.status === 'open').length;
@@ -88,32 +143,49 @@ export default function AdminSupportTickets() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-black text-gray-900">Support Tickets</h2>
-          <p className="text-sm text-gray-500">Manage tickets from users, partners and delivery agents</p>
+          <p className="text-sm text-gray-500">Manage tickets from users, partners and delivery agents (Click stat boxes to filter)</p>
         </div>
         <button onClick={() => setShowNewTicket(true)}
-          className="flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-primary/90 transition-colors">
+          className="flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-primary/90 transition-colors cursor-pointer shadow-sm">
           <Plus size={16} /> Create Ticket
         </button>
       </div>
 
-      {/* Stats */}
+      {/* Stats - Fully Interactive and Clickable */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Tickets', value: tickets.length, icon: MessageSquare, color: 'bg-blue-50 text-blue-600' },
-          { label: 'Open', value: openCount, icon: AlertCircle, color: 'bg-red-50 text-red-600' },
-          { label: 'In Progress', value: inProgressCount, icon: Clock, color: 'bg-yellow-50 text-yellow-600' },
-          { label: 'Resolved', value: resolvedCount, icon: CheckCircle, color: 'bg-green-50 text-green-600' },
-        ].map(s => (
-          <div key={s.label} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${s.color}`}>
-              <s.icon size={18} />
-            </div>
-            <div>
-              <p className="text-2xl font-black text-gray-900">{s.value}</p>
-              <p className="text-xs text-gray-500">{s.label}</p>
-            </div>
-          </div>
-        ))}
+          { label: 'Total Tickets', value: tickets.length, statusKey: 'all', icon: MessageSquare, color: 'bg-blue-50 text-blue-600', activeRing: 'ring-blue-500 border-blue-500' },
+          { label: 'Open', value: openCount, statusKey: 'open', icon: AlertCircle, color: 'bg-red-50 text-red-600', activeRing: 'ring-red-500 border-red-500' },
+          { label: 'In Progress', value: inProgressCount, statusKey: 'in_progress', icon: Clock, color: 'bg-yellow-50 text-yellow-600', activeRing: 'ring-yellow-500 border-yellow-500' },
+          { label: 'Resolved', value: resolvedCount, statusKey: 'resolved', icon: CheckCircle, color: 'bg-green-50 text-green-600', activeRing: 'ring-green-500 border-green-500' },
+        ].map(s => {
+          const isSelected = filterStatus === s.statusKey;
+          return (
+            <button
+              key={s.label}
+              type="button"
+              onClick={() => setFilterStatus(s.statusKey)}
+              className={`bg-white rounded-2xl p-4 border text-left transition-all duration-200 cursor-pointer shadow-xs hover:shadow-md flex items-center justify-between ${
+                isSelected ? `ring-2 ${s.activeRing} bg-slate-50/80` : 'border-gray-200/80 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${s.color}`}>
+                  <s.icon size={18} />
+                </div>
+                <div>
+                  <p className="text-2xl font-black text-gray-900 leading-tight">{s.value}</p>
+                  <p className="text-xs font-semibold text-gray-500">{s.label}</p>
+                </div>
+              </div>
+              {isSelected && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                  Active
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       <div className="flex gap-5">
@@ -290,37 +362,42 @@ export default function AdminSupportTickets() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-bold text-gray-600 mb-1 block">Raised By</label>
-                  <select className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
-                    <option>User</option><option>Partner</option><option>Delivery Agent</option>
+                  <select value={newUserType} onChange={e => setNewUserType(e.target.value as TicketUserType)}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="user">User</option><option value="partner">Partner</option><option value="delivery">Delivery Agent</option>
                   </select>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-600 mb-1 block">Priority</label>
-                  <select className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
-                    <option>Low</option><option>Medium</option><option>High</option><option>Urgent</option>
+                  <select value={newPriority} onChange={e => setNewPriority(e.target.value as TicketPriority)}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="urgent">Urgent</option>
                   </select>
                 </div>
               </div>
               <div>
                 <label className="text-xs font-bold text-gray-600 mb-1 block">Subject</label>
-                <input className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Brief subject..." />
+                <input value={newSubject} onChange={e => setNewSubject(e.target.value)}
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Brief subject..." />
               </div>
               <div>
                 <label className="text-xs font-bold text-gray-600 mb-1 block">Category</label>
-                <select className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
-                  <option>Payment</option><option>Order</option><option>Account</option><option>Technical</option><option>Product</option><option>Delivery</option><option>Pricing</option>
+                <select value={newCategory} onChange={e => setNewCategory(e.target.value)}
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+                  <option value="Payment">Payment</option><option value="Order">Order</option><option value="Account">Account</option><option value="Technical">Technical</option><option value="Product">Product</option><option value="Delivery">Delivery</option><option value="Pricing">Pricing</option>
                 </select>
               </div>
               <div>
                 <label className="text-xs font-bold text-gray-600 mb-1 block">Description</label>
-                <textarea rows={3} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" placeholder="Detailed description..." />
+                <textarea value={newDesc} onChange={e => setNewDesc(e.target.value)}
+                  rows={3} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" placeholder="Detailed description..." />
               </div>
             </div>
             <div className="flex gap-3 mt-5">
               <button onClick={() => setShowNewTicket(false)}
                 className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-bold hover:bg-gray-50">Cancel</button>
-              <button onClick={() => setShowNewTicket(false)}
-                className="flex-1 bg-primary text-white py-2.5 rounded-xl text-sm font-bold hover:bg-primary/90">Create Ticket</button>
+              <button onClick={handleCreateTicket} disabled={!newSubject.trim() || !newDesc.trim()}
+                className="flex-1 bg-primary text-white py-2.5 rounded-xl text-sm font-bold hover:bg-primary/90 disabled:opacity-50 transition-colors">Create Ticket</button>
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { triggerNotification } from '@/lib/notifications';
 import QRScannerModal from '@/components/QRScannerModal';
 import AadhaarVerificationSection from '@/components/AadhaarVerificationSection';
+import { checkPartnerWalletSufficiency, deductPartnerWalletBalance, getPartnerWalletBalance, addPartnerWalletBalance } from '@/lib/wallet';
 import { 
   Camera, 
   CheckCircle, 
@@ -70,19 +71,44 @@ const photoAngles = [
   { id: 'defect', label: 'Scratch / Defect Close-up', desc: 'Any cosmetic blemish' },
 ];
 
+const getActivePartnerId = (): string => {
+  if (typeof window !== 'undefined') {
+    try {
+      const sess = localStorage.getItem('casmik_partner_session');
+      if (sess) {
+        const parsed = JSON.parse(sess);
+        if (parsed?.id) return parsed.id;
+      }
+    } catch {}
+  }
+  return 'partner-001';
+};
+
 const getInspectionOrders = (): Order[] => {
+  const activePid = getActivePartnerId();
   if (typeof window !== 'undefined') {
     try {
       const saved = localStorage.getItem('casmik_partner_orders_v1') || localStorage.getItem('casmik_orders_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+        if (Array.isArray(parsed)) {
+          // Strictly return only active inspections! Completed or cancelled orders MUST be excluded!
+          return parsed.filter((o: Order) => 
+            (o.partnerId === activePid || !o.partnerId) &&
+            o.status !== 'completed' &&
+            o.status !== 'cancelled' &&
+            ['inspection', 'accepted', 'picked_up'].includes(o.status)
+          );
         }
       }
     } catch {}
   }
-  return defaultOrders;
+  return defaultOrders.filter(o => 
+    (o.partnerId === activePid || !o.partnerId) &&
+    o.status !== 'completed' && 
+    o.status !== 'cancelled' &&
+    ['inspection', 'accepted', 'picked_up'].includes(o.status)
+  );
 };
 
 interface PartnerInspectionProps {
@@ -122,6 +148,7 @@ export default function PartnerInspection({ initialOrderId, onBackToOrders }: Pa
   const [payoutUpiOrRef, setPayoutUpiOrRef] = useState('');
   const [isProcessingPayout, setIsProcessingPayout] = useState(false);
   const [partnerIdentityVerified, setPartnerIdentityVerified] = useState(false);
+  const [walletShortfallModal, setWalletShortfallModal] = useState<{ required: number; available: number; shortfall: number } | null>(null);
 
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const multiFileInputRef = useRef<HTMLInputElement | null>(null);
@@ -212,10 +239,36 @@ export default function PartnerInspection({ initialOrderId, onBackToOrders }: Pa
     ? parseInt(customPriceOverride, 10) || calculatedExactPayout
     : calculatedExactPayout;
 
-  // Instant Spot Payout Handler (shifts order to completed & paid)
+  // Instant Spot Payout Handler (shifts order to completed & paid) with Wallet Deduction
   const handleInstantPayout = async () => {
     if (!selectedOrder || !customerConfirmedPrice) return;
     setIsProcessingPayout(true);
+
+    // 0. Verify partner wallet balance sufficiency
+    const partnerId = selectedOrder.partnerId || getActivePartnerId();
+    const sufficiency = checkPartnerWalletSufficiency(partnerId, finalPayoutToUser);
+    if (!sufficiency.sufficient) {
+      setIsProcessingPayout(false);
+      setWalletShortfallModal({
+        required: finalPayoutToUser,
+        available: sufficiency.currentBalance,
+        shortfall: sufficiency.shortfall,
+      });
+      return;
+    }
+
+    // 0.1 Deduct payout amount from partner's wallet
+    const deducted = deductPartnerWalletBalance(
+      partnerId,
+      finalPayoutToUser,
+      selectedOrder.orderNumber,
+      `Device Inspection Spot Payout (${payoutMode.toUpperCase()})`
+    );
+    if (!deducted) {
+      setIsProcessingPayout(false);
+      alert('Wallet deduction failed. Please verify partner wallet balance.');
+      return;
+    }
 
     const completedOrder: Order = {
       ...selectedOrder,
@@ -278,13 +331,16 @@ export default function PartnerInspection({ initialOrderId, onBackToOrders }: Pa
     setIsProcessingPayout(false);
     setPayoutDisbursed(true);
     setSubmitted(true);
+    // Remove completed order from active inspection list so it gets cleared immediately!
+    setOrdersList(prev => prev.filter(o => o.id !== selectedOrder.id));
   };
 
-  // Orders available for inspection
-  const displayOrders = ordersList.filter(o =>
-    ['inspection', 'accepted', 'picked_up'].includes(o.status) || o.id === selectedOrder?.id
+  // Orders available for inspection (strictly uncompleted)
+  const ordersToShow = ordersList.filter(o =>
+    o.status !== 'completed' &&
+    o.status !== 'cancelled' &&
+    ['inspection', 'accepted', 'picked_up'].includes(o.status)
   );
-  const ordersToShow = displayOrders.length > 0 ? displayOrders : ordersList;
 
   if (submitted) {
     return (
@@ -874,17 +930,34 @@ export default function PartnerInspection({ initialOrderId, onBackToOrders }: Pa
 
         </div>
       ) : (
-        <div className="text-center py-16 bg-white rounded-3xl border border-gray-100 shadow-sm">
-          <ClipboardCheck size={48} className="mx-auto text-gray-300 mb-3" />
-          <p className="text-gray-700 font-bold text-base">No device selected for inspection</p>
-          <p className="text-xs text-gray-400 mt-1">Please scan customer QR code or select an assigned order from above</p>
-          <button
-            type="button"
-            onClick={() => setIsQRScannerOpen(true)}
-            className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-black shadow-md cursor-pointer"
-          >
-            <Scan size={14} /> Scan Customer QR Pass
-          </button>
+        <div className="text-center py-16 bg-white rounded-3xl border border-gray-100 shadow-sm max-w-lg mx-auto p-8">
+          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3">
+            <CheckCircle size={36} />
+          </div>
+          <p className="text-gray-900 font-black text-lg">All Device Inspections Cleared!</p>
+          <p className="text-xs text-gray-500 mt-1 mb-5 leading-relaxed">
+            {ordersToShow.length === 0
+              ? 'There are currently no active devices waiting for physical inspection. All assigned devices have been inspected and disbursed.'
+              : 'Please select an assigned order from above or scan a customer QR pass to begin inspection.'}
+          </p>
+          <div className="flex justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsQRScannerOpen(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md cursor-pointer transition-all"
+            >
+              <Scan size={14} /> Scan Customer QR Pass
+            </button>
+            {onBackToOrders && (
+              <button
+                type="button"
+                onClick={onBackToOrders}
+                className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition-all cursor-pointer"
+              >
+                View Orders Queue →
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -914,6 +987,71 @@ export default function PartnerInspection({ initialOrderId, onBackToOrders }: Pa
                 className="px-5 py-2 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-black"
               >
                 Close Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PARTNER WALLET SHORTFALL POPUP */}
+      {walletShortfallModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-in fade-in">
+          <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 border border-red-100 animate-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center font-bold">
+                  <ShieldAlert size={20} />
+                </div>
+                <div>
+                  <h3 className="font-black text-gray-900 text-base">Insufficient Partner Wallet</h3>
+                  <p className="text-xs text-red-600 font-semibold">Funds required for customer spot payment</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setWalletShortfallModal(null)}
+                className="p-1.5 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-700 cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-4 bg-red-50 rounded-2xl border border-red-200 mb-4 text-xs text-red-900 space-y-2">
+              <p className="font-bold text-sm">
+                You don&apos;t have enough balance in your partner wallet to disburse this payout.
+              </p>
+              <p className="text-red-700">
+                Add amount in your wallet to complete this spot payment to the customer.
+              </p>
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-red-200/60 font-mono text-xs">
+                <div>
+                  <span className="text-gray-500 block text-[10px] uppercase font-sans">Required Payout</span>
+                  <span className="font-black text-red-700 text-sm">₹{walletShortfallModal.required.toLocaleString('en-IN')}</span>
+                </div>
+                <div>
+                  <span className="text-gray-500 block text-[10px] uppercase font-sans">Available in Wallet</span>
+                  <span className="font-black text-gray-800 text-sm">₹{walletShortfallModal.available.toLocaleString('en-IN')}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  addPartnerWalletBalance(getActivePartnerId(), walletShortfallModal.shortfall + 10000, 'Inspection Wallet Top-up');
+                  alert(`₹${(walletShortfallModal.shortfall + 10000).toLocaleString('en-IN')} successfully added to wallet!`);
+                  setWalletShortfallModal(null);
+                }}
+                className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <CreditCard size={14} /> Add ₹{(walletShortfallModal.shortfall + 10000).toLocaleString('en-IN')} to Wallet
+              </button>
+              <button
+                type="button"
+                onClick={() => setWalletShortfallModal(null)}
+                className="px-4 py-3 border border-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                Cancel
               </button>
             </div>
           </div>

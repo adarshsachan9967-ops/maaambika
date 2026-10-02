@@ -32,7 +32,7 @@ interface CustomerRecord {
   orderCount: number;
   totalSpent: number;
   latestDevice: string;
-  latestOrderType: 'sell' | 'buy' | 'exchange' | 'repair';
+  latestOrderType: 'sell' | 'buy' | 'exchange' | 'repair' | 'rental';
   latestOrderDate: string;
   status: 'active' | 'vip' | 'new';
   orders: typeof orders;

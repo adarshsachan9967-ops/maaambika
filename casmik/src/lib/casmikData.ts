@@ -79,7 +79,7 @@ export interface QuestionOption {
 export interface Order {
   id: string;
   orderNumber: string;
-  type: 'sell' | 'buy' | 'exchange' | 'repair';
+  type: 'sell' | 'buy' | 'exchange' | 'repair' | 'rental';
   status: OrderStatus;
   customerId: string;
   customerName: string;
@@ -106,6 +106,10 @@ export interface Order {
   paymentStatus: 'pending' | 'processing' | 'paid' | 'failed';
   inspectionScore: number | null;
   notes: string;
+  rentalDays?: number;
+  dailyRate?: number;
+  securityDeposit?: number;
+  returnDate?: string;
 }
 
 export type OrderStatus =
@@ -3045,6 +3049,111 @@ export const orders: Order[] = [
     "paymentStatus": "pending",
     "inspectionScore": null,
     "notes": "Order logged into system."
+  },
+  {
+    "id": "ord-rent-101",
+    "orderNumber": "CSM-RNT-401",
+    "type": "rental",
+    "status": "in_transit",
+    "customerId": "cust-201",
+    "customerName": "Karan Malhotra",
+    "customerPhone": "9811223344",
+    "customerEmail": "karan.films@gmail.com",
+    "customerAddress": "Flat 402, Aastha Residency, Sector 62",
+    "pinCode": "201301",
+    "city": "Noida",
+    "deviceName": "Sony Alpha A7 IV + 24-70mm f/2.8 GM Kit",
+    "deviceBrand": "Sony",
+    "deviceModel": "Alpha A7 IV Production Rig",
+    "deviceStorage": "Body + 2x 128GB V90 Cards",
+    "deviceColor": "Black",
+    "quotedPrice": 7200,
+    "finalPrice": 7200,
+    "partnerId": "partner-001",
+    "partnerName": "Camsik Certified Camera Hub",
+    "deliveryAgentId": "agent-101",
+    "deliveryAgentName": "Raghu Sharma",
+    "pickupDate": "2026-09-28",
+    "pickupSlot": "10:00 AM - 1:00 PM",
+    "createdAt": "2026-09-27T10:15:00.000Z",
+    "updatedAt": "2026-09-28T11:30:00.000Z",
+    "paymentStatus": "paid",
+    "inspectionScore": 98,
+    "rentalDays": 3,
+    "dailyRate": 2400,
+    "securityDeposit": 15000,
+    "returnDate": "2026-10-01",
+    "notes": "3-Day Commercial Shoot Rental · Security Deposit ₹15,000 Verified"
+  },
+  {
+    "id": "ord-rent-102",
+    "orderNumber": "CSM-RNT-402",
+    "type": "rental",
+    "status": "pickup_scheduled",
+    "customerId": "cust-202",
+    "customerName": "Pooja Varma",
+    "customerPhone": "9833445566",
+    "customerEmail": "pooja.weddings@outlook.com",
+    "customerAddress": "Villa 18, Palm Meadows, Whitefield",
+    "pinCode": "560066",
+    "city": "Bengaluru",
+    "deviceName": "Canon EOS R5 Cinema Kit + RF 50mm f/1.2L",
+    "deviceBrand": "Canon",
+    "deviceModel": "EOS R5 8K Cinema Setup",
+    "deviceStorage": "Body + 512GB CFexpress B",
+    "deviceColor": "Black",
+    "quotedPrice": 17500,
+    "finalPrice": 17500,
+    "partnerId": "partner-002",
+    "partnerName": "Maa Ambika Main Hub",
+    "deliveryAgentId": "delivery-001",
+    "deliveryAgentName": "Raghu Sharma",
+    "pickupDate": "2026-09-29",
+    "pickupSlot": "2:00 PM - 5:00 PM",
+    "createdAt": "2026-09-28T09:00:00.000Z",
+    "updatedAt": "2026-09-28T09:30:00.000Z",
+    "paymentStatus": "paid",
+    "inspectionScore": 100,
+    "rentalDays": 5,
+    "dailyRate": 3500,
+    "securityDeposit": 25000,
+    "returnDate": "2026-10-04",
+    "notes": "5-Day Wedding Videography Booking · Insured & Clean Glass"
+  },
+  {
+    "id": "ord-rent-103",
+    "orderNumber": "CSM-RNT-403",
+    "type": "rental",
+    "status": "completed",
+    "customerId": "cust-203",
+    "customerName": "Devendra Joshi",
+    "customerPhone": "9722334455",
+    "customerEmail": "dev.cinema@gmail.com",
+    "customerAddress": "104, Sunrise Heights, Banjara Hills",
+    "pinCode": "500034",
+    "city": "Hyderabad",
+    "deviceName": "Blackmagic Pocket Cinema Camera 6K Pro",
+    "deviceBrand": "Blackmagic",
+    "deviceModel": "BMPCC 6K Pro Rig",
+    "deviceStorage": "1TB Samsung T7 Shield SSD",
+    "deviceColor": "Black",
+    "quotedPrice": 12000,
+    "finalPrice": 12000,
+    "partnerId": "partner-001",
+    "partnerName": "Camsik Certified Camera Hub",
+    "deliveryAgentId": "agent-101",
+    "deliveryAgentName": "Raghu Sharma",
+    "pickupDate": "2026-09-20",
+    "pickupSlot": "10:00 AM - 1:00 PM",
+    "createdAt": "2026-09-19T14:20:00.000Z",
+    "updatedAt": "2026-09-24T18:00:00.000Z",
+    "paymentStatus": "paid",
+    "inspectionScore": 96,
+    "rentalDays": 4,
+    "dailyRate": 3000,
+    "securityDeposit": 20000,
+    "returnDate": "2026-09-24",
+    "notes": "Rental Completed · Gear returned in pristine condition · Deposit refunded"
   }
 ];
 
@@ -3166,7 +3275,7 @@ export const customers: Customer[] = [
     joinedAt: '2023-11-20',
     status: 'active',
     avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&q=80',
-  },
+  }
 ];
 
 // ─── HELPER FUNCTIONS ────────────────────────────────────────────────────────
@@ -3212,7 +3321,7 @@ export function getOrderStatusColor(status: OrderStatus): string {
   }
 }
 
-export function getTypeColor(type: 'sell' | 'buy' | 'exchange' | 'repair'): string {
+export function getTypeColor(type: 'sell' | 'buy' | 'exchange' | 'repair' | 'rental'): string {
   switch (type) {
     case 'sell':
       return 'text-purple-600 bg-purple-50 border-purple-200';
@@ -3222,6 +3331,8 @@ export function getTypeColor(type: 'sell' | 'buy' | 'exchange' | 'repair'): stri
       return 'text-emerald-600 bg-emerald-50 border-emerald-200';
     case 'repair':
       return 'text-amber-600 bg-amber-50 border-amber-200';
+    case 'rental':
+      return 'text-cyan-700 bg-cyan-50 border-cyan-200';
   }
 }
 

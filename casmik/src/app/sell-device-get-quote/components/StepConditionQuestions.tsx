@@ -260,7 +260,7 @@ export default function StepConditionQuestions({ sellState, onUpdate, onNext, on
               </div>
 
               {/* Navigation */}
-              <div className="flex items-center justify-between mt-6">
+              <div className="flex items-center justify-between mt-6 flex-wrap gap-2">
                 <button 
                   type="button"
                   onClick={() => setActiveQ(q => Math.max(q - 1, 0))} 
@@ -270,23 +270,43 @@ export default function StepConditionQuestions({ sellState, onUpdate, onNext, on
                   <ChevronLeft size={14} /> Previous
                 </button>
 
-                {activeQ < questions.length - 1 ? (
+                <div className="flex items-center gap-2">
                   <button 
                     type="button"
-                    onClick={() => setActiveQ(q => q + 1)}
-                    className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-muted text-sm font-semibold text-foreground hover:bg-muted/80 transition-colors"
+                    onClick={() => {
+                      setHasFinishedQuestions(true);
+                      setTimeout(() => {
+                        document.getElementById('device-verification-gate')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors"
                   >
-                    Skip Question →
+                    Skip All &amp; Verify →
                   </button>
-                ) : (
-                  <button 
-                    type="button"
-                    onClick={() => setHasFinishedQuestions(true)}
-                    className="flex items-center gap-2 px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-colors"
-                  >
-                    Proceed to Verification →
-                  </button>
-                )}
+
+                  {activeQ < questions.length - 1 ? (
+                    <button 
+                      type="button"
+                      onClick={() => setActiveQ(q => q + 1)}
+                      className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-muted text-sm font-semibold text-foreground hover:bg-muted/80 transition-colors"
+                    >
+                      Skip Question →
+                    </button>
+                  ) : (
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        setHasFinishedQuestions(true);
+                        setTimeout(() => {
+                          document.getElementById('device-verification-gate')?.scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                      }}
+                      className="flex items-center gap-2 px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-colors"
+                    >
+                      Proceed to Verification →
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -295,7 +315,7 @@ export default function StepConditionQuestions({ sellState, onUpdate, onNext, on
 
       {/* Device Verification Gate + Continue button */}
       {isReadyForVerification && (
-        <div className="fade-in space-y-3">
+        <div id="device-verification-gate" className="fade-in space-y-3 pt-2">
           <DeviceVerificationSection
             selectedBrand={sellState.brandName}
             selectedModel={sellState.modelName}

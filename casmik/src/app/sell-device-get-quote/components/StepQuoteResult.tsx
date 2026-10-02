@@ -1,11 +1,12 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { CheckCircle, Shield, Truck, Zap, Ban, TrendingUp, Clock, MapPin, Calendar, User, Phone, ArrowRight, BellRing } from 'lucide-react';
+import { CheckCircle, Shield, Truck, Zap, Ban, TrendingUp, Clock, MapPin, Calendar, User, Phone, ArrowRight, BellRing, LogIn, Lock } from 'lucide-react';
 import type { SellState } from './SellDeviceWorkflow';
 import { triggerNotification } from '@/lib/notifications';
 import { createClient } from '@/lib/supabase/client';
 import BookingQRCode from '@/components/BookingQRCode';
+import { getCurrentUser, saveCustomerOrder, registerUser, authenticateUser, CustomerUser } from '@/lib/auth';
 
 interface Props {
   sellState: SellState;
@@ -27,6 +28,14 @@ type QuoteView = 'quote' | 'schedule' | 'confirmed';
 
 export default function StepQuoteResult({ sellState, onSchedulePickup, onBack }: Props) {
   const [view, setView] = useState<QuoteView>('quote');
+  const [currentUser, setCurrentUser] = useState<CustomerUser | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [authIdentifier, setAuthIdentifier] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authName, setAuthName] = useState('');
+  const [authError, setAuthError] = useState('');
+
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
@@ -37,9 +46,64 @@ export default function StepQuoteResult({ sellState, onSchedulePickup, onBack }:
   const [bookedOrderNumber, setBookedOrderNumber] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    const user = getCurrentUser();
+    if (user) {
+      setCurrentUser(user);
+      setName(user.name || '');
+      setPhone(user.phone || '');
+    }
+  }, []);
+
+  const handleAuthSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError('');
+    try {
+      if (authMode === 'register') {
+        if (!authName.trim()) {
+          setAuthError('Please enter your name');
+          return;
+        }
+        if (authIdentifier.replace(/\D/g, '').length < 10) {
+          setAuthError('Please enter a valid 10-digit mobile number');
+          return;
+        }
+        const newUser = registerUser({
+          name: authName.trim(),
+          phone: authIdentifier.trim(),
+          email: `${authIdentifier.replace(/\D/g, '')}@maaambika.in`,
+          password: authPassword || '123456',
+        });
+        setCurrentUser(newUser);
+        setName(newUser.name);
+        setPhone(newUser.phone);
+        setShowAuthModal(false);
+      } else {
+        if (!authIdentifier.trim()) {
+          setAuthError('Please enter your mobile number or email');
+          return;
+        }
+        const user = authenticateUser(authIdentifier.trim(), authPassword || undefined);
+        setCurrentUser(user);
+        setName(user.name);
+        setPhone(user.phone);
+        setShowAuthModal(false);
+      }
+    } catch (err: any) {
+      setAuthError(err?.message || 'Authentication failed. Please check details.');
+    }
+  };
+
   const price = sellState.currentPrice;
 
   const handleConfirmBooking = async () => {
+    // 0. Ensure user is logged in
+    const activeUser = currentUser || getCurrentUser();
+    if (!activeUser) {
+      setShowAuthModal(true);
+      return;
+    }
+
     if (!name || !phone || !address || !pinCode || !selectedDate || !selectedSlot || isSubmitting) return;
     setIsSubmitting(true);
 
@@ -50,12 +114,12 @@ export default function StepQuoteResult({ sellState, onSchedulePickup, onBack }:
     const newOrder = {
       id: newOrderId,
       orderNumber: generatedNumber,
-      type: 'sell',
-      status: 'created',
-      customerId: `cust-${Date.now()}`,
+      type: 'sell' as const,
+      status: 'created' as const,
+      customerId: activeUser.id || `cust-${Date.now()}`,
       customerName: name,
       customerPhone: phone,
-      customerEmail: '',
+      customerEmail: activeUser.email || '',
       customerAddress: address,
       pinCode: pinCode,
       city: 'Delhi NCR',
@@ -72,12 +136,43 @@ export default function StepQuoteResult({ sellState, onSchedulePickup, onBack }:
       deliveryAgentName: null,
       pickupDate: selectedDate,
       pickupSlot: selectedSlot,
-      paymentStatus: 'pending',
+      paymentStatus: 'pending' as const,
       inspectionScore: null,
       notes: `Customer booking placed. Preferred payout via ${paymentMethod}. Slot: ${selectedDate} (${selectedSlot})`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+
+    // 1. Save to customer order records for customer's My Orders page
+    saveCustomerOrder({
+      id: newOrderId,
+      orderNumber: generatedNumber,
+      type: 'sell',
+      status: 'created',
+      createdAt: new Date().toISOString(),
+      customerName: name,
+      customerPhone: phone,
+      customerAddress: address,
+      city: 'Delhi NCR',
+      pincode: pinCode,
+      pickupDate: selectedDate,
+      pickupSlot: selectedSlot,
+      paymentMethod: paymentMethod,
+      paymentStatus: 'pending',
+      oldDevice: {
+        brand: sellState.brandName,
+        model: sellState.modelName,
+        image: '',
+        conditionSummary: `${sellState.storage || ''} · Verified via IMEI`,
+        valuation: price,
+        exchangeBonus: 0,
+      },
+      upgradePrice: 0,
+      tradeInCredit: price,
+      exchangeBonus: 0,
+      couponDiscount: 0,
+      netPayable: 0,
+    });
 
     // 1. Save to global orders storage for instant admin visibility
     if (typeof window !== 'undefined') {
@@ -393,6 +488,93 @@ export default function StepQuoteResult({ sellState, onSchedulePickup, onBack }:
         <Shield size={14} className="text-primary flex-shrink-0" />
         This quote is valid for <strong className="text-foreground">24 hours from now.</strong>
       </div>
+
+      {/* User Login/Register Modal */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 fade-in">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                  <LogIn size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-slate-900">
+                    {authMode === 'register' ? 'Create Customer Account' : 'Sign In to Book'}
+                  </h3>
+                  <p className="text-xs text-slate-500">Login is required to schedule doorstep pickup.</p>
+                </div>
+              </div>
+              <button onClick={() => setShowAuthModal(false)} className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleAuthSubmit} className="space-y-3 pt-1">
+              {authMode === 'register' && (
+                <div>
+                  <label className="text-xs font-bold text-slate-700 mb-1 block">Full Name</label>
+                  <input
+                    type="text"
+                    value={authName}
+                    onChange={e => setAuthName(e.target.value)}
+                    placeholder="Enter your full name"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 mb-1 block">Mobile Number or Email</label>
+                <input
+                  type="text"
+                  value={authIdentifier}
+                  onChange={e => setAuthIdentifier(e.target.value)}
+                  placeholder="e.g. 9876543210"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 mb-1 block">Password</label>
+                <input
+                  type="password"
+                  value={authPassword}
+                  onChange={e => setAuthPassword(e.target.value)}
+                  placeholder="Enter password"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+
+              {authError && (
+                <p className="text-xs text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-100">
+                  ⚠ {authError}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-sm shadow-md transition-all cursor-pointer"
+              >
+                {authMode === 'register' ? 'Create Account & Continue' : 'Sign In & Continue'}
+              </button>
+            </form>
+
+            <div className="text-center pt-1 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthMode(m => m === 'login' ? 'register' : 'login');
+                  setAuthError('');
+                }}
+                className="text-xs font-bold text-emerald-700 hover:underline"
+              >
+                {authMode === 'register' ? 'Already have an account? Sign In →' : "Don't have an account? Register Now →"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

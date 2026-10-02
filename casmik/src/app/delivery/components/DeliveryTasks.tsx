@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { orders } from '@/lib/casmikData';
 import type { Order, OrderStatus } from '@/lib/casmikData';
 import { 
   MapPin, 
@@ -35,10 +36,10 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import LiveOrderTracker from '@/components/LiveOrderTracker';
-import { orders } from '@/lib/casmikData';
 import { triggerNotification } from '@/lib/notifications';
 import QRScannerModal from '@/components/QRScannerModal';
 import AadhaarVerificationSection from '@/components/AadhaarVerificationSection';
+import { checkPartnerWalletSufficiency, deductPartnerWalletBalance, getPartnerWalletBalance } from '@/lib/wallet';
 
 const DELIVERY_AGENT_ID = 'delivery-001';
 
@@ -161,6 +162,13 @@ export default function DeliveryTasks() {
   const [isProcessingPayout, setIsProcessingPayout] = useState(false);
   const [inspectionNotes, setInspectionNotes] = useState('');
   const [deliveryIdentityVerified, setDeliveryIdentityVerified] = useState(false);
+  const [partnerWalletAlert, setPartnerWalletAlert] = useState<{
+    partnerId: string;
+    partnerName: string;
+    required: number;
+    available: number;
+    shortfall: number;
+  } | null>(null);
 
   const supabase = createClient();
 
@@ -200,7 +208,7 @@ export default function DeliveryTasks() {
       .on('postgres_changes', {
         event: '*', schema: 'public', table: 'orders',
         filter: `delivery_agent_id=eq.${currentAid}`
-      }, (payload) => {
+      }, (payload: any) => {
         if (payload.eventType === 'INSERT') {
           setTaskList(prev => [dbToOrder(payload.new as DBOrder), ...prev]);
         } else if (payload.eventType === 'UPDATE') {
@@ -209,7 +217,7 @@ export default function DeliveryTasks() {
           setTaskList(prev => prev.filter(t => t.id !== (payload.old as any).id));
         }
       })
-      .subscribe(status => setIsConnected(status === 'SUBSCRIBED'));
+      .subscribe((status: any) => setIsConnected(status === 'SUBSCRIBED'));
 
     const handleSync = () => fetchTasks();
     window.addEventListener('casmik_orders_updated', handleSync);
@@ -328,10 +336,41 @@ export default function DeliveryTasks() {
     Math.round(quotedPrice * 0.25)
   );
 
-  // Handle Complete Inspection & Payout Disbursal
+  // Handle Complete Inspection & Payout Disbursal with Partner Wallet Deduction
   const handleCompleteInspection = async () => {
     if (!inspectingTask || !customerConfirmedPrice) return;
     setIsProcessingPayout(true);
+
+    // 1. Identify which partner assigned this task
+    const assignedPartnerId = inspectingTask.partnerId || 'partner-001';
+    const assignedPartnerName = inspectingTask.partnerName || 'Partner Store';
+
+    // 2. Check partner wallet balance sufficiency
+    const sufficiency = checkPartnerWalletSufficiency(assignedPartnerId, finalCalculatedPayout);
+    if (!sufficiency.sufficient) {
+      setIsProcessingPayout(false);
+      setPartnerWalletAlert({
+        partnerId: assignedPartnerId,
+        partnerName: assignedPartnerName,
+        required: finalCalculatedPayout,
+        available: sufficiency.currentBalance,
+        shortfall: sufficiency.shortfall,
+      });
+      return;
+    }
+
+    // 3. Deduct final payout amount from that partner's wallet
+    const deducted = deductPartnerWalletBalance(
+      assignedPartnerId,
+      finalCalculatedPayout,
+      inspectingTask.orderNumber,
+      `Delivery Doorstep Payout by Field Executive`
+    );
+    if (!deducted) {
+      setIsProcessingPayout(false);
+      alert('Wallet deduction failed. Please verify partner wallet funds.');
+      return;
+    }
 
     const completedTask: Order = {
       ...inspectingTask,
@@ -1206,6 +1245,60 @@ export default function DeliveryTasks() {
                 className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {isProcessingPayout ? 'Disbursing & Closing...' : `Pay ₹${finalCalculatedPayout.toLocaleString('en-IN')} & Close Booking`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PARTNER WALLET SHORTFALL POPUP FOR DELIVERY EXECUTIVE */}
+      {partnerWalletAlert && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-in fade-in">
+          <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 border border-amber-200 animate-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+                  <AlertCircle size={22} />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 text-base">Partner Wallet Balance Low</h3>
+                  <p className="text-xs text-amber-700 font-semibold">{partnerWalletAlert.partnerName}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setPartnerWalletAlert(null)}
+                className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-4 bg-amber-50 rounded-2xl border border-amber-300 mb-4 text-xs text-amber-950 space-y-2.5">
+              <p className="font-black text-sm text-amber-900 flex items-center gap-1.5">
+                <span>⚠️ Mention your partner to add balance in his wallet to make a payment.</span>
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                The partner account assigned to this booking does not currently have sufficient balance to disburse this doorstep payment.
+              </p>
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-amber-200 font-mono text-xs">
+                <div>
+                  <span className="text-slate-500 block text-[10px] uppercase font-sans">Payout Due</span>
+                  <span className="font-black text-red-600 text-sm">₹{partnerWalletAlert.required.toLocaleString('en-IN')}</span>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-[10px] uppercase font-sans">Partner Balance</span>
+                  <span className="font-black text-slate-800 text-sm">₹{partnerWalletAlert.available.toLocaleString('en-IN')}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setPartnerWalletAlert(null)}
+                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
+              >
+                Understood / Contact Partner Store
               </button>
             </div>
           </div>

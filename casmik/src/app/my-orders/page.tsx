@@ -35,39 +35,109 @@ export default function MyOrdersPage() {
   const [selectedReceiptOrder, setSelectedReceiptOrder] = useState<CustomerOrderRecord | null>(null);
   const [selectedQRModalOrder, setSelectedQRModalOrder] = useState<CustomerOrderRecord | null>(null);
 
+  const loadUnifiedOrders = (userPhone?: string): CustomerOrderRecord[] => {
+    const directCustOrders = getCustomerOrders(userPhone);
+    const orderMap = new Map<string, CustomerOrderRecord>();
+
+    directCustOrders.forEach(o => {
+      orderMap.set(o.orderNumber || o.id, { ...o });
+    });
+
+    // Merge latest status and missing orders from global casmik_orders_v1
+    if (typeof window !== 'undefined') {
+      try {
+        const rawGlobal = localStorage.getItem('casmik_orders_v1');
+        if (rawGlobal) {
+          const globalList = JSON.parse(rawGlobal);
+          if (Array.isArray(globalList)) {
+            const cleanPhone = userPhone?.trim().replace(/\D/g, '').slice(-10);
+
+            globalList.forEach((go: any) => {
+              const goPhone = (go.customerPhone || '').replace(/\D/g, '').slice(-10);
+              const key = go.orderNumber || go.id;
+
+              // If order is already in user orders, update with latest operational status
+              if (orderMap.has(key)) {
+                const existing = orderMap.get(key)!;
+                existing.status = go.status || existing.status;
+                if (go.finalPrice) existing.tradeInCredit = go.finalPrice;
+                if (go.paymentStatus) existing.paymentStatus = go.paymentStatus;
+                orderMap.set(key, existing);
+              } else if (cleanPhone && goPhone && cleanPhone === goPhone) {
+                // Order placed on this phone not yet in customer table
+                orderMap.set(key, {
+                  id: go.id,
+                  orderNumber: go.orderNumber,
+                  type: (go.type || 'sell') as any,
+                  status: go.status || 'created',
+                  createdAt: go.createdAt || new Date().toISOString(),
+                  customerName: go.customerName || 'Customer',
+                  customerPhone: go.customerPhone || '',
+                  customerAddress: go.customerAddress || '',
+                  city: go.city || 'Delhi NCR',
+                  pincode: go.pinCode || '',
+                  pickupDate: go.pickupDate,
+                  pickupSlot: go.pickupSlot,
+                  paymentMethod: 'UPI',
+                  paymentStatus: go.paymentStatus || 'pending',
+                  oldDevice: {
+                    brand: go.deviceBrand || '',
+                    model: go.deviceModel || go.deviceName || '',
+                    image: '',
+                    conditionSummary: go.deviceStorage || 'Standard',
+                    valuation: go.quotedPrice || 0,
+                    exchangeBonus: 0,
+                  },
+                  upgradePrice: 0,
+                  tradeInCredit: go.finalPrice || go.quotedPrice || 0,
+                  exchangeBonus: 0,
+                  couponDiscount: 0,
+                  netPayable: 0,
+                });
+              }
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Failed syncing customer orders with global:', err);
+      }
+    }
+
+    return Array.from(orderMap.values()).sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  };
+
   useEffect(() => {
     const currentUser = getCurrentUser();
     setUser(currentUser);
-    const initialOrders = getCustomerOrders(currentUser?.phone);
-    setOrders(initialOrders);
+    setOrders(loadUnifiedOrders(currentUser?.phone));
 
     const handleAuthChange = (e: Event) => {
       const customEvent = e as CustomEvent<CustomerUser | null>;
       setUser(customEvent.detail);
-      setOrders(getCustomerOrders(customEvent.detail?.phone));
+      setOrders(loadUnifiedOrders(customEvent.detail?.phone));
     };
 
-    const handleOrdersChange = (e: Event) => {
-      const customEvent = e as CustomEvent<CustomerOrderRecord[]>;
-      if (customEvent.detail) {
-        setOrders(customEvent.detail);
-      } else {
-        setOrders(getCustomerOrders(currentUser?.phone));
-      }
+    const handleOrdersChange = () => {
+      const u = getCurrentUser();
+      setOrders(loadUnifiedOrders(u?.phone));
     };
 
     window.addEventListener('casmik_auth_change', handleAuthChange);
     window.addEventListener('casmik_orders_updated', handleOrdersChange);
+    window.addEventListener('storage', handleOrdersChange);
     return () => {
       window.removeEventListener('casmik_auth_change', handleAuthChange);
       window.removeEventListener('casmik_orders_updated', handleOrdersChange);
+      window.removeEventListener('storage', handleOrdersChange);
     };
   }, []);
 
   const handleSearchByPhone = (e: React.FormEvent) => {
     e.preventDefault();
     if (phoneSearch.trim().length >= 10) {
-      setOrders(getCustomerOrders(phoneSearch.trim()));
+      setOrders(loadUnifiedOrders(phoneSearch.trim()));
     }
   };
 

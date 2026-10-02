@@ -35,11 +35,11 @@ const navGroups: { group: string; items: NavItem[] }[] = [
   {
     group: 'Orders',
     items: [
-      { id: 'sell-orders', icon: Tag, label: 'Sell Orders', badge: 47, badgeVariant: 'danger' },
-      { id: 'buy-orders', icon: ShoppingBag, label: 'Buy Orders', badge: 23 },
+      { id: 'sell-orders', icon: Tag, label: 'Sell Orders' },
+      { id: 'buy-orders', icon: ShoppingBag, label: 'Buy Orders' },
       { id: 'exchange-orders', icon: RefreshCw, label: 'Exchange Orders' },
-      { id: 'repair-orders', icon: Wrench, label: 'Repair Orders', badge: 8 },
-      { id: 'pickups', icon: Truck, label: 'Pickups', badge: 15, badgeVariant: 'warning' },
+      { id: 'repair-orders', icon: Wrench, label: 'Repair Orders' },
+      { id: 'pickups', icon: Truck, label: 'Pickups' },
     ],
   },
   {
@@ -63,14 +63,14 @@ const navGroups: { group: string; items: NavItem[] }[] = [
     group: 'Finance',
     items: [
       { id: 'payments', icon: CreditCard, label: 'Payments' },
-      { id: 'payouts', icon: Zap, label: 'Partner Payouts', badge: '₹2.4L', badgeVariant: 'warning' },
+      { id: 'payouts', icon: Zap, label: 'Partner Payouts' },
     ],
   },
   {
     group: 'Operations',
     items: [
       { id: 'pincodes', icon: MapPin, label: 'PIN Codes' },
-      { id: 'support', icon: MessageSquare, label: 'Support Tickets', badge: 19, badgeVariant: 'danger' },
+      { id: 'support', icon: MessageSquare, label: 'Support Tickets' },
       { id: 'reviews', icon: Star, label: 'Reviews' },
       { id: 'notifications', icon: Bell, label: 'Notifications' },
     ],

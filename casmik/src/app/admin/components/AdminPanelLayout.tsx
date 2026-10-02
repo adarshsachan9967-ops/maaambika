@@ -1,51 +1,15 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { AdminSection } from '../page';
 import { LayoutDashboard, ShoppingBag, Tag, Globe, Package, Calculator, Users, Handshake, Truck, FileText, BarChart3, Settings, ChevronLeft, ChevronRight, Bell, Menu, X, CreditCard, Send, LogOut, Wrench, Warehouse, MessageSquare, Percent, RefreshCw, Shield } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
+import { orders as defaultOrders, partners as defaultPartners } from '@/lib/casmikData';
+import { getStoredNotifications, markAllNotificationsRead, addNotificationListener } from '@/lib/notifications';
 
 interface NavItem { id: AdminSection; icon: React.ElementType; label: string; badge?: string | number; badgeColor?: string; }
 interface NavGroup { group: string; items: NavItem[]; }
-
-const navGroups: NavGroup[] = [
-  { group: 'Overview', items: [{ id: 'overview', icon: LayoutDashboard, label: 'Dashboard' }] },
-  { group: 'Orders', items: [
-    { id: 'orders', icon: ShoppingBag, label: 'All Orders', badge: 47, badgeColor: 'bg-red-500' },
-  ]},
-  { group: 'Catalog', items: [
-    { id: 'categories', icon: Tag, label: 'Categories' },
-    { id: 'brands', icon: Globe, label: 'Brands' },
-    { id: 'models', icon: Package, label: 'Models' },
-    { id: 'refurbished', icon: RefreshCw, label: 'Refurbished Devices' },
-    { id: 'repair_issues', icon: Wrench, label: 'Repair Issues' },
-    { id: 'pricing', icon: Calculator, label: 'Pricing Engine' },
-  ]},
-  { group: 'Inventory', items: [
-    { id: 'inventory', icon: Warehouse, label: 'Inventory' },
-  ]},
-  { group: 'People', items: [
-    { id: 'customers', icon: Users, label: 'Customers' },
-    { id: 'partners', icon: Handshake, label: 'Partners', badge: 3, badgeColor: 'bg-yellow-500' },
-    { id: 'delivery', icon: Truck, label: 'Delivery Agents' },
-    { id: 'identity_verification', icon: Shield, label: 'Identity (KYC)', badge: '!', badgeColor: 'bg-amber-500' },
-  ]},
-  { group: 'Finance', items: [
-    { id: 'payouts', icon: CreditCard, label: 'Wallet & Payouts', badge: '₹2.4L', badgeColor: 'bg-orange-500' },
-    { id: 'coupons', icon: Percent, label: 'Coupons & Offers' },
-  ]},
-  { group: 'Support', items: [
-    { id: 'support_tickets', icon: MessageSquare, label: 'Support Tickets', badge: 5, badgeColor: 'bg-red-500' },
-  ]},
-  { group: 'Content & Tools', items: [
-    { id: 'cms', icon: FileText, label: 'CMS' },
-    { id: 'reports', icon: BarChart3, label: 'Reports' },
-    { id: 'notifications', icon: Bell, label: 'Notifications', badge: 5, badgeColor: 'bg-red-500' },
-    { id: 'push_notifications', icon: Send, label: 'Push Notifications' },
-    { id: 'settings', icon: Settings, label: 'Settings' },
-  ]},
-];
 
 interface Props { activeSection: AdminSection; onSectionChange: (s: AdminSection) => void; children: React.ReactNode; }
 
@@ -53,6 +17,133 @@ export default function AdminPanelLayout({ activeSection, onSectionChange, child
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Dynamic real counts for badges
+  const [orderCount, setOrderCount] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('casmik_orders_v1');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed.length;
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    return defaultOrders.length;
+  });
+
+  const [unreadNotifs, setUnreadNotifs] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      return getStoredNotifications('admin').filter(n => !n.read).length;
+    }
+    return 0;
+  });
+
+  const [supportTicketsCount, setSupportTicketsCount] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('casmik_support_tickets_v1');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) return parsed.filter((t: any) => t.status === 'open' || t.status === 'in_progress').length;
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    return 3;
+  });
+
+  // Keep badges synced with live events
+  useEffect(() => {
+    const syncCounts = () => {
+      try {
+        const savedOrders = localStorage.getItem('casmik_orders_v1');
+        if (savedOrders) {
+          const parsed = JSON.parse(savedOrders);
+          if (Array.isArray(parsed)) setOrderCount(parsed.length);
+        }
+
+        const notifs = getStoredNotifications('admin');
+        setUnreadNotifs(notifs.filter(n => !n.read).length);
+
+        const savedTickets = localStorage.getItem('casmik_support_tickets_v1');
+        if (savedTickets) {
+          const parsed = JSON.parse(savedTickets);
+          if (Array.isArray(parsed)) setSupportTicketsCount(parsed.filter((t: any) => t.status === 'open' || t.status === 'in_progress').length);
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    };
+
+    const unsubscribeNotif = addNotificationListener((n) => {
+      if (n.targetRole === 'admin' || n.targetRole === 'all') {
+        syncCounts();
+      }
+    });
+
+    window.addEventListener('casmik_orders_updated', syncCounts);
+    window.addEventListener('casmik_notifications_updated', syncCounts);
+    window.addEventListener('casmik_support_tickets_updated', syncCounts);
+    window.addEventListener('storage', syncCounts);
+
+    return () => {
+      unsubscribeNotif();
+      window.removeEventListener('casmik_orders_updated', syncCounts);
+      window.removeEventListener('casmik_notifications_updated', syncCounts);
+      window.removeEventListener('casmik_support_tickets_updated', syncCounts);
+      window.removeEventListener('storage', syncCounts);
+    };
+  }, []);
+
+  // When opening notifications section, mark all admin notifications as read immediately
+  useEffect(() => {
+    if (activeSection === 'notifications') {
+      markAllNotificationsRead('admin');
+      setUnreadNotifs(0);
+    }
+  }, [activeSection]);
+
+  const navGroups: NavGroup[] = [
+    { group: 'Overview', items: [{ id: 'overview', icon: LayoutDashboard, label: 'Dashboard' }] },
+    { group: 'Orders', items: [
+      { id: 'orders', icon: ShoppingBag, label: 'All Orders', badge: orderCount, badgeColor: 'bg-primary' },
+    ]},
+    { group: 'Catalog', items: [
+      { id: 'categories', icon: Tag, label: 'Categories' },
+      { id: 'brands', icon: Globe, label: 'Brands' },
+      { id: 'models', icon: Package, label: 'Models' },
+      { id: 'refurbished', icon: RefreshCw, label: 'Refurbished Devices' },
+      { id: 'repair_issues', icon: Wrench, label: 'Repair Issues' },
+      { id: 'pricing', icon: Calculator, label: 'Pricing Engine' },
+    ]},
+    { group: 'Inventory', items: [
+      { id: 'inventory', icon: Warehouse, label: 'Inventory' },
+    ]},
+    { group: 'People', items: [
+      { id: 'customers', icon: Users, label: 'Customers' },
+      { id: 'partners', icon: Handshake, label: 'Partners', badge: defaultPartners.filter(p => p.status === 'active').length, badgeColor: 'bg-yellow-500' },
+      { id: 'delivery', icon: Truck, label: 'Delivery Agents' },
+      { id: 'identity_verification', icon: Shield, label: 'Identity (KYC)', badge: '!', badgeColor: 'bg-amber-500' },
+    ]},
+    { group: 'Finance', items: [
+      { id: 'payouts', icon: CreditCard, label: 'Wallet & Payouts', badge: '₹2.4L', badgeColor: 'bg-orange-500' },
+      { id: 'coupons', icon: Percent, label: 'Coupons & Offers' },
+    ]},
+    { group: 'Support', items: [
+      { id: 'support_tickets', icon: MessageSquare, label: 'Support Tickets', badge: supportTicketsCount > 0 ? supportTicketsCount : undefined, badgeColor: 'bg-red-500' },
+    ]},
+    { group: 'Content & Tools', items: [
+      { id: 'cms', icon: FileText, label: 'CMS' },
+      { id: 'reports', icon: BarChart3, label: 'Reports' },
+      { id: 'notifications', icon: Bell, label: 'Notifications', badge: unreadNotifs > 0 ? unreadNotifs : undefined, badgeColor: 'bg-red-500' },
+      { id: 'push_notifications', icon: Send, label: 'Push Notifications' },
+      { id: 'settings', icon: Settings, label: 'Settings' },
+    ]},
+  ];
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
@@ -71,6 +162,15 @@ export default function AdminPanelLayout({ activeSection, onSectionChange, child
       coupons: 'Coupons & Offers', models: 'Device Models',
     };
     return map[s] || s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  };
+
+  const handleNavClick = (id: AdminSection) => {
+    if (id === 'notifications') {
+      markAllNotificationsRead('admin');
+      setUnreadNotifs(0);
+    }
+    onSectionChange(id);
+    setMobileOpen(false);
   };
 
   const SidebarContent = () => (
@@ -93,7 +193,7 @@ export default function AdminPanelLayout({ activeSection, onSectionChange, child
             {group.items.map((item) => {
               const active = activeSection === item.id;
               return (
-                <button key={item.id} onClick={() => { onSectionChange(item.id); setMobileOpen(false); }}
+                <button key={item.id} onClick={() => handleNavClick(item.id)}
                   className={`w-full flex items-center mx-2 rounded-xl transition-all duration-150 mb-0.5 ${collapsed ? 'justify-center w-12 h-10 p-0' : 'gap-2.5 px-3 py-2.5'} ${active ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-white/60 hover:bg-white/10 hover:text-white'}`}
                   style={{ width: collapsed ? '3rem' : 'calc(100% - 1rem)' }}
                 >

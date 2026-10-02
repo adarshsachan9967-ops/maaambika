@@ -60,87 +60,90 @@ export default function CustomerOrderTracker() {
   const [selectedOrder, setSelectedOrder] = useState<LiveOrder | null>(null);
   const [qrModalOrder, setQrModalOrder] = useState<LiveOrder | null>(null);
   const [recentUpdate, setRecentUpdate] = useState<string | null>(null);
-  const supabase = createClient();
+  const supabaseRef = React.useRef<any>(null);
+  if (!supabaseRef.current) {
+    supabaseRef.current = createClient();
+  }
+  const supabase = supabaseRef.current;
 
   const getLocalMatchingOrders = (query: string): LiveOrder[] => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const saved = localStorage.getItem('casmik_orders_v1');
-      if (saved) {
-        const list = JSON.parse(saved);
-        if (Array.isArray(list)) {
-          const q = query.toLowerCase().trim();
-          return list
-            .filter((o: any) =>
-              o.customerPhone?.includes(q) ||
-              o.orderNumber?.toLowerCase().includes(q) ||
-              o.id?.toLowerCase().includes(q)
-            )
-            .map((o: any) => ({
-              id: o.id,
-              order_number: o.orderNumber,
-              order_type: o.type,
-              status: o.status,
-              customer_name: o.customerName,
-              customer_phone: o.customerPhone,
-              device_name: o.deviceName,
-              quoted_price: o.quotedPrice || 0,
-              final_price: o.finalPrice || 0,
-              partner_name: o.partnerName || null,
-              delivery_agent_name: o.deliveryAgentName || null,
-              pickup_date: o.pickupDate || null,
-              pickup_slot: o.pickupSlot || null,
-              city: o.city || null,
-              pin_code: o.pinCode || null,
-              payment_status: o.paymentStatus || 'pending',
-              inspection_score: o.inspectionScore || null,
-              notes: o.notes || null,
-              updated_at: o.updatedAt || new Date().toISOString(),
-            }));
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('casmik_orders_v1');
+        if (saved) {
+          const list = JSON.parse(saved);
+          if (Array.isArray(list)) {
+            const q = query.toLowerCase().trim();
+            return list
+              .filter((o: any) =>
+                (o.customerPhone && o.customerPhone.includes(q)) ||
+                (o.orderNumber && o.orderNumber.toLowerCase().includes(q)) ||
+                (o.id && o.id.toLowerCase().includes(q))
+              )
+              .map((o: any) => ({
+                id: o.id,
+                order_number: o.orderNumber,
+                order_type: o.type,
+                status: o.status,
+                customer_name: o.customerName,
+                customer_phone: o.customerPhone,
+                device_name: o.deviceName,
+                quoted_price: o.quotedPrice || 0,
+                final_price: o.finalPrice || 0,
+                partner_name: o.partnerName || null,
+                delivery_agent_name: o.deliveryAgentName || null,
+                pickup_date: o.pickupDate || null,
+                pickup_slot: o.pickupSlot || null,
+                city: o.city || null,
+                pin_code: o.pinCode || null,
+                payment_status: o.paymentStatus || 'pending',
+                inspection_score: o.inspectionScore || null,
+                notes: o.notes || null,
+                updated_at: o.updatedAt || new Date().toISOString(),
+              }));
+          }
         }
-      }
-    } catch {}
+      } catch {}
+    }
     return [];
   };
 
-  const fetchOrders = useCallback(async (query: string) => {
-    if (!query) return;
-    setLoading(true);
-    const localMatches = getLocalMatchingOrders(query);
+  const fetchOrders = useCallback(async (query: string, showSpinner = true) => {
+    if (!query || !query.trim()) return;
+    const cleanQuery = query.trim();
+    if (showSpinner) setLoading(true);
+    const localMatches = getLocalMatchingOrders(cleanQuery);
+    if (localMatches.length > 0) {
+      setOrders(localMatches);
+    }
 
     try {
-      const isPhoneNumber = /^\d+$/.test(query.trim());
+      const isPhoneNumber = /^\d+$/.test(cleanQuery);
       let queryBuilder = supabase.from('orders').select('*');
 
       if (isPhoneNumber) {
-        queryBuilder = queryBuilder.eq('customer_phone', query.trim());
+        queryBuilder = queryBuilder.eq('customer_phone', cleanQuery);
       } else {
-        queryBuilder = queryBuilder.or(`order_number.ilike.%${query.trim()}%,id.eq.${query.trim()}`);
+        queryBuilder = queryBuilder.or(`order_number.ilike.%${cleanQuery}%,id.eq.${cleanQuery}`);
       }
 
       const { data, error } = await queryBuilder.order('created_at', { ascending: false });
       if (!error && data && data.length > 0) {
-        // Merge remote and local without duplicates
         const map = new Map();
-        data.forEach(item => map.set(item.id, item));
+        data.forEach((item: any) => map.set(item.id, item));
         localMatches.forEach(item => {
           if (!map.has(item.id)) map.set(item.id, item);
         });
         setOrders(Array.from(map.values()));
-        return;
       }
     } catch (err: any) {
       console.log('Customer orders error:', err.message);
     } finally {
-      setLoading(false);
+      if (showSpinner) setLoading(false);
     }
+  }, []);
 
-    if (localMatches.length > 0) {
-      setOrders(localMatches);
-    }
-  }, [supabase]);
-
-  // Handle URL params on mount
+  // Handle URL params once on initial mount only
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -148,14 +151,29 @@ export default function CustomerOrderTracker() {
       const paramPhone = params.get('phone');
       if (paramOrderId) {
         setSearchInput(paramOrderId);
-        fetchOrders(paramOrderId);
+        fetchOrders(paramOrderId, true);
       } else if (paramPhone) {
         setSearchPhone(paramPhone);
         setSearchInput(paramPhone);
-        fetchOrders(paramPhone);
+        fetchOrders(paramPhone, true);
       }
     }
-  }, [fetchOrders]);
+  }, []); // Run once on mount!
+
+  // Listen for local order updates without full reload or scroll jump
+  useEffect(() => {
+    const handleOrderUpdate = () => {
+      if (searchInput.trim()) {
+        fetchOrders(searchInput.trim(), false); // Background silent update
+      }
+    };
+    window.addEventListener('casmik_orders_updated', handleOrderUpdate);
+    window.addEventListener('storage', handleOrderUpdate);
+    return () => {
+      window.removeEventListener('casmik_orders_updated', handleOrderUpdate);
+      window.removeEventListener('storage', handleOrderUpdate);
+    };
+  }, [searchInput, fetchOrders]);
 
   useEffect(() => {
     if (!searchPhone) return;
@@ -165,7 +183,7 @@ export default function CustomerOrderTracker() {
       .on('postgres_changes', {
         event: '*', schema: 'public', table: 'orders',
         filter: `customer_phone=eq.${searchPhone}`
-      }, (payload) => {
+      }, (payload: any) => {
         setRecentUpdate(payload.new && 'order_number' in payload.new ? (payload.new as any).order_number : null);
         setTimeout(() => setRecentUpdate(null), 4000);
 
@@ -176,10 +194,10 @@ export default function CustomerOrderTracker() {
           setOrders(prev => [payload.new as LiveOrder, ...prev]);
         }
       })
-      .subscribe(status => setIsConnected(status === 'SUBSCRIBED'));
+      .subscribe((status: string) => setIsConnected(status === 'SUBSCRIBED'));
 
     return () => { supabase.removeChannel(channel); };
-  }, [searchPhone, supabase]);
+  }, [searchPhone]);
 
   const handleSearch = () => {
     if (searchInput.trim().length >= 3) {

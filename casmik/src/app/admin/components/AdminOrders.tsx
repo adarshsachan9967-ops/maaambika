@@ -203,17 +203,19 @@ export default function AdminOrders({
     };
   }, [fetchOrders, supabase]);
 
-  const filtered = orderList.filter(o =>
-    (o.orderNumber.toLowerCase().includes(query.toLowerCase()) ||
-     o.customerName.toLowerCase().includes(query.toLowerCase()) ||
-     o.deviceName.toLowerCase().includes(query.toLowerCase()) ||
-     (o.city && o.city.toLowerCase().includes(query.toLowerCase()))) &&
-    (filterType === 'all' || o.type === filterType) &&
-    (filterStatus === 'all' || 
-     (filterStatus === 'pending'
-       ? ['created', 'assigned', 'accepted', 'pickup_scheduled'].includes(o.status)
-       : o.status === filterStatus))
-  );
+  const filtered = orderList
+    .filter(o =>
+      (o.orderNumber.toLowerCase().includes(query.toLowerCase()) ||
+       o.customerName.toLowerCase().includes(query.toLowerCase()) ||
+       o.deviceName.toLowerCase().includes(query.toLowerCase()) ||
+       (o.city && o.city.toLowerCase().includes(query.toLowerCase()))) &&
+      (filterType === 'all' || o.type === filterType) &&
+      (filterStatus === 'all' || 
+       (filterStatus === 'pending'
+         ? ['created', 'assigned', 'accepted', 'pickup_scheduled'].includes(o.status)
+         : o.status === filterStatus))
+    )
+    .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
 
   const handleAssignPartner = async () => {
     if (!assignModal || !selectedPartner) return;
@@ -303,12 +305,43 @@ export default function AdminOrders({
     setSelectedDelivery('');
   };
 
+  const STAGE_RANK: Record<string, number> = {
+    created: 1,
+    assigned: 2,
+    accepted: 3,
+    pickup_scheduled: 4,
+    picked_up: 5,
+    in_transit: 6,
+    inspection: 7,
+    completed: 8,
+    cancelled: 99,
+  };
+
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
     const targetOrder = orderList.find(o => o.id === orderId);
+    if (!targetOrder) return;
+
+    if (targetOrder.status === 'completed') {
+      alert('This order is marked as Completed and is permanently locked. No further modifications can be made.');
+      return;
+    }
+    if (targetOrder.status === 'cancelled') {
+      alert('This order is cancelled and cannot be modified.');
+      return;
+    }
+
+    const currentRank = STAGE_RANK[targetOrder.status] || 1;
+    const newRank = STAGE_RANK[newStatus] || 1;
+    if (newStatus !== 'cancelled' && newRank < currentRank) {
+      alert(`Progression lock: You cannot move an order backwards to a previous stage (${newStatus.replace(/_/g, ' ')}).`);
+      return;
+    }
+
     const updated = orderList.map(o => o.id === orderId ? { ...o, status: newStatus } : o);
     setOrderList(updated);
     if (typeof window !== 'undefined') {
       localStorage.setItem('casmik_orders_v1', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('casmik_orders_updated'));
     }
     setSelectedOrder(prev => prev && prev.id === orderId ? { ...prev, status: newStatus } : prev);
 
@@ -443,6 +476,7 @@ export default function AdminOrders({
               <option value="buy">Buy</option>
               <option value="exchange">Exchange</option>
               <option value="repair">Repair</option>
+              <option value="rental">Camera Rental Bookings</option>
             </select>
             <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
               className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white">
@@ -464,7 +498,7 @@ export default function AdminOrders({
                   <tr className="bg-gray-50 border-b border-gray-100">
                     <th className="text-left px-5 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Order</th>
                     <th className="text-left px-4 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Customer</th>
-                    <th className="text-left px-4 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Device</th>
+                    <th className="text-left px-4 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Device / Equipment</th>
                     <th className="text-left px-4 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Type</th>
                     <th className="text-left px-4 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Amount</th>
                     <th className="text-left px-4 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Status</th>
@@ -473,53 +507,83 @@ export default function AdminOrders({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {filtered.map((order) => (
-                    <tr
-                      key={order.id}
-                      onClick={() => setSelectedOrder(order)}
-                      className="hover:bg-primary/5 transition-colors cursor-pointer group"
-                    >
-                      <td className="px-5 py-3.5">
-                        <p className="font-bold text-gray-900 text-xs group-hover:text-primary transition-colors">{order.orderNumber}</p>
-                        <p className="text-xs text-gray-400">{order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN') : ''}</p>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <p className="font-semibold text-gray-800 text-xs">{order.customerName}</p>
-                        <p className="text-xs text-gray-400">{order.city} · {order.pinCode}</p>
-                      </td>
-                      <td className="px-4 py-3.5 max-w-[150px]">
-                        <p className="text-xs text-gray-700 truncate font-medium">{order.deviceName}</p>
-                        <p className="text-xs text-gray-400">{order.pickupDate}</p>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <span className={`text-xs font-bold px-2 py-1 rounded-lg capitalize ${getTypeColor(order.type)}`}>{order.type}</span>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <p className="font-bold text-gray-900 text-xs">₹{order.quotedPrice.toLocaleString('en-IN')}</p>
-                        {order.finalPrice > 0 && order.finalPrice !== order.quotedPrice && (
-                          <p className="text-xs text-green-600 font-semibold">Final: ₹{order.finalPrice.toLocaleString('en-IN')}</p>
-                        )}
-                      </td>
-                      <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
-                        <div className="relative inline-block">
-                          <select
-                            value={order.status}
-                            onChange={(e) => handleStatusChange(order.id, e.target.value as OrderStatus)}
-                            className={`text-xs font-bold px-2.5 py-1 rounded-lg border border-transparent hover:border-gray-300 cursor-pointer appearance-none pr-6 transition-all ${getOrderStatusColor(order.status)}`}
-                          >
-                            {STATUS_OPTIONS.map(opt => (
-                              <option key={opt.value} value={opt.value} className="bg-white text-gray-800 font-semibold">
-                                {opt.label}
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown size={11} className="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
-                        </div>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-1.5 text-xs">
-                            <Store size={12} className="text-gray-400 flex-shrink-0" />
+                  {filtered.map((order) => {
+                    const isCompleted = order.status === 'completed';
+                    const isCancelled = order.status === 'cancelled';
+                    const currRank = STAGE_RANK[order.status] || 1;
+                    return (
+                      <tr
+                        key={order.id}
+                        onClick={() => setSelectedOrder(order)}
+                        className="hover:bg-primary/5 transition-colors cursor-pointer group"
+                      >
+                        <td className="px-5 py-3.5">
+                          <p className="font-bold text-gray-900 text-xs group-hover:text-primary transition-colors">{order.orderNumber}</p>
+                          <p className="text-xs text-gray-400">{order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN') : ''}</p>
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <p className="font-semibold text-gray-800 text-xs">{order.customerName}</p>
+                          <p className="text-xs text-gray-400">{order.city} · {order.pinCode}</p>
+                        </td>
+                        <td className="px-4 py-3.5 max-w-[170px]">
+                          <p className="text-xs text-gray-800 truncate font-semibold">{order.deviceName}</p>
+                          {order.type === 'rental' ? (
+                            <div className="text-[11px] text-amber-700 font-medium space-y-0.5 mt-0.5">
+                              <p>📅 {order.rentalDays || 3} Days @ ₹{(order.dailyRate || 1200).toLocaleString('en-IN')}/day</p>
+                              <p className="text-[10px] text-gray-500">Return: {order.returnDate || 'Scheduled'}</p>
+                            </div>
+                          ) : (
+                            <p className="text-xs text-gray-400">{order.pickupDate}</p>
+                          )}
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <span className={`text-xs font-bold px-2 py-1 rounded-lg capitalize ${getTypeColor(order.type)}`}>
+                            {order.type === 'rental' ? '📷 Camera Rental' : order.type}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <p className="font-bold text-gray-900 text-xs">₹{order.quotedPrice.toLocaleString('en-IN')}</p>
+                          {order.type === 'rental' && order.securityDeposit ? (
+                            <p className="text-[10px] text-gray-500 font-medium">+₹{order.securityDeposit.toLocaleString('en-IN')} Deposit</p>
+                          ) : null}
+                          {order.finalPrice > 0 && order.finalPrice !== order.quotedPrice && order.type !== 'rental' && (
+                            <p className="text-xs text-green-600 font-semibold">Final: ₹{order.finalPrice.toLocaleString('en-IN')}</p>
+                          )}
+                        </td>
+                        <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
+                          {isCompleted ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-lg bg-green-100 text-green-800 border border-green-200">
+                              ✓ Completed (Locked)
+                            </span>
+                          ) : isCancelled ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-lg bg-red-100 text-red-800 border border-red-200">
+                              ✕ Cancelled
+                            </span>
+                          ) : (
+                            <div className="relative inline-block">
+                              <select
+                                value={order.status}
+                                onChange={(e) => handleStatusChange(order.id, e.target.value as OrderStatus)}
+                                className={`text-xs font-bold px-2.5 py-1 rounded-lg border border-transparent hover:border-gray-300 cursor-pointer appearance-none pr-6 transition-all ${getOrderStatusColor(order.status)}`}
+                              >
+                                {STATUS_OPTIONS.map(opt => {
+                                  const optRank = STAGE_RANK[opt.value] || 1;
+                                  const isPrevious = opt.value !== 'cancelled' && optRank < currRank;
+                                  return (
+                                    <option key={opt.value} value={opt.value} disabled={isPrevious} className="bg-white text-gray-800 font-semibold disabled:text-gray-300">
+                                      {opt.label} {isPrevious ? '(Completed)' : ''}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                              <ChevronDown size={11} className="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 text-xs">
+                              <Store size={12} className="text-gray-400 flex-shrink-0" />
                             {order.partnerName ? (
                               <span className="font-semibold text-gray-800 truncate max-w-[110px]" title={order.partnerName}>
                                 {order.partnerName}
@@ -574,8 +638,9 @@ export default function AdminOrders({
                         </div>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
+                  );
+                })}
+              </tbody>
               </table>
             </div>
             {filtered.length === 0 && (
@@ -617,66 +682,123 @@ export default function AdminOrders({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-                  <button
-                    type="button"
-                    onClick={() => handleStatusChange(selectedOrder.id, 'accepted')}
-                    className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                      selectedOrder.status === 'accepted' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-blue-200 hover:bg-blue-50'
-                    }`}
-                  >
-                    ✓ Accept
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleStatusChange(selectedOrder.id, 'picked_up')}
-                    className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                      selectedOrder.status === 'picked_up' ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-purple-700 border-purple-200 hover:bg-purple-50'
-                    }`}
-                  >
-                    🚚 Picked Up
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleStatusChange(selectedOrder.id, 'inspection')}
-                    className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                      selectedOrder.status === 'inspection' ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-amber-700 border-amber-200 hover:bg-amber-50'
-                    }`}
-                  >
-                    🔍 Inspection
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleStatusChange(selectedOrder.id, 'completed')}
-                    className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                      selectedOrder.status === 'completed' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-green-700 border-green-200 hover:bg-green-50'
-                    }`}
-                  >
-                    🎉 Complete
-                  </button>
-                </div>
+                {selectedOrder.status === 'completed' ? (
+                  <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-800 font-bold mb-3">
+                    <span className="flex items-center gap-1.5">
+                      <CheckCircle2 size={16} className="text-emerald-600" />
+                      Order is Completed & Finalized. Changes are permanently locked.
+                    </span>
+                    <span className="bg-emerald-600 text-white text-[10px] px-2.5 py-0.5 rounded-full font-black">
+                      FINALIZED
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+                      {(() => {
+                        const currRank = STAGE_RANK[selectedOrder.status] || 1;
+                        return (
+                          <>
+                            <button
+                              type="button"
+                              disabled={currRank >= 3}
+                              onClick={() => handleStatusChange(selectedOrder.id, 'accepted')}
+                              className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+                                selectedOrder.status === 'accepted' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-blue-200 hover:bg-blue-50'
+                              }`}
+                            >
+                              ✓ Accept {currRank >= 3 ? '(Done)' : ''}
+                            </button>
+                            <button
+                              type="button"
+                              disabled={currRank >= 5}
+                              onClick={() => handleStatusChange(selectedOrder.id, 'picked_up')}
+                              className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+                                selectedOrder.status === 'picked_up' ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-purple-700 border-purple-200 hover:bg-purple-50'
+                              }`}
+                            >
+                              🚚 Picked Up {currRank >= 5 ? '(Done)' : ''}
+                            </button>
+                            <button
+                              type="button"
+                              disabled={currRank >= 7}
+                              onClick={() => handleStatusChange(selectedOrder.id, 'inspection')}
+                              className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+                                selectedOrder.status === 'inspection' ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-amber-700 border-amber-200 hover:bg-amber-50'
+                              }`}
+                            >
+                              🔍 Inspection {currRank >= 7 ? '(Done)' : ''}
+                            </button>
+                            <button
+                              type="button"
+                              disabled={currRank >= 8}
+                              onClick={() => handleStatusChange(selectedOrder.id, 'completed')}
+                              className="py-1.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed bg-white text-green-700 border-green-200 hover:bg-green-50"
+                            >
+                              🎉 Complete
+                            </button>
+                          </>
+                        );
+                      })()}
+                    </div>
 
-                <div className="flex items-center gap-2 pt-2 border-t border-gray-200/60">
-                  <label htmlFor="admin-modal-status-select" className="text-xs font-semibold text-gray-700 whitespace-nowrap">
-                    All Statuses:
-                  </label>
-                  <div className="relative flex-1">
-                    <select
-                      id="admin-modal-status-select"
-                      value={selectedOrder.status}
-                      onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value as OrderStatus)}
-                      className="w-full text-xs font-bold bg-white border border-gray-300 rounded-xl pl-3 pr-8 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
-                    >
-                      {STATUS_OPTIONS.map(opt => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                    <div className="flex items-center gap-2 pt-2 border-t border-gray-200/60">
+                      <label htmlFor="admin-modal-status-select" className="text-xs font-semibold text-gray-700 whitespace-nowrap">
+                        Advance Status:
+                      </label>
+                      <div className="relative flex-1">
+                        <select
+                          id="admin-modal-status-select"
+                          value={selectedOrder.status}
+                          onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value as OrderStatus)}
+                          className="w-full text-xs font-bold bg-white border border-gray-300 rounded-xl pl-3 pr-8 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
+                        >
+                          {STATUS_OPTIONS.map(opt => {
+                            const optRank = STAGE_RANK[opt.value] || 1;
+                            const currRank = STAGE_RANK[selectedOrder.status] || 1;
+                            const isPrevious = opt.value !== 'cancelled' && optRank < currRank;
+                            return (
+                              <option key={opt.value} value={opt.value} disabled={isPrevious}>
+                                {opt.label} {isPrevious ? '(Completed Stage)' : ''}
+                              </option>
+                            );
+                          })}
+                        </select>
+                        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Dedicated Camera Equipment Rental Card */}
+              {selectedOrder.type === 'rental' && (
+                <div className="bg-amber-50/90 border border-amber-200 rounded-2xl p-4 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-black text-amber-900 uppercase tracking-wide flex items-center gap-1.5">
+                      📷 Camera Equipment Rental Booking Terms
+                    </p>
+                    <span className="text-[11px] font-bold text-amber-800 bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-300">
+                      {selectedOrder.rentalDays || 3} Days Duration
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2.5 text-xs pt-1">
+                    <div className="bg-white p-2.5 rounded-xl border border-amber-200 shadow-2xs">
+                      <p className="text-[10px] text-gray-500 font-semibold">Daily Rent Rate</p>
+                      <p className="font-bold text-gray-900 text-sm mt-0.5">₹{(selectedOrder.dailyRate || 1200).toLocaleString('en-IN')}/day</p>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-xl border border-amber-200 shadow-2xs">
+                      <p className="text-[10px] text-gray-500 font-semibold">Security Deposit</p>
+                      <p className="font-bold text-emerald-700 text-sm mt-0.5">₹{(selectedOrder.securityDeposit || 5000).toLocaleString('en-IN')}</p>
+                      <p className="text-[9px] text-gray-400">Refundable on return</p>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-xl border border-amber-200 shadow-2xs">
+                      <p className="text-[10px] text-gray-500 font-semibold">Scheduled Return</p>
+                      <p className="font-bold text-indigo-700 text-sm mt-0.5">{selectedOrder.returnDate || 'Pending Return'}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-50 rounded-xl p-3">
                   <p className="text-xs font-bold text-gray-500 mb-1">Customer</p>
@@ -905,9 +1027,9 @@ export default function AdminOrders({
                           </span>
                         </div>
                         <p className="text-[11px] text-gray-500">
-                          {agent.city} · 🛵 {agent.vehicleType} · ⭐ {agent.rating}
+                          {agent.city} · 🛵 {agent.vehicle} · ⭐ {agent.rating}
                         </p>
-                        <p className="text-[10px] text-gray-400">Phone: {agent.phone} · {agent.completedOrders} pickups done</p>
+                        <p className="text-[10px] text-gray-400">Phone: {agent.phone} · {agent.totalDeliveries} pickups done</p>
                       </div>
                     </button>
                   ))}
