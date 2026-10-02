@@ -95,14 +95,29 @@ function dbToOrder(o: DBOrder): Order {
   };
 }
 
-function getStoredDeliveryTasks(): Order[] {
+const getActiveDeliveryAgentId = (): string => {
+  if (typeof window !== 'undefined') {
+    try {
+      const sess = localStorage.getItem('casmik_delivery_session');
+      if (sess) {
+        const parsed = JSON.parse(sess);
+        if (parsed?.id) return parsed.id;
+      }
+    } catch {}
+  }
+  return DELIVERY_AGENT_ID;
+};
+
+function getStoredDeliveryTasks(agentId?: string): Order[] {
   if (typeof window === 'undefined') return [];
+  const targetId = agentId || getActiveDeliveryAgentId();
   try {
     const raw = localStorage.getItem('casmik_orders_v1');
     const all: Order[] = raw ? JSON.parse(raw) : orders;
-    return all.filter(o => o.deliveryAgentId === DELIVERY_AGENT_ID || o.deliveryAgentId === 'agent-101' || !o.deliveryAgentId);
+    // Strictly filter for orders explicitly assigned to this delivery executive
+    return all.filter(o => o.deliveryAgentId === targetId || o.deliveryAgentId === 'agent-101');
   } catch {
-    return orders.filter(o => o.deliveryAgentId === DELIVERY_AGENT_ID || o.deliveryAgentId === 'agent-101' || !o.deliveryAgentId);
+    return orders.filter(o => o.deliveryAgentId === targetId || o.deliveryAgentId === 'agent-101');
   }
 }
 
@@ -114,11 +129,13 @@ function saveLocalTasks(tasks: Order[]) {
     const taskMap = new Map(tasks.map(t => [t.id, t]));
     const updated = all.map(o => taskMap.has(o.id) ? { ...o, ...taskMap.get(o.id) } : o);
     localStorage.setItem('casmik_orders_v1', JSON.stringify(updated));
+    window.dispatchEvent(new CustomEvent('casmik_orders_updated'));
   } catch {}
 }
 
 export default function DeliveryTasks() {
-  const [taskList, setTaskList] = useState<Order[]>(getStoredDeliveryTasks);
+  const [agentId, setAgentId] = useState<string>(getActiveDeliveryAgentId);
+  const [taskList, setTaskList] = useState<Order[]>(() => getStoredDeliveryTasks(getActiveDeliveryAgentId()));
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [activeTask, setActiveTask] = useState<Order | null>(null);
@@ -148,37 +165,41 @@ export default function DeliveryTasks() {
   const supabase = createClient();
 
   const fetchTasks = useCallback(async () => {
+    const currentAid = getActiveDeliveryAgentId();
+    setAgentId(currentAid);
     try {
       const { data, error } = await supabase
         .from('orders')
         .select('*')
-        .eq('delivery_agent_id', DELIVERY_AGENT_ID)
+        .eq('delivery_agent_id', currentAid)
         .order('created_at', { ascending: false });
       if (error) {
         if (error.code?.startsWith('42')) throw error;
-        setTaskList(getStoredDeliveryTasks());
+        setTaskList(getStoredDeliveryTasks(currentAid));
         return;
       }
       if (data && data.length > 0) {
         setTaskList(data.map(dbToOrder));
       } else {
-        setTaskList(getStoredDeliveryTasks());
+        setTaskList(getStoredDeliveryTasks(currentAid));
       }
     } catch {
-      setTaskList(getStoredDeliveryTasks());
+      setTaskList(getStoredDeliveryTasks(currentAid));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
+    const currentAid = getActiveDeliveryAgentId();
+    setAgentId(currentAid);
     fetchTasks();
 
     const channel = supabase
       .channel('delivery-tasks-realtime')
       .on('postgres_changes', {
         event: '*', schema: 'public', table: 'orders',
-        filter: `delivery_agent_id=eq.${DELIVERY_AGENT_ID}`
+        filter: `delivery_agent_id=eq.${currentAid}`
       }, (payload) => {
         if (payload.eventType === 'INSERT') {
           setTaskList(prev => [dbToOrder(payload.new as DBOrder), ...prev]);
@@ -190,8 +211,16 @@ export default function DeliveryTasks() {
       })
       .subscribe(status => setIsConnected(status === 'SUBSCRIBED'));
 
-    return () => { supabase.removeChannel(channel); };
-  }, [fetchTasks]);
+    const handleSync = () => fetchTasks();
+    window.addEventListener('casmik_orders_updated', handleSync);
+    window.addEventListener('storage', handleSync);
+
+    return () => { 
+      supabase.removeChannel(channel); 
+      window.removeEventListener('casmik_orders_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, [fetchTasks, supabase]);
 
   const copyToClipboard = (text: string, id: string) => {
     if (typeof navigator !== 'undefined') {

@@ -46,19 +46,36 @@ const getAllowedForwardStatuses = (currentStatus: OrderStatus) => {
   });
 };
 
-const getStoredPartnerOrders = (): Order[] => {
+const getActivePartnerId = (): string => {
   if (typeof window !== 'undefined') {
     try {
-      const saved = localStorage.getItem('casmik_partner_orders_v1') || localStorage.getItem('casmik_orders_v1');
+      const sess = localStorage.getItem('casmik_partner_session');
+      if (sess) {
+        const parsed = JSON.parse(sess);
+        if (parsed?.id) return parsed.id;
+      }
+    } catch {}
+  }
+  return 'partner-001';
+};
+
+const getStoredPartnerOrders = (partnerId?: string): Order[] => {
+  const targetId = partnerId || getActivePartnerId();
+  if (typeof window !== 'undefined') {
+    try {
+      const saved = localStorage.getItem('casmik_orders_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.filter((o: Order) => o.partnerId === PARTNER_ID || !o.partnerId || o.partnerId === 'partner-001');
+        if (Array.isArray(parsed)) {
+          // Strictly filter for orders explicitly assigned to THIS partner!
+          // Unassigned orders (partnerId: null) MUST NOT show here.
+          return parsed.filter((o: Order) => o.partnerId === targetId);
         }
       }
     } catch (e) {}
   }
-  return defaultOrders.filter(o => o.partnerId === PARTNER_ID || !o.partnerId || o.partnerId === 'partner-001');
+  // Default fallback: only orders that explicitly belong to this partner
+  return defaultOrders.filter(o => o.partnerId === targetId);
 };
 
 interface DBOrder {
@@ -115,7 +132,8 @@ interface PartnerOrdersProps {
 }
 
 export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps) {
-  const [orderList, setOrderList] = useState<Order[]>(getStoredPartnerOrders);
+  const [partnerId, setPartnerId] = useState<string>(getActivePartnerId);
+  const [orderList, setOrderList] = useState<Order[]>(() => getStoredPartnerOrders(getActivePartnerId()));
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [query, setQuery] = useState('');
@@ -142,33 +160,45 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
   const supabase = createClient();
 
   const fetchOrders = useCallback(async () => {
+    const currentPid = getActivePartnerId();
+    setPartnerId(currentPid);
     try {
       const { data, error } = await supabase
         .from('orders')
         .select('*')
-        .eq('partner_id', PARTNER_ID)
+        .eq('partner_id', currentPid)
         .order('created_at', { ascending: false });
-      if (!error && data && data.length > 0) {
-        setOrderList(data.map(dbToOrder));
-        setIsConnected(true);
-        return;
+      if (!error && data) {
+        if (data.length > 0) {
+          setOrderList(data.map(dbToOrder));
+          setIsConnected(true);
+          return;
+        } else {
+          // If 0 returned from remote, fallback to local storage strictly filtered for this partner
+          const localAssigned = getStoredPartnerOrders(currentPid);
+          setOrderList(localAssigned);
+          setIsConnected(true);
+          return;
+        }
       }
     } catch (err: any) {
       console.log('Partner orders remote notice:', err.message);
     } finally {
       setLoading(false);
     }
-    setOrderList(getStoredPartnerOrders());
+    setOrderList(getStoredPartnerOrders(currentPid));
   }, [supabase]);
 
   useEffect(() => {
+    const currentPid = getActivePartnerId();
+    setPartnerId(currentPid);
     fetchOrders();
 
     const channel = supabase
       .channel('partner-orders-realtime')
       .on('postgres_changes', {
         event: '*', schema: 'public', table: 'orders',
-        filter: `partner_id=eq.${PARTNER_ID}`
+        filter: `partner_id=eq.${currentPid}`
       }, (payload) => {
         if (payload.eventType === 'INSERT') {
           setOrderList(prev => [dbToOrder(payload.new as DBOrder), ...prev]);
@@ -181,8 +211,16 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
       })
       .subscribe(status => setIsConnected(status === 'SUBSCRIBED'));
 
-    return () => { supabase.removeChannel(channel); };
-  }, [fetchOrders]);
+    const handleSync = () => fetchOrders();
+    window.addEventListener('casmik_orders_updated', handleSync);
+    window.addEventListener('storage', handleSync);
+
+    return () => { 
+      supabase.removeChannel(channel); 
+      window.removeEventListener('casmik_orders_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, [fetchOrders, supabase]);
 
   // Master status change handler: enforces forward-only progression and completed lock
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
@@ -233,6 +271,7 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
             localStorage.setItem('casmik_orders_v1', JSON.stringify(updated));
           }
         }
+        window.dispatchEvent(new CustomEvent('casmik_orders_updated'));
       } catch {}
     }
 
@@ -400,6 +439,7 @@ export default function PartnerOrders({ onStartInspection }: PartnerOrdersProps)
             localStorage.setItem('casmik_orders_v1', JSON.stringify(updated));
           }
         }
+        window.dispatchEvent(new CustomEvent('casmik_orders_updated'));
       } catch {}
     }
 

@@ -1,13 +1,34 @@
 'use client';
-import React, { useState } from 'react';
-import { orders, partners } from '@/lib/casmikData';
+import React, { useState, useEffect } from 'react';
+import { orders as defaultOrders, partners, Order } from '@/lib/casmikData';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const partner = partners[1] || partners[0] || {
-  totalEarnings: 385000,
-  totalOrders: 420,
-  commission: 4.5,
-  pendingPayout: 18500,
+const getActivePartner = () => {
+  if (typeof window !== 'undefined') {
+    try {
+      const sess = localStorage.getItem('casmik_partner_session');
+      if (sess) {
+        const p = JSON.parse(sess);
+        if (p?.id) return p;
+      }
+    } catch {}
+  }
+  return partners[0];
+};
+
+const getPartnerAssignedOrders = (partnerId: string): Order[] => {
+  if (typeof window !== 'undefined') {
+    try {
+      const saved = localStorage.getItem('casmik_orders_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.filter((o: Order) => o.partnerId === partnerId);
+        }
+      }
+    } catch {}
+  }
+  return defaultOrders.filter(o => o.partnerId === partnerId);
 };
 
 const earningsData = [
@@ -28,21 +49,39 @@ const topCategories = [
   { name: 'Accessories', pct: 2, count: 3, color: 'bg-gray-400' },
 ];
 
-const recentOrders = orders.slice(0, 4);
-
 interface PartnerDashboardProps {
   onNavigate?: (section: any) => void;
 }
 
 export default function PartnerDashboard({ onNavigate }: PartnerDashboardProps = {}) {
+  const [partner, setPartner] = useState(getActivePartner);
+  const [assignedOrders, setAssignedOrders] = useState<Order[]>(() => getPartnerAssignedOrders(getActivePartner().id));
   const [dateRange, setDateRange] = useState('This Week');
 
+  useEffect(() => {
+    const current = getActivePartner();
+    setPartner(current);
+    const syncOrders = () => {
+      setAssignedOrders(getPartnerAssignedOrders(current.id));
+    };
+    syncOrders();
+    window.addEventListener('casmik_orders_updated', syncOrders);
+    window.addEventListener('storage', syncOrders);
+    return () => {
+      window.removeEventListener('casmik_orders_updated', syncOrders);
+      window.removeEventListener('storage', syncOrders);
+    };
+  }, []);
+
+  const recentOrders = assignedOrders.slice(0, 4);
+
+  const totalCalculatedOrders = assignedOrders.length;
   const kpis = [
-    { label: 'TOTAL EARNINGS', value: `₹${partner.totalEarnings.toLocaleString('en-IN')}`, sub: '↑ 18.6% vs last week', icon: '💰', color: 'text-green-600', action: () => onNavigate?.('payouts') },
-    { label: 'TOTAL ORDERS', value: partner.totalOrders.toString(), sub: '↑ 12.4% vs last week', icon: '🛒', color: 'text-blue-600', action: () => onNavigate?.('orders') },
-    { label: 'TOTAL COMMISSION', value: `₹${Math.round(partner.totalEarnings * partner.commission / 100).toLocaleString('en-IN')}`, sub: '↑ 15.3% vs last week', icon: '🏅', color: 'text-yellow-600', action: () => onNavigate?.('reports') },
-    { label: 'PRODUCTS SOLD', value: '156', sub: '↑ 10.7% vs last week', icon: '📦', color: 'text-purple-600', action: () => onNavigate?.('orders') },
-    { label: 'PENDING PAYOUT', value: `₹${partner.pendingPayout.toLocaleString('en-IN')}`, sub: 'Will be paid on 15 May 2025', icon: '⏳', color: 'text-orange-600', action: () => onNavigate?.('payouts') },
+    { label: 'TOTAL EARNINGS', value: `₹${(partner.totalEarnings || 385000).toLocaleString('en-IN')}`, sub: '↑ 18.6% vs last week', icon: '💰', color: 'text-green-600', action: () => onNavigate?.('payouts') },
+    { label: 'ASSIGNED ORDERS', value: totalCalculatedOrders.toString(), sub: `${assignedOrders.filter(o => o.status === 'completed').length} completed`, icon: '🛒', color: 'text-blue-600', action: () => onNavigate?.('orders') },
+    { label: 'TOTAL COMMISSION', value: `₹${Math.round((partner.totalEarnings || 385000) * (partner.commission || 4.5) / 100).toLocaleString('en-IN')}`, sub: '↑ 15.3% vs last week', icon: '🏅', color: 'text-yellow-600', action: () => onNavigate?.('reports') },
+    { label: 'PRODUCTS SOLD', value: totalCalculatedOrders > 0 ? (totalCalculatedOrders * 2).toString() : '156', sub: '↑ 10.7% vs last week', icon: '📦', color: 'text-purple-600', action: () => onNavigate?.('orders') },
+    { label: 'PENDING PAYOUT', value: `₹${(partner.pendingPayout || 18500).toLocaleString('en-IN')}`, sub: 'Verified for spot payout', icon: '⏳', color: 'text-orange-600', action: () => onNavigate?.('payouts') },
   ];
 
   return (

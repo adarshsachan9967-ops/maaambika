@@ -48,15 +48,25 @@ export default function DeliveryLayout({ activeSection, onSectionChange, childre
   const [taskCount, setTaskCount] = useState(5);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem('casmik_orders_v1');
-      const all = raw ? JSON.parse(raw) : orders;
-      const activeTasks = all.filter((o: any) => 
-        (o.deliveryAgentId === agent?.id || o.deliveryAgentId === 'agent-101' || !o.deliveryAgentId) &&
-        ['assigned', 'accepted', 'pickup_scheduled', 'picked_up'].includes(o.status)
-      );
-      setTaskCount(activeTasks.length);
-    } catch {}
+    const updateCount = () => {
+      try {
+        const raw = localStorage.getItem('casmik_orders_v1');
+        const all = raw ? JSON.parse(raw) : orders;
+        const activeTasks = all.filter((o: any) => 
+          (o.deliveryAgentId === agent?.id || o.deliveryAgentId === 'agent-101') &&
+          ['assigned', 'accepted', 'pickup_scheduled', 'picked_up'].includes(o.status)
+        );
+        setTaskCount(activeTasks.length);
+      } catch {}
+    };
+
+    updateCount();
+    window.addEventListener('casmik_orders_updated', updateCount);
+    window.addEventListener('storage', updateCount);
+    return () => {
+      window.removeEventListener('casmik_orders_updated', updateCount);
+      window.removeEventListener('storage', updateCount);
+    };
   }, [agent?.id]);
 
   const navItems: NavItem[] = [

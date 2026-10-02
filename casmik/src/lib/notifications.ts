@@ -81,14 +81,31 @@ export function playNotificationSound(force = false) {
   }
 }
 
-// ─── BROWSER DESKTOP NOTIFICATIONS ─────────────────────────────────────────────
+// ─── BROWSER & MOBILE APP DRAWER NOTIFICATIONS ────────────────────────────────
+export async function initNotificationService() {
+  if (typeof window === 'undefined') return;
+  if ('serviceWorker' in navigator) {
+    try {
+      await navigator.serviceWorker.register('/sw.js');
+    } catch (e) {
+      console.log('SW registration note:', e);
+    }
+  }
+}
+
 export async function requestBrowserNotificationPermission(): Promise<boolean> {
   if (typeof window === 'undefined' || !('Notification' in window)) return false;
-  if (Notification.permission === 'granted') return true;
+  if (Notification.permission === 'granted') {
+    initNotificationService();
+    return true;
+  }
   if (Notification.permission !== 'denied') {
     try {
       const permission = await Notification.requestPermission();
-      return permission === 'granted';
+      if (permission === 'granted') {
+        initNotificationService();
+        return true;
+      }
     } catch {
       return false;
     }
@@ -96,15 +113,47 @@ export async function requestBrowserNotificationPermission(): Promise<boolean> {
   return false;
 }
 
-export function showBrowserNotification(title: string, body: string) {
+export async function showBrowserNotification(title: string, body: string, data?: any) {
   if (typeof window === 'undefined' || !('Notification' in window)) return;
+
+  // Haptic feedback for mobile devices
+  try {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate([200, 100, 200]);
+    }
+  } catch {}
+
+  const options: NotificationOptions = {
+    body,
+    icon: '/assets/images/app_logo.png',
+    badge: '/assets/images/app_logo.png',
+    data: data || {},
+    tag: `notif-${Date.now()}`,
+  };
+
   if (Notification.permission === 'granted') {
+    // 1. Try Service Worker first (puts notification in Android App Drawer, Lockscreen & Status Bar)
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration && registration.showNotification) {
+          await registration.showNotification(title, options);
+          return;
+        }
+      } catch (err) {
+        console.log('SW showNotification fallback:', err);
+      }
+    }
+
+    // 2. Standard Web Notification API fallback (Desktop browsers)
     try {
-      new Notification(title, {
-        body,
-        icon: '/favicon.ico',
-      });
-    } catch {}
+      const notif = new Notification(title, options);
+      notif.onclick = () => {
+        window.focus();
+      };
+    } catch (e) {
+      console.log('Browser notification fallback note:', e);
+    }
   }
 }
 

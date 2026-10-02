@@ -24,13 +24,15 @@ import {
   NotificationRole, 
   getStoredNotifications, 
   markNotificationAsRead, 
-  markNotificationAsUnread,
+  markNotificationAsUnread, 
   markAllNotificationsAsRead, 
   deleteNotification, 
   playNotificationSound, 
   isSoundMuted, 
   setSoundMuted,
-  requestBrowserNotificationPermission
+  requestBrowserNotificationPermission,
+  initNotificationService,
+  showBrowserNotification
 } from '@/lib/notifications';
 
 interface NotificationBellProps {
@@ -47,6 +49,7 @@ export default function NotificationBell({ role, onNavigateToOrder, onNavigateSe
   const [hasNewAlert, setHasNewAlert] = useState(false);
   const [toastAlert, setToastAlert] = useState<CasmikNotification | null>(null);
   const [recentlyShiftedId, setRecentlyShiftedId] = useState<string | null>(null);
+  const [permission, setPermission] = useState<NotificationPermission>('default');
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -54,10 +57,19 @@ export default function NotificationBell({ role, onNavigateToOrder, onNavigateSe
     const list = getStoredNotifications(role);
     setNotifications(list);
     setMuted(isSoundMuted());
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      setPermission(Notification.permission);
+    }
   };
 
   useEffect(() => {
     refreshNotifications();
+    initNotificationService();
+
+    // Auto check or request permission if possible
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      setPermission(Notification.permission);
+    }
 
     // BroadcastChannel listener across tabs
     let channel: BroadcastChannel | null = null;
@@ -70,8 +82,9 @@ export default function NotificationBell({ role, onNavigateToOrder, onNavigateSe
           setHasNewAlert(true);
           setToastAlert(notif);
           playNotificationSound();
+          showBrowserNotification(notif.title, notif.shortDetails, notif);
           setTimeout(() => setHasNewAlert(false), 3000);
-          setTimeout(() => setToastAlert(null), 6500);
+          setTimeout(() => setToastAlert(null), 7000);
         }
       };
     }
@@ -83,8 +96,10 @@ export default function NotificationBell({ role, onNavigateToOrder, onNavigateSe
         refreshNotifications();
         setHasNewAlert(true);
         setToastAlert(notif);
+        playNotificationSound();
+        showBrowserNotification(notif.title, notif.shortDetails, notif);
         setTimeout(() => setHasNewAlert(false), 3000);
-        setTimeout(() => setToastAlert(null), 6500);
+        setTimeout(() => setToastAlert(null), 7000);
       }
     };
 
@@ -233,7 +248,7 @@ export default function NotificationBell({ role, onNavigateToOrder, onNavigateSe
             handleItemClick(toastAlert);
             setToastAlert(null);
           }}
-          className="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-gray-900 text-white p-4 rounded-2xl shadow-2xl border border-gray-700 animate-in fade-in slide-in-from-bottom-5 cursor-pointer hover:bg-gray-800 transition-all font-sans"
+          className="fixed top-5 right-5 sm:right-6 z-[999999] max-w-sm w-[calc(100%-2.5rem)] sm:w-full bg-gray-950 text-white p-4 rounded-2xl shadow-2xl border border-gray-700 animate-in fade-in slide-in-from-top-5 cursor-pointer hover:bg-gray-900 transition-all font-sans"
         >
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-xl bg-primary/20 text-primary flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -331,6 +346,20 @@ export default function NotificationBell({ role, onNavigateToOrder, onNavigateSe
               </button>
             </div>
           </div>
+
+          {/* Device / Web Notification Permission Banner if not yet granted */}
+          {permission === 'default' && (
+            <div className="bg-amber-50 border-b border-amber-200 px-3.5 py-2 flex items-center justify-between text-xs text-amber-900">
+              <span className="text-[11px] font-medium leading-tight">Enable push & sound notifications for live orders</span>
+              <button
+                type="button"
+                onClick={requestBrowserNotificationPermission}
+                className="ml-2 px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] rounded-lg transition-colors flex-shrink-0"
+              >
+                Enable
+              </button>
+            </div>
+          )}
 
           {/* Filter Tabs (Unread vs Read vs All) */}
           <div className="flex gap-1 p-2 bg-gray-50/80 border-b border-gray-100 text-xs overflow-x-auto scrollbar-hide">

@@ -1,9 +1,9 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { orders as defaultOrders, partners, getOrderStatusLabel, getOrderStatusColor, getTypeColor } from '@/lib/casmikData';
+import { orders as defaultOrders, partners, deliveryAgents, getOrderStatusLabel, getOrderStatusColor, getTypeColor } from '@/lib/casmikData';
 import type { Order, OrderStatus } from '@/lib/casmikData';
-import { Search, Eye, UserCheck, X, AlertCircle, Wifi, WifiOff, RefreshCw, CheckCircle2, ChevronDown, SlidersHorizontal, CheckCircle } from 'lucide-react';
+import { Search, Eye, UserCheck, X, AlertCircle, Wifi, WifiOff, RefreshCw, CheckCircle2, ChevronDown, SlidersHorizontal, CheckCircle, Truck, Store, UserPlus } from 'lucide-react';
 import LiveOrderTracker from '@/components/LiveOrderTracker';
 import { triggerNotification } from '@/lib/notifications';
 
@@ -121,7 +121,9 @@ export default function AdminOrders({
   const [filterStatus, setFilterStatus] = useState(initialFilterStatus || 'all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [assignModal, setAssignModal] = useState<Order | null>(null);
+  const [assignTab, setAssignTab] = useState<'partner' | 'delivery'>('partner');
   const [selectedPartner, setSelectedPartner] = useState('');
+  const [selectedDelivery, setSelectedDelivery] = useState('');
   const [activeTab, setActiveTab] = useState<'list' | 'live'>('list');
   const supabase = createClient();
 
@@ -190,7 +192,15 @@ export default function AdminOrders({
       })
       .subscribe(status => setIsConnected(status === 'SUBSCRIBED'));
 
-    return () => { supabase.removeChannel(channel); };
+    const handleSync = () => fetchOrders();
+    window.addEventListener('casmik_orders_updated', handleSync);
+    window.addEventListener('storage', handleSync);
+
+    return () => { 
+      supabase.removeChannel(channel); 
+      window.removeEventListener('casmik_orders_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
   }, [fetchOrders, supabase]);
 
   const filtered = orderList.filter(o =>
@@ -205,29 +215,34 @@ export default function AdminOrders({
        : o.status === filterStatus))
   );
 
-  const handleAssign = async () => {
+  const handleAssignPartner = async () => {
     if (!assignModal || !selectedPartner) return;
     const partner = partners.find(p => p.id === selectedPartner);
+    const newStatus: OrderStatus = assignModal.status === 'created' ? 'assigned' : assignModal.status;
     const updated = orderList.map(o =>
       o.id === assignModal.id
-        ? { ...o, partnerId: selectedPartner, partnerName: partner?.storeName || '', status: 'assigned' as OrderStatus }
+        ? { ...o, partnerId: selectedPartner, partnerName: partner?.storeName || '', status: newStatus }
         : o
     );
     setOrderList(updated);
     if (typeof window !== 'undefined') {
       localStorage.setItem('casmik_orders_v1', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('casmik_orders_updated'));
+    }
+    if (selectedOrder?.id === assignModal.id) {
+      setSelectedOrder(prev => prev ? { ...prev, partnerId: selectedPartner, partnerName: partner?.storeName || '', status: newStatus } : null);
     }
 
     try {
       await supabase
         .from('orders')
-        .update({ partner_id: selectedPartner, partner_name: partner?.storeName || '', status: 'assigned' })
+        .update({ partner_id: selectedPartner, partner_name: partner?.storeName || '', status: newStatus })
         .eq('id', assignModal.id);
     } catch (err: any) {
-      console.log('Assign error:', err.message);
+      console.log('Assign partner error:', err.message);
     }
 
-    // Trigger notification to partner, admin and customer
+    // Trigger notification to partner, admin and delivery
     triggerNotification({
       type: 'status_update',
       targetRole: 'all',
@@ -237,11 +252,55 @@ export default function AdminOrders({
       deviceName: assignModal.deviceName,
       customerName: assignModal.customerName,
       price: assignModal.quotedPrice,
-      status: 'assigned',
+      status: newStatus,
     });
 
     setAssignModal(null);
     setSelectedPartner('');
+  };
+
+  const handleAssignDelivery = async () => {
+    if (!assignModal || !selectedDelivery) return;
+    const agent = deliveryAgents.find(a => a.id === selectedDelivery);
+    const newStatus: OrderStatus = assignModal.status === 'created' ? 'assigned' : assignModal.status;
+    const updated = orderList.map(o =>
+      o.id === assignModal.id
+        ? { ...o, deliveryAgentId: selectedDelivery, deliveryAgentName: agent?.name || '', status: newStatus }
+        : o
+    );
+    setOrderList(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('casmik_orders_v1', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('casmik_orders_updated'));
+    }
+    if (selectedOrder?.id === assignModal.id) {
+      setSelectedOrder(prev => prev ? { ...prev, deliveryAgentId: selectedDelivery, deliveryAgentName: agent?.name || '', status: newStatus } : null);
+    }
+
+    try {
+      await supabase
+        .from('orders')
+        .update({ delivery_agent_id: selectedDelivery, delivery_agent_name: agent?.name || '', status: newStatus })
+        .eq('id', assignModal.id);
+    } catch (err: any) {
+      console.log('Assign delivery error:', err.message);
+    }
+
+    // Trigger notification to delivery agent and operations
+    triggerNotification({
+      type: 'status_update',
+      targetRole: 'all',
+      title: `Order #${assignModal.orderNumber} Assigned to Delivery Agent`,
+      shortDetails: `Admin assigned pickup task for Order #${assignModal.orderNumber} (${assignModal.deviceName}) to delivery agent "${agent?.name || 'Delivery Partner'}".`,
+      orderNumber: assignModal.orderNumber,
+      deviceName: assignModal.deviceName,
+      customerName: assignModal.customerName,
+      price: assignModal.quotedPrice,
+      status: newStatus,
+    });
+
+    setAssignModal(null);
+    setSelectedDelivery('');
   };
 
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
@@ -409,7 +468,7 @@ export default function AdminOrders({
                     <th className="text-left px-4 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Type</th>
                     <th className="text-left px-4 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Amount</th>
                     <th className="text-left px-4 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Status</th>
-                    <th className="text-left px-4 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Partner</th>
+                    <th className="text-left px-4 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Assigned To</th>
                     <th className="text-left px-4 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Actions</th>
                   </tr>
                 </thead>
@@ -458,11 +517,32 @@ export default function AdminOrders({
                         </div>
                       </td>
                       <td className="px-4 py-3.5">
-                        {order.partnerName ? (
-                          <p className="text-xs font-semibold text-gray-700">{order.partnerName}</p>
-                        ) : (
-                          <span className="text-xs font-bold text-red-500">Unassigned</span>
-                        )}
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5 text-xs">
+                            <Store size={12} className="text-gray-400 flex-shrink-0" />
+                            {order.partnerName ? (
+                              <span className="font-semibold text-gray-800 truncate max-w-[110px]" title={order.partnerName}>
+                                {order.partnerName}
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
+                                No Partner
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs">
+                            <Truck size={12} className="text-gray-400 flex-shrink-0" />
+                            {order.deliveryAgentName ? (
+                              <span className="font-semibold text-indigo-700 truncate max-w-[110px]" title={order.deliveryAgentName}>
+                                {order.deliveryAgentName}
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-medium text-gray-400">
+                                No Delivery
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
@@ -474,16 +554,23 @@ export default function AdminOrders({
                           >
                             <Eye size={13} />
                           </button>
-                          {!order.partnerId && (
-                            <button
-                              type="button"
-                              onClick={() => setAssignModal(order)}
-                              className="p-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-500 hover:text-white transition-colors cursor-pointer"
-                              title="Assign Partner"
-                            >
-                              <UserCheck size={13} />
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAssignModal(order);
+                              setSelectedPartner(order.partnerId || '');
+                              setSelectedDelivery(order.deliveryAgentId || '');
+                            }}
+                            className={`p-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold ${
+                              !order.partnerId && !order.deliveryAgentId 
+                                ? 'bg-amber-100 text-amber-800 hover:bg-amber-500 hover:text-white' 
+                                : 'bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white'
+                            }`}
+                            title="Assign Partner or Delivery Executive"
+                          >
+                            <UserCheck size={13} />
+                            <span>{!order.partnerId && !order.deliveryAgentId ? 'Assign' : 'Edit'}</span>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -619,13 +706,45 @@ export default function AdminOrders({
                   </div>
                 )}
               </div>
-              {selectedOrder.partnerName && (
-                <div className="bg-purple-50 rounded-xl p-3">
-                  <p className="text-xs font-bold text-gray-500 mb-1">Partner</p>
-                  <p className="text-sm font-bold text-gray-900">{selectedOrder.partnerName}</p>
-                  {selectedOrder.deliveryAgentName && <p className="text-xs text-gray-500">Delivery: {selectedOrder.deliveryAgentName}</p>}
+              {/* Assignment Details in Order Modal */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-black text-gray-700 uppercase tracking-wide flex items-center gap-1.5">
+                    <UserPlus size={14} className="text-primary" /> Assignment Status
+                  </p>
+                  <span className="text-[11px] text-gray-500 font-medium">Manage dispatch</span>
                 </div>
-              )}
+                
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="bg-white p-3 rounded-xl border border-gray-200 shadow-2xs">
+                    <p className="text-gray-400 font-semibold text-[10px] uppercase">Partner Hub</p>
+                    <p className="font-bold text-gray-900 mt-1 truncate">
+                      {selectedOrder.partnerName || 'None (Unassigned)'}
+                    </p>
+                  </div>
+                  <div className="bg-white p-3 rounded-xl border border-gray-200 shadow-2xs">
+                    <p className="text-gray-400 font-semibold text-[10px] uppercase">Delivery Executive</p>
+                    <p className="font-bold text-indigo-700 mt-1 truncate">
+                      {selectedOrder.deliveryAgentName || 'None (Unassigned)'}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAssignModal(selectedOrder);
+                    setSelectedPartner(selectedOrder.partnerId || '');
+                    setSelectedDelivery(selectedOrder.deliveryAgentId || '');
+                    setSelectedOrder(null);
+                  }}
+                  className="w-full py-2.5 bg-primary text-white hover:bg-primary/90 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                >
+                  <UserCheck size={14} />
+                  <span>Assign / Change Partner or Delivery Person</span>
+                </button>
+              </div>
+
               {selectedOrder.inspectionScore && (
                 <div className="bg-blue-50 rounded-xl p-3">
                   <p className="text-xs font-bold text-gray-500 mb-1">Inspection Score</p>
@@ -639,45 +758,180 @@ export default function AdminOrders({
                 </div>
               )}
             </div>
-            {!selectedOrder.partnerId && (
-              <button onClick={() => { setAssignModal(selectedOrder); setSelectedOrder(null); }}
-                className="w-full mt-5 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90">
-                Assign Partner
-              </button>
-            )}
           </div>
         </div>
       )}
 
-      {/* Assign Partner Modal */}
+      {/* Dual Assign Modal (Partner or Delivery Person) */}
       {assignModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setAssignModal(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 z-10">
-            <h3 className="text-lg font-black text-gray-900 mb-2">Assign Partner</h3>
-            <p className="text-sm text-gray-500 mb-5">Order: {assignModal.orderNumber} · PIN: {assignModal.pinCode}</p>
-            <div className="space-y-3 mb-5">
-              {partners.filter(p => p.status === 'active').map(partner => (
-                <button key={partner.id} onClick={() => setSelectedPartner(partner.id)}
-                  className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all ${selectedPartner === partner.id ? 'border-primary bg-primary/5' : 'border-gray-100 hover:border-gray-200'}`}>
-                  <img src={partner.avatar} alt={partner.name} className="w-10 h-10 rounded-full object-cover" />
-                  <div className="flex-1">
-                    <p className="text-sm font-bold text-gray-900">{partner.storeName}</p>
-                    <p className="text-xs text-gray-500">{partner.city} · ⭐ {partner.rating} · {partner.completedOrders} orders</p>
-                    <p className="text-xs text-gray-400">PINs: {partner.pinCodes.slice(0, 3).join(', ')}</p>
-                  </div>
-                  {partner.pinCodes.includes(assignModal.pinCode) && (
-                    <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-lg">PIN Match ✓</span>
-                  )}
-                </button>
-              ))}
-            </div>
-            <div className="flex gap-3">
-              <button onClick={() => setAssignModal(null)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50">Cancel</button>
-              <button onClick={handleAssign} disabled={!selectedPartner} className="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-50">
-                Assign Partner
+          <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 z-10 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="text-lg font-black text-gray-900">Assign Order</h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Order: #{assignModal.orderNumber} · {assignModal.deviceName} (PIN: {assignModal.pinCode})
+                </p>
+              </div>
+              <button 
+                type="button"
+                onClick={() => setAssignModal(null)} 
+                className="p-2 rounded-xl hover:bg-gray-100 cursor-pointer"
+              >
+                <X size={18} />
               </button>
             </div>
+
+            {/* Current Assignment Status Banner */}
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 mb-4 grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="text-[10px] text-gray-400 font-bold uppercase">Current Partner:</span>
+                <p className="font-bold text-gray-900 truncate">{assignModal.partnerName || 'Unassigned'}</p>
+              </div>
+              <div>
+                <span className="text-[10px] text-gray-400 font-bold uppercase">Current Delivery:</span>
+                <p className="font-bold text-indigo-700 truncate">{assignModal.deliveryAgentName || 'Unassigned'}</p>
+              </div>
+            </div>
+
+            {/* Tabs for Partner or Delivery Assignment */}
+            <div className="flex gap-2 p-1 bg-gray-100 rounded-2xl mb-4">
+              <button
+                type="button"
+                onClick={() => setAssignTab('partner')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  assignTab === 'partner' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-800'
+                }`}
+              >
+                <Store size={14} className={assignTab === 'partner' ? 'text-primary' : ''} />
+                <span>Assign Partner Hub</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAssignTab('delivery')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  assignTab === 'delivery' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-800'
+                }`}
+              >
+                <Truck size={14} className={assignTab === 'delivery' ? 'text-indigo-600' : ''} />
+                <span>Assign Delivery Executive</span>
+              </button>
+            </div>
+
+            {/* PARTNER SELECTION TAB */}
+            {assignTab === 'partner' && (
+              <div className="space-y-4">
+                <p className="text-xs text-gray-500">
+                  Select a partner store. Partners can process inspection and payouts, and can also assign to their own delivery team.
+                </p>
+                <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                  {partners.filter(p => p.status === 'active').map(partner => (
+                    <button
+                      key={partner.id}
+                      type="button"
+                      onClick={() => setSelectedPartner(partner.id)}
+                      className={`w-full flex items-center gap-3 p-3 rounded-2xl border-2 text-left transition-all cursor-pointer ${
+                        selectedPartner === partner.id 
+                          ? 'border-primary bg-primary/5 shadow-xs' 
+                          : 'border-gray-100 hover:border-gray-200 bg-white'
+                      }`}
+                    >
+                      <img src={partner.avatar} alt={partner.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-bold text-gray-900 truncate">{partner.storeName}</p>
+                          {partner.pinCodes.includes(assignModal.pinCode) && (
+                            <span className="text-[10px] font-black text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
+                              PIN Match ✓
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-gray-500">{partner.city} · ⭐ {partner.rating} · {partner.completedOrders} orders</p>
+                        <p className="text-[10px] text-gray-400 truncate">PINs: {partner.pinCodes.slice(0, 4).join(', ')}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex gap-2 pt-2 border-t border-gray-100">
+                  <button 
+                    type="button"
+                    onClick={() => setAssignModal(null)} 
+                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={handleAssignPartner} 
+                    disabled={!selectedPartner} 
+                    className="flex-1 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
+                  >
+                    Confirm Partner Assignment
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* DELIVERY EXECUTIVE SELECTION TAB */}
+            {assignTab === 'delivery' && (
+              <div className="space-y-4">
+                <p className="text-xs text-gray-500">
+                  Assign directly to a field delivery executive for doorstep pickup, inspection & OTP verification.
+                </p>
+                <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                  {deliveryAgents.map(agent => (
+                    <button
+                      key={agent.id}
+                      type="button"
+                      onClick={() => setSelectedDelivery(agent.id)}
+                      className={`w-full flex items-center gap-3 p-3 rounded-2xl border-2 text-left transition-all cursor-pointer ${
+                        selectedDelivery === agent.id 
+                          ? 'border-indigo-600 bg-indigo-50/50 shadow-xs' 
+                          : 'border-gray-100 hover:border-gray-200 bg-white'
+                      }`}
+                    >
+                      <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                        {agent.name[0]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-bold text-gray-900 truncate">{agent.name}</p>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            agent.status === 'online' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-gray-100 text-gray-600'
+                          }`}>
+                            {agent.status === 'online' ? '● Online' : 'Offline'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-gray-500">
+                          {agent.city} · 🛵 {agent.vehicleType} · ⭐ {agent.rating}
+                        </p>
+                        <p className="text-[10px] text-gray-400">Phone: {agent.phone} · {agent.completedOrders} pickups done</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex gap-2 pt-2 border-t border-gray-100">
+                  <button 
+                    type="button"
+                    onClick={() => setAssignModal(null)} 
+                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={handleAssignDelivery} 
+                    disabled={!selectedDelivery} 
+                    className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
+                  >
+                    Confirm Delivery Assignment
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

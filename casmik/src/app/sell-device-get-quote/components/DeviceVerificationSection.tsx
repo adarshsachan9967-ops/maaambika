@@ -172,10 +172,10 @@ export default function DeviceVerificationSection({
 
         <button
           onClick={() => setShowModal(true)}
-          className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-slate-900/20 transition-all"
+          className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-slate-900/20 transition-all cursor-pointer"
         >
           <Smartphone size={15} />
-          <span>Verify Your Device</span>
+          <span>Verify Device (Enter IMEI)</span>
           <ChevronRight size={15} />
         </button>
 
