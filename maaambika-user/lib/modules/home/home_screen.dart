@@ -133,9 +133,9 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: widget.categories.length,
             itemBuilder: (ctx, idx) {
               final cat = widget.categories[idx];
-              final catId = cat['id'] as String;
-              final catName = cat['name'] as String;
-              final catImg = cat['image'] as String;
+              final catId = cat['id']?.toString() ?? '';
+              final catName = cat['name']?.toString() ?? '';
+              final catImg = cat['image']?.toString() ?? 'assets/images/categories/smartphone.png';
 
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -218,19 +218,20 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 10),
         SizedBox(
-          height: 220,
+          height: 235,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 12),
             itemCount: widget.refurbishedProducts.length,
             itemBuilder: (ctx, idx) {
               final p = widget.refurbishedProducts[idx];
-              final name = p['model'] as String;
-              final price = p['sellingPrice'] as int;
-              final origPrice = p['originalPrice'] as int;
-              final discount = p['discount'] as int;
-              final battery = p['batteryHealth'] as String;
-              final image = p['image'] as String;
+              final name = p['model']?.toString() ?? p['name']?.toString() ?? 'Device';
+              final price = (p['sellingPrice'] as num?)?.toInt() ?? (p['price'] as num?)?.toInt() ?? 0;
+              final origPrice = (p['originalPrice'] as num?)?.toInt() ?? (price > 0 ? (price * 1.3).round() : 0);
+              final discount = (p['discount'] as num?)?.toInt() ?? 
+                  (origPrice > price && origPrice > 0 ? (((origPrice - price) / origPrice) * 100).round() : 15);
+              final battery = p['batteryHealth']?.toString() ?? '90%+';
+              final image = p['image']?.toString() ?? 'assets/images/categories/smartphone.png';
 
               return Container(
                 width: 170,
@@ -816,9 +817,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           CircleAvatar(
                             radius: 14,
-                            backgroundColor: r['color'] as Color,
+                            backgroundColor: r['color'] is Color ? r['color'] as Color : const Color(0xFF059669),
                             child: Text(
-                              (r['name'] as String).substring(0, 1),
+                              (r['name']?.toString() ?? 'U').isNotEmpty ? (r['name']?.toString() ?? 'U').substring(0, 1) : 'U',
                               style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
                             ),
                           ),
@@ -828,13 +829,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  r['name'] as String,
+                                  r['name']?.toString() ?? 'Verified Customer',
                                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF0F172A)),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                  r['city'] as String,
+                                  r['city']?.toString() ?? 'India',
                                   style: const TextStyle(fontSize: 9, color: Color(0xFF94A3B8), fontWeight: FontWeight.bold),
                                 ),
                               ],

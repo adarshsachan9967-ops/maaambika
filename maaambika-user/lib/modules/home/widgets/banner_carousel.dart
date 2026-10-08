@@ -61,7 +61,7 @@ class _MaaAmbikaFullWidthBannerCarouselState extends State<MaaAmbikaFullWidthBan
       children: [
         // FULL WIDTH CONTAINER (Edge-to-Edge)
         SizedBox(
-          height: 195,
+          height: 200,
           width: double.infinity,
           child: PageView.builder(
             controller: _pageController,
@@ -83,7 +83,7 @@ class _MaaAmbikaFullWidthBannerCarouselState extends State<MaaAmbikaFullWidthBan
               return Container(
                 width: double.infinity,
                 margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
@@ -108,9 +108,10 @@ class _MaaAmbikaFullWidthBannerCarouselState extends State<MaaAmbikaFullWidthBan
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
                               color: const Color(0xFF38BDF8).withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
@@ -126,9 +127,9 @@ class _MaaAmbikaFullWidthBannerCarouselState extends State<MaaAmbikaFullWidthBan
                               ),
                             ),
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 5),
                           RichText(
-                            maxLines: 2,
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             text: TextSpan(
                               children: [
@@ -143,23 +144,27 @@ class _MaaAmbikaFullWidthBannerCarouselState extends State<MaaAmbikaFullWidthBan
                               ],
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 3),
                           Text(
                             desc,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Colors.white70, fontSize: 10, height: 1.25),
+                            style: const TextStyle(color: Colors.white70, fontSize: 10, height: 1.2),
                           ),
                           const SizedBox(height: 8),
-                          Row(
+                          Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 8,
+                            runSpacing: 4,
                             children: [
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF059669),
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                  minimumSize: const Size(0, 28),
+                                  minimumSize: const Size(0, 26),
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   elevation: 2,
                                 ),
                                 onPressed: () => widget.onBannerTap(catId),
@@ -168,8 +173,8 @@ class _MaaAmbikaFullWidthBannerCarouselState extends State<MaaAmbikaFullWidthBan
                                   style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900),
                                 ),
                               ),
-                              const SizedBox(width: 8),
                               const Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(Icons.local_shipping, size: 11, color: Color(0xFF34D399)),
                                   SizedBox(width: 3),
@@ -188,10 +193,15 @@ class _MaaAmbikaFullWidthBannerCarouselState extends State<MaaAmbikaFullWidthBan
                     // Image Column
                     Expanded(
                       flex: 2,
-                      child: Image.asset(
-                        image,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stack) => const Icon(Icons.devices, color: Colors.white70, size: 48),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 145),
+                          child: Image.asset(
+                            image,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stack) => const Icon(Icons.devices, color: Colors.white70, size: 48),
+                          ),
+                        ),
                       ),
                     ),
                   ],

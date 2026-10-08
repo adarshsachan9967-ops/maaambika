@@ -37,16 +37,16 @@ class _BuyRefurbishedWidgetState extends State<BuyRefurbishedWidget> {
 
     var filtered = widget.products;
     if (_selectedCategory != 'all') {
-      filtered = filtered.where((p) => (p['category'] as String).toLowerCase() == _selectedCategory.toLowerCase()).toList();
+      filtered = filtered.where((p) => (p['category']?.toString() ?? '').toLowerCase() == _selectedCategory.toLowerCase()).toList();
     }
     if (_selectedCondition != 'all') {
-      filtered = filtered.where((p) => (p['condition'] as String).toLowerCase() == _selectedCondition.toLowerCase()).toList();
+      filtered = filtered.where((p) => (p['condition']?.toString() ?? '').toLowerCase() == _selectedCondition.toLowerCase()).toList();
     }
     if (_searchQuery.trim().isNotEmpty) {
       final q = _searchQuery.toLowerCase().trim();
       filtered = filtered.where((p) =>
-        (p['model'] as String).toLowerCase().contains(q) ||
-        (p['brand'] as String).toLowerCase().contains(q)
+        (p['model']?.toString() ?? '').toLowerCase().contains(q) ||
+        (p['brand']?.toString() ?? '').toLowerCase().contains(q)
       ).toList();
     }
 
@@ -118,12 +118,13 @@ class _BuyRefurbishedWidgetState extends State<BuyRefurbishedWidget> {
                     itemCount: filtered.length,
                     itemBuilder: (ctx, idx) {
                       final p = filtered[idx];
-                      final name = p['model'] as String;
-                      final price = p['sellingPrice'] as int;
-                      final origPrice = p['originalPrice'] as int;
-                      final battery = p['batteryHealth'] as String;
-                      final condition = p['condition'] as String;
-                      final image = p['image'] as String;
+                      final name = p['model']?.toString() ?? p['name']?.toString() ?? 'Device';
+                      final price = (p['sellingPrice'] as num?)?.toInt() ?? (p['price'] as num?)?.toInt() ?? 0;
+                      final origPrice = (p['originalPrice'] as num?)?.toInt() ?? (price > 0 ? (price * 1.3).round() : 0);
+                      final rawBatt = p['batteryHealth'];
+                      final battery = rawBatt != null ? (rawBatt.toString().contains('%') ? rawBatt.toString() : '$rawBatt% Battery') : '95% Battery';
+                      final condition = p['condition']?.toString() ?? 'Superb';
+                      final image = p['image']?.toString() ?? 'assets/images/categories/smartphone.png';
                       final units = (p['availableUnits'] as List?) ?? [];
 
                       return InkWell(
@@ -260,16 +261,16 @@ class _BuyRefurbishedWidgetState extends State<BuyRefurbishedWidget> {
         ? units[_selectedUnitIndex]
         : <String, dynamic>{};
 
-    final currentPrice = (activeUnit['price'] as num?)?.toInt() ?? (p['sellingPrice'] as int);
-    final currentBattery = activeUnit['batteryHealth'] as String? ?? (p['batteryHealth'] as String);
-    final gallery = (p['gallery'] as List?)?.cast<String>() ?? [p['image'] as String];
+    final currentPrice = (activeUnit['price'] as num?)?.toInt() ?? (p['sellingPrice'] as num?)?.toInt() ?? 0;
+    final currentBattery = activeUnit['batteryHealth']?.toString() ?? p['batteryHealth']?.toString() ?? '95% Battery';
+    final gallery = (p['gallery'] as List?)?.map((e) => e.toString()).toList() ?? [p['image']?.toString() ?? 'assets/images/categories/smartphone.png'];
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: const Color(0xFF0F172A),
         elevation: 1,
-        title: Text(p['model'] as String, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        title: Text(p['model']?.toString() ?? 'Product Detail', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => setState(() => _activeDetailProduct = null),
@@ -296,12 +297,12 @@ class _BuyRefurbishedWidgetState extends State<BuyRefurbishedWidget> {
             ),
             const SizedBox(height: 16),
             Text(
-              p['model'] as String,
+              p['model']?.toString() ?? '',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF0F172A)),
             ),
             const SizedBox(height: 4),
             Text(
-              p['specs'] as String? ?? '',
+              p['specs']?.toString() ?? '',
               style: const TextStyle(color: Color(0xFF64748B), fontSize: 12),
             ),
             const SizedBox(height: 12),
@@ -313,7 +314,7 @@ class _BuyRefurbishedWidgetState extends State<BuyRefurbishedWidget> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  formatCurrency(p['originalPrice'] as int),
+                  formatCurrency((p['originalPrice'] as num?)?.toInt() ?? (currentPrice > 0 ? (currentPrice * 1.3).round() : 0)),
                   style: const TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF94A3B8), fontSize: 14),
                 ),
                 const SizedBox(width: 8),
@@ -321,7 +322,7 @@ class _BuyRefurbishedWidgetState extends State<BuyRefurbishedWidget> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(6)),
                   child: Text(
-                    '${p['discount']}% OFF',
+                    '${(p['discount'] as num?)?.toInt() ?? 15}% OFF',
                     style: const TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.bold, fontSize: 11),
                   ),
                 ),

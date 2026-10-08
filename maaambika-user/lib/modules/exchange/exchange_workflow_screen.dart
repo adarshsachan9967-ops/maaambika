@@ -109,7 +109,7 @@ class _ExchangeWorkflowWidgetState extends State<ExchangeWorkflowWidget> {
   }
 
   int _getAdjustedNewDevicePrice() {
-    final basePrice = (_selectedNewDevice?['sellingPrice'] as int?) ?? 70000;
+    final basePrice = (_selectedNewDevice?['sellingPrice'] as num?)?.toInt() ?? 70000;
     if (_selectedCondition == 'Good') return (basePrice * 0.92).toInt();
     if (_selectedCondition == 'Fair') return (basePrice * 0.85).toInt();
     return basePrice;
@@ -587,9 +587,9 @@ class _ExchangeWorkflowWidgetState extends State<ExchangeWorkflowWidget> {
             separatorBuilder: (c, i) => const SizedBox(height: 10),
             itemBuilder: (ctx, idx) {
               final p = filtered[idx];
-              final name = p['model'] as String? ?? 'Device';
-              final price = p['sellingPrice'] as int? ?? 65000;
-              final image = p['image'] as String? ?? 'assets/images/categories/dslr.png';
+              final name = p['model']?.toString() ?? 'Device';
+              final price = (p['sellingPrice'] as num?)?.toInt() ?? 65000;
+              final image = p['image']?.toString() ?? 'assets/images/categories/dslr.png';
               final diff = price - totalTradeIn;
 
               return InkWell(
