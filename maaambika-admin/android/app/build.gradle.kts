@@ -17,8 +17,8 @@ android {
     defaultConfig {
         applicationId = "in.maaambika.admin"
         minSdk = flutter.minSdkVersion
-        targetSdk = 35
-        versionCode = 2
+        targetSdk = 36
+        versionCode = 3
         versionName = "1.1.0"
         multiDexEnabled = true
     }
