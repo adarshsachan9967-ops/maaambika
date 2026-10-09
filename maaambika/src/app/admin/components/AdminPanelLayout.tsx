@@ -217,7 +217,10 @@ export default function AdminPanelLayout({ activeSection, onSectionChange, child
         {!collapsed && (
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold text-white truncate">Adarsh Kumar</p>
-            <p className="text-xs text-white/40 truncate">Super Admin</p>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-white/40 truncate">Super Admin</span>
+              <Link href="/admin/privacy-policy" target="_blank" className="text-[10px] text-amber-400 hover:text-amber-300 underline font-semibold">Privacy</Link>
+            </div>
           </div>
         )}
         <button

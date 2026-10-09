@@ -42,5 +42,14 @@ Thumbs.db
 # Backup zips
 *.zip
 
-# Built APKs
+# Built APKs & AABs
 release-apks/
+release_aabs/
+*.aab
+
+# Old legacy folders before rename
+camsik-admin/
+camsik-delivery/
+camsik-partner/
+camsik-user/
+casmik/

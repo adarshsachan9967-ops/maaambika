@@ -228,7 +228,7 @@ export default function CustomerFooter() {
         <div className="mt-8 pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© 2026 Maa Ambika Mobile Shop. All rights reserved. GSTIN: 21ELDPS6270L1ZS</p>
           <div className="flex items-center gap-6">
-            <Link href="#privacy" className="hover:text-slate-300 transition-colors">Privacy Policy</Link>
+            <Link href="/privacy-policy" className="hover:text-slate-300 transition-colors">Privacy Policy</Link>
             <Link href="#terms" className="hover:text-slate-300 transition-colors">Terms of Service</Link>
             <Link href="#disclaimer" className="hover:text-slate-300 transition-colors">Valuation Disclaimer</Link>
             <Link href="#sitemap" className="hover:text-slate-300 transition-colors">Sitemap</Link>

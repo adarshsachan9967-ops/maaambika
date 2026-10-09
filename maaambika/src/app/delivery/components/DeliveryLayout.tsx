@@ -210,6 +210,12 @@ export default function DeliveryLayout({ activeSection, onSectionChange, childre
             <span className="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-md">24/7</span>
           </div>
 
+          {/* Privacy Link */}
+          <div className="flex items-center justify-between px-1 py-0.5 text-[11px] text-slate-500">
+            <span>Fleet Protections</span>
+            <Link href="/delivery/privacy-policy" className="font-bold text-amber-600 hover:text-amber-700 underline">Privacy Policy</Link>
+          </div>
+
           {/* Logout Button */}
           <button
             onClick={handleLogout}

@@ -176,7 +176,10 @@ export default function PartnerLayout({ activeSection, onSectionChange, children
         {!collapsed && (
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold text-gray-900 truncate">{partner?.storeName || partner?.name}</p>
-            <p className="text-xs text-gray-400 truncate">ID: {partner?.id}</p>
+            <div className="flex items-center justify-between mt-0.5">
+              <span className="text-[10px] text-gray-400 truncate">ID: {partner?.id}</span>
+              <Link href="/partner/privacy-policy" className="text-[10px] font-bold text-amber-600 hover:text-amber-700 underline">Privacy</Link>
+            </div>
           </div>
         )}
       </div>

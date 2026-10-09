@@ -224,6 +224,23 @@ export default function PartnerSettings({ partner, onUpdateSession }: PartnerSet
               For changes to your store trade name, bank accounts, or verified territory pin codes, contact Maa Ambika Super Admin or your territory manager.
             </p>
           </div>
+
+          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-bold text-xs text-slate-900">Partner Privacy Charter</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">Read terms on customer device data wipe, KYC processing, and commission security.</p>
+              </div>
+              <a
+                href="/partner/privacy-policy"
+                target="_blank"
+                rel="noreferrer"
+                className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-amber-600 font-bold text-xs transition-colors shadow-2xs"
+              >
+                View Policy →
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
