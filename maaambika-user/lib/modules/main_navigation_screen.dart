@@ -8,9 +8,9 @@ import '../widgets/maaambika_bottom_bar.dart';
 import '../widgets/location_picker_sheet.dart';
 import '../widgets/notification_bottom_sheet.dart';
 import 'buy/buy_refurbished_screen.dart';
-import 'exchange/exchange_workflow_screen.dart';
 import 'home/home_screen.dart';
 import 'profile/user_profile_screen.dart';
+import 'repairs/repairs_workflow_screen.dart';
 import 'sell/sell_workflow_screen.dart';
 
 class UserMainNavigationScreen extends StatefulWidget {
@@ -75,7 +75,7 @@ class _UserMainNavigationScreenState extends State<UserMainNavigationScreen> {
   void _navigateToSellWithCategory([String? catId]) {
     setState(() {
       _preselectedSellCategory = catId;
-      _currentIndex = 1;
+      _currentIndex = 2; // Tab 2 is Sell
     });
   }
 
@@ -129,37 +129,40 @@ class _UserMainNavigationScreenState extends State<UserMainNavigationScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(62),
+        preferredSize: const Size.fromHeight(66),
         child: AppBar(
-          backgroundColor: const Color(0xFF0F172A),
+          backgroundColor: Colors.white,
           elevation: 0,
           titleSpacing: 16,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Container(color: const Color(0xFFF1F5F9), height: 1),
+          ),
           title: InkWell(
             onTap: () => setState(() => _currentIndex = 0),
             child: Row(
               children: [
                 Container(
-                  width: 36,
-                  height: 36,
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF059669),
-                    borderRadius: BorderRadius.circular(12),
+                    shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF7C3AED).withValues(alpha: 0.35),
-                        blurRadius: 8,
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: Image.asset(
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/images/shop_emblem.png',
+                      fit: BoxFit.cover,
+                      errorBuilder: (c, e, s) => Image.asset(
                         'assets/images/app_logo.png',
                         fit: BoxFit.contain,
-                        errorBuilder: (c, e, s) => const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                        errorBuilder: (c2, e2, s2) => const Icon(Icons.storefront, color: Color(0xFF7C3AED), size: 24),
                       ),
                     ),
                   ),
@@ -169,36 +172,49 @@ class _UserMainNavigationScreenState extends State<UserMainNavigationScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    RichText(
-                      text: const TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'MAA ',
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: -0.5),
+                    Row(
+                      children: [
+                        const Text(
+                          'MAA AMBIKA',
+                          style: TextStyle(
+                            color: Color(0xFF0F172A),
+                            fontWeight: FontWeight.w900,
+                            fontSize: 16,
+                            letterSpacing: -0.3,
                           ),
-                          TextSpan(
-                            text: 'AMBIKA',
+                        ),
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF7ED),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: const Color(0xFFFFEDD5)),
+                          ),
+                          child: const Text(
+                            'MOBILE SHOP',
                             style: TextStyle(
-                              color: Color(0xFF34D399),
+                              color: Color(0xFFEA580C),
+                              fontSize: 9,
                               fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                              letterSpacing: -0.5,
+                              letterSpacing: 0.3,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                    const SizedBox(height: 2),
                     InkWell(
                       onTap: _openLocationPicker,
                       child: Row(
                         children: [
-                          const Icon(Icons.place, color: Color(0xFF34D399), size: 12),
+                          const Icon(Icons.place, color: Color(0xFFEA580C), size: 12),
                           const SizedBox(width: 2),
                           Text(
                             '$_selectedArea, $_selectedCity',
-                            style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w500),
+                            style: const TextStyle(color: Color(0xFF64748B), fontSize: 11, fontWeight: FontWeight.w600),
                           ),
-                          const Icon(Icons.arrow_drop_down, color: Colors.white70, size: 16),
+                          const Icon(Icons.arrow_drop_down, color: Color(0xFF64748B), size: 16),
                         ],
                       ),
                     ),
@@ -209,16 +225,41 @@ class _UserMainNavigationScreenState extends State<UserMainNavigationScreen> {
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.location_on_outlined, color: Colors.white70, size: 22),
-              tooltip: 'Select Location',
-              onPressed: _openLocationPicker,
+              icon: const Icon(Icons.search_rounded, color: Color(0xFF334155), size: 22),
+              tooltip: 'Search Shop',
+              onPressed: () => setState(() => _currentIndex = 1),
+            ),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.shopping_bag_outlined, color: Color(0xFF334155), size: 22),
+                  tooltip: 'Cart',
+                  onPressed: () => setState(() => _currentIndex = 1),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFEA580C),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Text(
+                      '2',
+                      style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
             ),
             IconButton(
-              icon: const Icon(Icons.notifications_outlined, color: Colors.white70, size: 22),
+              icon: const Icon(Icons.notifications_none_rounded, color: Color(0xFF334155), size: 22),
               tooltip: 'Notifications',
               onPressed: _showNotificationsDialog,
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 6),
           ],
         ),
       ),
@@ -230,8 +271,15 @@ class _UserMainNavigationScreenState extends State<UserMainNavigationScreen> {
             categories: _categories,
             refurbishedProducts: _refurbishedProducts,
             onNavigateToSell: ([catId]) => _navigateToSellWithCategory(catId),
-            onNavigateToBuy: () => setState(() => _currentIndex = 2),
-            onNavigateToExchange: () => setState(() => _currentIndex = 3),
+            onNavigateToBuy: () => setState(() => _currentIndex = 1),
+            onNavigateToExchange: () => setState(() => _currentIndex = 2),
+            onNavigateToRepairs: () => setState(() => _currentIndex = 3),
+          ),
+          BuyRefurbishedWidget(
+            products: _refurbishedProducts,
+            userProfile: widget.userProfile,
+            onProfileUpdate: widget.onProfileUpdate,
+            onOrderCreated: _handleOrderCreated,
           ),
           SellWorkflowWidget(
             categories: _categories,
@@ -240,16 +288,8 @@ class _UserMainNavigationScreenState extends State<UserMainNavigationScreen> {
             onProfileUpdate: widget.onProfileUpdate,
             onOrderCreated: _handleOrderCreated,
           ),
-          BuyRefurbishedWidget(
-            products: _refurbishedProducts,
+          RepairsWorkflowScreen(
             userProfile: widget.userProfile,
-            onProfileUpdate: widget.onProfileUpdate,
-            onOrderCreated: _handleOrderCreated,
-          ),
-          ExchangeWorkflowWidget(
-            refurbishedProducts: _refurbishedProducts,
-            userProfile: widget.userProfile,
-            onProfileUpdate: widget.onProfileUpdate,
             onOrderCreated: _handleOrderCreated,
           ),
           UserProfileWidget(
@@ -257,8 +297,9 @@ class _UserMainNavigationScreenState extends State<UserMainNavigationScreen> {
             orders: _orders,
             onProfileUpdate: widget.onProfileUpdate,
             onLogout: widget.onLogout,
-            onNavigateToSell: () => setState(() => _currentIndex = 1),
-            onNavigateToBuy: () => setState(() => _currentIndex = 2),
+            onNavigateToSell: () => setState(() => _currentIndex = 2),
+            onNavigateToBuy: () => setState(() => _currentIndex = 1),
+            onNavigateToRepairs: () => setState(() => _currentIndex = 3),
           ),
         ],
       ),

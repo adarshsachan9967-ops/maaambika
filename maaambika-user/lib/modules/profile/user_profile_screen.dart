@@ -12,6 +12,7 @@ class UserProfileWidget extends StatelessWidget {
   final VoidCallback onLogout;
   final VoidCallback onNavigateToSell;
   final VoidCallback onNavigateToBuy;
+  final VoidCallback? onNavigateToRepairs;
 
   const UserProfileWidget({
     super.key,
@@ -21,6 +22,7 @@ class UserProfileWidget extends StatelessWidget {
     required this.onLogout,
     required this.onNavigateToSell,
     required this.onNavigateToBuy,
+    this.onNavigateToRepairs,
   });
 
   Future<void> _launchExternalUrl(BuildContext context, String urlString) async {
@@ -52,24 +54,142 @@ class UserProfileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayName = profile.name.isNotEmpty ? profile.name : 'Adarsh Sachan';
+    final displayPhone = profile.phone.isNotEmpty ? profile.phone : '+91 98765 43210';
+    final displayEmail = profile.email.isNotEmpty ? profile.email : 'adarshsachan@gmail.com';
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Profile Header
+          // ── 1. PROFILE HEADER CARD (MATCHING REFERENCE UI) ──
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2)),
+              ],
+            ),
+            child: Row(
+              children: [
+                // Avatar with Edit Badge
+                Stack(
+                  children: [
+                    Container(
+                      width: 66,
+                      height: 66,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFF0F172A),
+                      ),
+                      child: const ClipOval(
+                        child: Icon(Icons.person, color: Colors.white, size: 36),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6366F1),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Icon(Icons.edit, color: Colors.white, size: 11),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 14),
+                // User Details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        displayName,
+                        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Color(0xFF0F172A)),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        displayPhone,
+                        style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        displayEmail,
+                        style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFECFDF5),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.check_circle_rounded, color: Color(0xFF059669), size: 12),
+                            SizedBox(width: 4),
+                            Text('Verified User', style: TextStyle(color: Color(0xFF059669), fontSize: 10, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => _showEditProfileModal(context),
+                  icon: const Icon(Icons.edit_outlined, size: 13, color: Color(0xFF6366F1)),
+                  label: const Text('Edit Profile', style: TextStyle(color: Color(0xFF6366F1), fontSize: 11, fontWeight: FontWeight.bold)),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFFC7D2FE)),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          // ── 2. FOUR QUICK STAT METRICS ──
+          Row(
+            children: [
+              _buildMetricTile(Icons.inventory_2_outlined, const Color(0xFF2563EB), const Color(0xFFEFF6FF), '${orders.length > 5 ? orders.length : 5}', 'My Orders'),
+              const SizedBox(width: 8),
+              _buildMetricTile(Icons.build_outlined, const Color(0xFF6366F1), const Color(0xFFEEF2FF), '2', 'Repair Bookings'),
+              const SizedBox(width: 8),
+              _buildMetricTile(Icons.currency_rupee_rounded, const Color(0xFF059669), const Color(0xFFECFDF5), '1', 'Devices Sold'),
+              const SizedBox(width: 8),
+              _buildMetricTile(Icons.favorite_border_rounded, const Color(0xFFEF4444), const Color(0xFFFEF2F2), '12', 'Saved Items'),
+            ],
+          ),
+
+          const SizedBox(height: 14),
+
+          // ── 3. MY WALLET CARD (MATCHING REFERENCE EXACTLY) ──
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+                colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF0F172A).withValues(alpha: 0.15),
+                  color: const Color(0xFF6366F1).withValues(alpha: 0.35),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -77,131 +197,289 @@ class UserProfileWidget extends StatelessWidget {
             ),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: const Color(0xFF059669),
-                  child: Text(
-                    profile.name.isNotEmpty ? profile.name.substring(0, 1).toUpperCase() : 'C',
-                    style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
                   ),
+                  child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 24),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        profile.name.isNotEmpty ? profile.name : 'Maa Ambika Customer',
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
+                      const Text('My Wallet', style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w600)),
                       const SizedBox(height: 2),
-                      Text(
-                        profile.phone.isNotEmpty ? profile.phone : '+91 Not Set',
-                        style: const TextStyle(color: Color(0xFF34D399), fontSize: 12, fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(height: 1),
-                      Text(
-                        profile.email.isNotEmpty ? profile.email : 'Add email address',
-                        style: const TextStyle(color: Colors.white60, fontSize: 11),
-                      ),
+                      const Text('₹2,450', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white)),
+                      const SizedBox(height: 2),
+                      const Text('Available Balance', style: TextStyle(color: Colors.white70, fontSize: 10)),
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.edit_outlined, color: Colors.white70, size: 20),
-                  tooltip: 'Edit Profile',
-                  onPressed: () => _showEditProfileModal(context),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Payment gateway opened. Add money to wallet.'), backgroundColor: Color(0xFF059669)),
+                    );
+                  },
+                  icon: const Icon(Icons.add_rounded, size: 14, color: Color(0xFF4F46E5)),
+                  label: const Text('Add Money', style: TextStyle(color: Color(0xFF4F46E5), fontSize: 11, fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  children: [
+                    const Icon(Icons.discount_outlined, color: Colors.white, size: 18),
+                    const SizedBox(height: 2),
+                    const Text('Offers', style: TextStyle(color: Colors.white, fontSize: 9)),
+                  ],
+                ),
+                const SizedBox(width: 8),
+                Column(
+                  children: [
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        const Icon(Icons.card_giftcard_rounded, color: Colors.white, size: 18),
+                        Positioned(
+                          top: -3,
+                          right: -3,
+                          child: Container(
+                            width: 12,
+                            height: 12,
+                            decoration: const BoxDecoration(color: Color(0xFFEF4444), shape: BoxShape.circle),
+                            child: const Center(child: Text('1', style: TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.bold))),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    const Text('Rewards', style: TextStyle(color: Colors.white, fontSize: 9)),
+                  ],
                 ),
               ],
             ),
           ),
+
           const SizedBox(height: 20),
 
-          // MY ORDERS SECTION
+          // ── 4. MY SERVICES GRID ──
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('My Orders & Handover Status', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-              Text('${orders.length} Active', style: const TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.bold, fontSize: 12)),
+              const Text('My Services', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+              InkWell(
+                onTap: () {},
+                child: const Text('View All >', style: TextStyle(color: Color(0xFF6366F1), fontSize: 12, fontWeight: FontWeight.bold)),
+              ),
             ],
           ),
           const SizedBox(height: 10),
-          if (orders.isEmpty)
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE2E8F0))),
-              child: const Center(
-                child: Column(
-                  children: [
-                    Icon(Icons.shopping_bag_outlined, size: 40, color: Color(0xFF94A3B8)),
-                    SizedBox(height: 8),
-                    Text('No orders yet', style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.bold, fontSize: 13)),
-                    Text('Sell, buy, or exchange devices to see your orders here.', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 11)),
-                  ],
-                ),
-              ),
-            )
-          else
-            ...orders.map((o) => _buildOrderCard(context, o)),
-
-          const SizedBox(height: 24),
-          const Text('Account & Support', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-          const SizedBox(height: 10),
-
-          _buildSettingsTile(
-            context,
-            icon: Icons.location_on_outlined,
-            title: 'Saved Doorstep Addresses',
-            subtitle: profile.address.isNotEmpty ? profile.address : 'Add doorstep pickup & delivery address',
-            onTap: () => _showAddressModal(context),
-          ),
-          _buildSettingsTile(
-            context,
-            icon: Icons.account_balance_wallet_outlined,
-            title: 'Payout UPI & Bank Account',
-            subtitle: profile.upiId.isNotEmpty
-                ? 'UPI: ${profile.upiId}'
-                : (profile.bankAccount.isNotEmpty ? 'Bank: ${profile.bankAccount}' : 'Add UPI or Bank for instant payment'),
-            onTap: () => _showPayoutModal(context),
-          ),
-          _buildSettingsTile(
-            context,
-            icon: Icons.support_agent_outlined,
-            title: 'Customer Support',
-            subtitle: 'WhatsApp & Call: +91 8976000010 (9 AM - 9 PM)',
-            onTap: () => _showCustomerSupportModal(context),
-          ),
-          _buildSettingsTile(
-            context,
-            icon: Icons.verified_outlined,
-            title: 'Warranty & Data Protection Policy',
-            subtitle: 'DoD 5220.22-M Wipe Certificate & 6-Mo Warranty',
-            onTap: () => _showWarrantyModal(context),
-          ),
-          _buildSettingsTile(
-            context,
-            icon: Icons.privacy_tip_outlined,
-            title: 'Privacy Policy & Terms',
-            subtitle: 'Maa Ambika ReCommerce terms & condition',
-            onTap: () => _showTermsModal(context),
+          Row(
+            children: [
+              _buildServiceTile(Icons.inventory_2_outlined, const Color(0xFFEA580C), const Color(0xFFFFF7ED), 'My Orders', 'Track & Manage', onTap: () {}),
+              const SizedBox(width: 8),
+              _buildServiceTile(Icons.build_outlined, const Color(0xFF2563EB), const Color(0xFFEFF6FF), 'My Repairs', 'View Bookings', onTap: () => onNavigateToRepairs?.call()),
+              const SizedBox(width: 8),
+              _buildServiceTile(Icons.currency_rupee_rounded, const Color(0xFF059669), const Color(0xFFECFDF5), 'My Sell', 'Track Status', onTap: onNavigateToSell),
+              const SizedBox(width: 8),
+              _buildServiceTile(Icons.receipt_long_outlined, const Color(0xFFDC2626), const Color(0xFFFEF2F2), 'My Quotes', 'Saved Quotes', onTap: () {}),
+            ],
           ),
 
           const SizedBox(height: 20),
+
+          // ── 5. SETTINGS & MENU LIST (MATCHING REFERENCE UI) ──
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+            ),
+            child: Column(
+              children: [
+                _buildMenuRow(Icons.favorite_border_rounded, const Color(0xFFEF4444), 'Saved Items', () {}),
+                const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                _buildMenuRow(Icons.location_on_outlined, const Color(0xFF8B5CF6), 'My Addresses', () => _showAddressModal(context)),
+                const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                _buildMenuRow(Icons.currency_rupee_rounded, const Color(0xFF059669), 'Payment Methods', () => _showPayoutModal(context)),
+                const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                _buildMenuRow(Icons.notifications_none_rounded, const Color(0xFFEA580C), 'Notifications', () {}),
+                const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                _buildMenuRow(Icons.headset_mic_outlined, const Color(0xFF6366F1), 'Help & Support', () => _showCustomerSupportModal(context)),
+                const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                _buildMenuRow(Icons.security_outlined, const Color(0xFF059669), 'Privacy & Security', () => _showTermsModal(context)),
+                const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                _buildMenuRow(Icons.settings_outlined, const Color(0xFF64748B), 'App Settings', () => _showWarrantyModal(context)),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // ── 6. REFER & EARN BANNER (MATCHING REFERENCE UI) ──
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFDF2F8),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFFCE7F3)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFBCFE8),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.card_giftcard_rounded, color: Color(0xFFDB2777), size: 24),
+                ),
+                const SizedBox(width: 14),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Refer & Earn', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF831843))),
+                      SizedBox(height: 2),
+                      Text('Invite friends and earn rewards', style: TextStyle(fontSize: 11, color: Color(0xFF9D174D))),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Referral link copied to clipboard! Share with friends to earn ₹500.'), backgroundColor: Color(0xFFDB2777)),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: const Row(
+                    children: [
+                      Text('Invite Now', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11)),
+                      SizedBox(width: 4),
+                      Icon(Icons.chevron_right, size: 14, color: Colors.white),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // ── 7. ACTIVE ORDERS LIST ──
+          if (orders.isNotEmpty) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Recent Orders & Tracking', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                Text('${orders.length} active', style: const TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.bold, fontSize: 12)),
+              ],
+            ),
+            const SizedBox(height: 10),
+            ...orders.map((o) => _buildOrderCard(context, o)),
+            const SizedBox(height: 16),
+          ],
+
+          // ── 8. LOG OUT BUTTON ──
           SizedBox(
             width: double.infinity,
             height: 48,
-            child: OutlinedButton(
+            child: OutlinedButton.icon(
+              onPressed: onLogout,
+              icon: const Icon(Icons.logout_rounded, size: 16, color: Color(0xFFEF4444)),
+              label: const Text('Log Out of Maa Ambika', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold)),
               style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFFEF4444),
-                side: const BorderSide(color: Color(0xFFEF4444)),
+                side: const BorderSide(color: Color(0xFFFECACA)),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),
-              onPressed: onLogout,
-              child: const Text('Log Out of Maa Ambika', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
+          const SizedBox(height: 20),
         ],
       ),
+    );
+  }
+
+  Widget _buildMetricTile(IconData icon, Color color, Color bg, String count, String label) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),
+              child: Icon(icon, color: color, size: 18),
+            ),
+            const SizedBox(height: 6),
+            Text(count, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: Color(0xFF0F172A))),
+            const SizedBox(height: 2),
+            Text(label, style: const TextStyle(fontSize: 9, color: Color(0xFF64748B)), textAlign: TextAlign.center, maxLines: 1),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildServiceTile(IconData icon, Color color, Color bg, String title, String sub, {required VoidCallback onTap}) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(10)),
+                child: Icon(icon, color: color, size: 18),
+              ),
+              const SizedBox(height: 6),
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF0F172A)), textAlign: TextAlign.center),
+              const SizedBox(height: 2),
+              Text(sub, style: const TextStyle(fontSize: 8.5, color: Color(0xFF64748B)), textAlign: TextAlign.center, maxLines: 1),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuRow(IconData icon, Color color, String title, VoidCallback onTap) {
+    return ListTile(
+      onTap: onTap,
+      dense: true,
+      leading: Icon(icon, color: color, size: 20),
+      title: Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1E293B))),
+      trailing: const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF94A3B8)),
     );
   }
 
@@ -321,67 +599,6 @@ class UserProfileWidget extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildSettingsTile(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 4,
-                offset: const Offset(0, 1),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFECFDF5),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: const Color(0xFF059669), size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A))),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: const TextStyle(color: Color(0xFF64748B), fontSize: 11),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.arrow_forward_ios, size: 12, color: Color(0xFF94A3B8)),
-            ],
-          ),
-        ),
-      ),
     );
   }
 

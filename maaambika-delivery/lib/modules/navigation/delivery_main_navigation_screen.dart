@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/models/delivery_task.dart';
 import '../../widgets/delivery_app_bar.dart';
 import '../../widgets/delivery_bottom_bar.dart';
+import '../dashboard/delivery_home_dashboard_screen.dart';
 import '../earnings/delivery_earnings_screen.dart';
-import '../hotspots/delivery_hotspots_screen.dart';
 import '../profile/delivery_profile_screen.dart';
+import '../support/delivery_support_screen.dart';
 import '../tasks/bloc/delivery_tasks_bloc.dart';
 import '../tasks/bloc/delivery_tasks_event.dart';
 import '../tasks/bloc/delivery_tasks_state.dart';
@@ -42,6 +43,15 @@ class _DeliveryMainNavigationScreenState extends State<DeliveryMainNavigationScr
             body: IndexedStack(
               index: _currentIndex,
               children: [
+                DeliveryHomeDashboardScreen(
+                  tasks: tasks,
+                  isOnline: isOnline,
+                  onViewAllTasks: () => setState(() => _currentIndex = 1),
+                  onTasksUpdated: () {
+                    context.read<DeliveryTasksBloc>().add(const LoadDeliveryTasksEvent());
+                  },
+                  onNavigateTab: (idx) => setState(() => _currentIndex = idx),
+                ),
                 DeliveryTasksScreen(
                   tasks: tasks,
                   isLoading: isLoading,
@@ -50,7 +60,7 @@ class _DeliveryMainNavigationScreenState extends State<DeliveryMainNavigationScr
                   },
                 ),
                 const DeliveryEarningsScreen(),
-                const DeliveryHotspotsScreen(),
+                const DeliverySupportScreen(),
                 const DeliveryProfileScreen(),
               ],
             ),

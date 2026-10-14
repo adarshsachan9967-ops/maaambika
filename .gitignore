@@ -44,8 +44,10 @@ Thumbs.db
 
 # Built APKs & AABs
 release-apks/
+release_apks/
 release_aabs/
 *.aab
+*.apk
 
 # Old legacy folders before rename
 camsik-admin/

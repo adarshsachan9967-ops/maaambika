@@ -11,6 +11,7 @@ class HomeScreen extends StatefulWidget {
   final VoidCallback onNavigateToBuy;
   final VoidCallback onNavigateToExchange;
   final VoidCallback? onNavigateToRent;
+  final VoidCallback? onNavigateToRepairs;
 
   const HomeScreen({
     super.key,
@@ -21,6 +22,7 @@ class HomeScreen extends StatefulWidget {
     required this.onNavigateToBuy,
     required this.onNavigateToExchange,
     this.onNavigateToRent,
+    this.onNavigateToRepairs,
   });
 
   @override
@@ -28,6 +30,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _selectedFilterIndex = 0;
+  final List<String> _quickFilters = ['All', 'Smartphones', 'Laptops', 'Repairs', 'Exchange', 'Accessories', 'Offers'];
+
   @override
   Widget build(BuildContext context) {
     return _buildHomeScreen();
@@ -39,14 +44,23 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // TOP SEARCH BAR (Matching Reference Image)
+          _buildTopSearchBar(),
+
+          // HORIZONTAL CATEGORY FILTER PILLS
+          _buildQuickCategoryChips(),
+
           // 1. FULL-WIDTH INFINITE LOOPING BANNER (PROPER TOP SPACING, NEVER TOUCHING HEADER)
           Padding(
-            padding: const EdgeInsets.only(top: 14, bottom: 8),
+            padding: const EdgeInsets.only(top: 8, bottom: 8),
             child: MaaAmbikaFullWidthBannerCarousel(
               banners: widget.banners,
               onBannerTap: (catId) => widget.onNavigateToSell(catId),
             ),
           ),
+
+          // TOP BRANDS CAROUSEL
+          _buildTopBrandsRow(),
 
           const SizedBox(height: 10),
 
@@ -89,6 +103,170 @@ class _HomeScreenState extends State<HomeScreen> {
           const MaaAmbikaFaqSectionWidget(),
         ],
       ),
+    );
+  }
+
+  Widget _buildTopSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Container(
+        height: 48,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            const SizedBox(width: 14),
+            const Icon(Icons.search_rounded, color: Color(0xFF94A3B8), size: 22),
+            const SizedBox(width: 10),
+            Expanded(
+              child: TextField(
+                onTap: () => widget.onNavigateToBuy(),
+                readOnly: true,
+                decoration: const InputDecoration(
+                  hintText: 'Search smartphones, accessories, brands...',
+                  hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 13, fontWeight: FontWeight.w400),
+                  border: InputBorder.none,
+                  isDense: true,
+                ),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.only(right: 6),
+              height: 34,
+              width: 34,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.tune_rounded, color: Color(0xFF475569), size: 18),
+                onPressed: () => widget.onNavigateToBuy(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickCategoryChips() {
+    return SizedBox(
+      height: 42,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: _quickFilters.length,
+        separatorBuilder: (c, i) => const SizedBox(width: 8),
+        itemBuilder: (ctx, idx) {
+          final isSelected = _selectedFilterIndex == idx;
+          return ChoiceChip(
+            label: Text(_quickFilters[idx]),
+            selected: isSelected,
+            onSelected: (selected) {
+              setState(() => _selectedFilterIndex = idx);
+              if (idx == 1) widget.onNavigateToBuy();
+              if (idx == 3) widget.onNavigateToRepairs?.call();
+              if (idx == 4) widget.onNavigateToExchange();
+            },
+            selectedColor: const Color(0xFF0F172A),
+            backgroundColor: Colors.white,
+            labelStyle: TextStyle(
+              color: isSelected ? Colors.white : const Color(0xFF475569),
+              fontSize: 12,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+            ),
+            side: BorderSide(
+              color: isSelected ? const Color(0xFF0F172A) : const Color(0xFFE2E8F0),
+            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            showCheckmark: false,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildTopBrandsRow() {
+    final brands = [
+      {'name': 'Apple', 'icon': Icons.apple},
+      {'name': 'Samsung', 'icon': Icons.phone_android},
+      {'name': 'OnePlus', 'icon': Icons.phone_iphone},
+      {'name': 'Xiaomi', 'icon': Icons.smartphone},
+      {'name': 'Vivo', 'icon': Icons.mobile_friendly},
+      {'name': 'Oppo', 'icon': Icons.edgesensor_high},
+      {'name': 'Google', 'icon': Icons.g_mobiledata},
+      {'name': 'Realme', 'icon': Icons.phonelink},
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Top Brands',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+              ),
+              Text(
+                '100% Genuine',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF059669)),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 72,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: brands.length,
+            separatorBuilder: (c, i) => const SizedBox(width: 10),
+            itemBuilder: (ctx, idx) {
+              final b = brands[idx];
+              return InkWell(
+                onTap: () => widget.onNavigateToBuy(),
+                borderRadius: BorderRadius.circular(14),
+                child: Container(
+                  width: 68,
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(b['icon'] as IconData, size: 22, color: const Color(0xFF1E293B)),
+                      const SizedBox(height: 4),
+                      Text(
+                        b['name'] as String,
+                        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF334155)),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -467,7 +645,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
             imagePath: 'assets/images/categories/dslr.png',
             proofText: '25,000+ repairs completed',
-            onTap: () => widget.onNavigateToSell(),
+            onTap: () {
+              if (widget.onNavigateToRepairs != null) {
+                widget.onNavigateToRepairs!();
+              } else {
+                widget.onNavigateToSell();
+              }
+            },
           ),
           const SizedBox(height: 14),
 

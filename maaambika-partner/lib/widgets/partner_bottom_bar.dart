@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../core/constants/app_constants.dart';
 
 class PartnerBottomBar extends StatelessWidget {
   final int selectedIndex;
@@ -13,38 +12,90 @@ class PartnerBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationBar(
-      selectedIndex: selectedIndex,
-      onDestinationSelected: onItemSelected,
-      backgroundColor: Colors.white,
-      indicatorColor: AppConstants.primaryColor.withValues(alpha: 0.18),
-      destinations: const [
-        NavigationDestination(
-          icon: Icon(Icons.dashboard_outlined),
-          selectedIcon: Icon(Icons.dashboard, color: AppConstants.primaryColor),
-          label: 'Dashboard',
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(color: Color(0xFFE2E8F0), width: 1),
         ),
-        NavigationDestination(
-          icon: Icon(Icons.shopping_bag_outlined),
-          selectedIcon: Icon(Icons.shopping_bag, color: AppConstants.primaryColor),
-          label: 'Orders',
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(0, Icons.home_outlined, Icons.home_rounded, 'Home'),
+              _buildNavItem(1, Icons.assignment_outlined, Icons.assignment_rounded, 'Orders'),
+              _buildNavItem(2, Icons.search_rounded, Icons.search_rounded, 'Inspection'),
+              _buildNavItem(3, Icons.currency_rupee_rounded, Icons.currency_rupee_rounded, 'Payouts'),
+              _buildNavItem(4, Icons.headset_mic_outlined, Icons.headset_mic_rounded, 'Support', hasBadge: true),
+              _buildNavItem(5, Icons.person_outline_rounded, Icons.person_rounded, 'Profile'),
+            ],
+          ),
         ),
-        NavigationDestination(
-          icon: Icon(Icons.fact_check_outlined),
-          selectedIcon: Icon(Icons.fact_check, color: AppConstants.primaryColor),
-          label: 'Inspection',
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, IconData activeIcon, String label, {bool hasBadge = false}) {
+    final isSelected = selectedIndex == index;
+    const activeColor = Color(0xFF059669);
+    const inactiveColor = Color(0xFF64748B);
+
+    return InkWell(
+      onTap: () => onItemSelected(index),
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  isSelected ? activeIcon : icon,
+                  color: isSelected ? activeColor : inactiveColor,
+                  size: 22,
+                ),
+                if (hasBadge)
+                  Positioned(
+                    top: -2,
+                    right: -2,
+                    child: Container(
+                      width: 7,
+                      height: 7,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFEF4444),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected ? activeColor : inactiveColor,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Container(
+              width: 12,
+              height: 2.5,
+              decoration: BoxDecoration(
+                color: isSelected ? activeColor : Colors.transparent,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ],
         ),
-        NavigationDestination(
-          icon: Icon(Icons.account_balance_wallet_outlined),
-          selectedIcon: Icon(Icons.account_balance_wallet, color: AppConstants.primaryColor),
-          label: 'Payouts',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.store_outlined),
-          selectedIcon: Icon(Icons.store, color: AppConstants.primaryColor),
-          label: 'Store KYC',
-        ),
-      ],
+      ),
     );
   }
 }

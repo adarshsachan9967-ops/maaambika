@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../data/fallback/fallback_partner_data.dart';
 import '../../widgets/partner_app_bar.dart';
 import '../../widgets/partner_bottom_bar.dart';
 import '../dashboard/bloc/partner_dashboard_bloc.dart';
@@ -16,6 +15,7 @@ import '../payouts/partner_payouts_screen.dart';
 import '../profile/bloc/partner_profile_bloc.dart';
 import '../profile/bloc/partner_profile_event.dart';
 import '../profile/partner_profile_screen.dart';
+import '../support/partner_support_screen.dart';
 
 class PartnerMainNavigationScreen extends StatefulWidget {
   const PartnerMainNavigationScreen({super.key});
@@ -51,7 +51,7 @@ class _PartnerMainNavigationScreenState extends State<PartnerMainNavigationScree
         builder: (context) {
           return Scaffold(
             appBar: PartnerAppBar(
-              store: FallbackPartnerData.store,
+              onProfileTap: () => setState(() => _currentIndex = 5),
               onRefresh: () {
                 context.read<PartnerDashboardBloc>().add(
                       const LoadPartnerDashboardEvent(isRefresh: true),
@@ -71,6 +71,7 @@ class _PartnerMainNavigationScreenState extends State<PartnerMainNavigationScree
                 const PartnerOrdersScreen(),
                 const PartnerInspectionScreen(),
                 const PartnerPayoutsScreen(),
+                const PartnerSupportScreen(),
                 const PartnerProfileScreen(),
               ],
             ),
