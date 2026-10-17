@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { Eye, EyeOff, Shield, Lock, Mail, AlertCircle, ArrowLeft } from 'lucide-react';
 
 const VALID_ADMIN_EMAILS = [
+  'maaambikaadmin@gmail.com',
+  'admin@maaambikamobile.com',
   'casmikadmin9967@gmail.com',
   'admin@casmik.com',
   'admin@camsik.com',
-  'maaambikaadmin@gmail.com',
-  'admin@maaambikamobile.com',
 ];
-const ADMIN_PASSWORD = 'Casmik@9967';
+const ADMIN_PASSWORDS = ['Ambika@7071', 'Casmik@9967'];
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -39,7 +39,7 @@ export default function AdminLoginPage() {
 
     const normalizedEmail = email.trim().toLowerCase();
     const isEmailValid = VALID_ADMIN_EMAILS.includes(normalizedEmail);
-    const isPasswordValid = password === ADMIN_PASSWORD;
+    const isPasswordValid = ADMIN_PASSWORDS.includes(password);
 
     if (isEmailValid && isPasswordValid) {
       if (typeof window !== 'undefined') {
@@ -92,7 +92,7 @@ export default function AdminLoginPage() {
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="admin@casmik.com"
+                  placeholder="maaambikaadmin@gmail.com"
                   required
                   className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
                 />
@@ -137,8 +137,8 @@ export default function AdminLoginPage() {
 
           <div className="mt-6 p-4 bg-white/5 rounded-xl border border-white/10">
             <p className="text-xs text-white/40 font-semibold mb-2">Demo Credentials</p>
-            <p className="text-xs text-white/60">Email: <span className="text-white/80 font-mono">casmikadmin9967@gmail.com</span></p>
-            <p className="text-xs text-white/60 mt-1">Password: <span className="text-white/80 font-mono">Casmik@9967</span></p>
+            <p className="text-xs text-white/60">Email: <span className="text-white/80 font-mono">maaambikaadmin@gmail.com</span></p>
+            <p className="text-xs text-white/60 mt-1">Password: <span className="text-white/80 font-mono">Ambika@7071</span></p>
           </div>
 
           <div className="mt-4 text-center">
